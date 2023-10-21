@@ -1,0 +1,14 @@
+/* eslint-disable no-useless-escape */
+
+export const checkEmail = (email: string) => {
+    const regex = /\S+@\S+\.\S+/;
+    console.log(regex.test(email));
+    return regex.test(email);
+}
+
+
+export const checkPassword = (password: string, minSize?: number) => {
+    if (minSize && (password.length < minSize)) return false;
+    const regex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]|[\u00C0-\u017F]/;
+    return regex.test(password); 
+}
