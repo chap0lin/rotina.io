@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { move, moveAndVanish, spawn, spawnAndMove, vanish } from "../../functions/animation";
 import { useGlobalContext } from "../../contexts/GlobalContextProvider";
-import { checkEmail, checkPassword } from "../../functions";
+import { isEmailValid, isPasswordValid } from "../../functions";
 import { colors } from "../../colors";
 import { texts } from "./Login.lang";
 import Background from "../../components/Background";
@@ -9,6 +9,7 @@ import Header from "../../components/Header";
 import Logo from "../../components/Logo";
 import Credential from "./components/Credential";
 import Button from "../../components/Button";
+import Popup from "../../components/Popup";
 import { TopContent, Credentials, DiscreteText, BottomContent, Content, Bold, LogoDiv, Gsap, HintText } from "./Login.style";
 
 const MIN_PASSWORD_SIZE = 8;
@@ -22,6 +23,7 @@ export default function Start(){
     const [buttonText, setButtonText] = useState<string>(() => loginTexts.buttonSignIn);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(() => true);
     const [waitingForServer, setWaitingForServer] = useState<boolean>(() => false);
+    const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
     const username = useRef<string>('');
     const email = useRef<string>('');
@@ -54,11 +56,11 @@ export default function Start(){
             email.current.length > 0 &&
             password.current.length > 0
         ) {
-            if(!checkEmail(email.current)){
+            if(!isEmailValid(email.current)){
                 hint = loginTexts.invalidEmail;
             } else {
                 hint = loginTexts.newPasswordHint;
-                if(checkPassword(password.current, MIN_PASSWORD_SIZE)){
+                if(isPasswordValid(password.current, MIN_PASSWORD_SIZE)){
                     if(repPassword.current.length > 0){
                         if(password.current === repPassword.current){
                             hint = loginTexts.goodToGo;
@@ -82,7 +84,7 @@ export default function Start(){
                 break;
             case 'sign-up': status = !checkSignUpInputs();
                 break;
-            default: status = !checkEmail(email.current);
+            default: status = !isEmailValid(email.current);
         }
         setButtonDisabled(status);
     }
@@ -234,6 +236,14 @@ export default function Start(){
                     </DiscreteText>
                 </BottomContent>
             </Content>
+            <Popup
+                title={'Title'}
+                description={'aaa'}
+                show={popupVisibility}
+                exit={() => setPopupVisibility(false)}
+                type='info'
+                border="1px solid black"
+            />
         </Background>
     )
 }
