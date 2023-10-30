@@ -11,6 +11,9 @@ export const Container = styled.div`
     align-items: center;
     max-width: 300px;
     gap: 10px;
+    @media(max-height: 750px){
+        max-width: 260px;
+    }
 `;
 
 export const Title = styled.p`
@@ -21,6 +24,9 @@ export const Title = styled.p`
     margin: 0;
     opacity: 70%;
     white-space: nowrap;
+    @media(max-height: 750px){
+        font-size: 15px;
+    }
 `;
 
 export const Input = styled.input`
@@ -30,4 +36,7 @@ export const Input = styled.input`
     border: none;
     color: ${colors.black};
     font-size: 17px;
+    @media(max-height: 750px){
+        font-size: 16px;
+    }
 `;

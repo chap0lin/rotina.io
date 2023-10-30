@@ -36,6 +36,9 @@ export const Credentials = styled(FlexColumn)`
 export const DiscreteText = styled.p`
     font-size: 16px;
     color: ${colors.black};
+    @media(max-height: 750px){
+        font-size: 15px;
+    }
 `;
 
 export const HintGsap = styled(Gsap)`

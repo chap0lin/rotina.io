@@ -18,7 +18,7 @@ type screenType = "sign-in" | "sign-up" | "forgot-password" | "sent-sign-up-emai
 type serverReply = "USER_ADDED" | "USER_PENDING" | "ERROR" | "USERNAME_ALREADY_TAKEN" | "EMAIL_ALREADY_TAKEN" | "EMAIL_FOUND" | "EMAIL_NOT_FOUND" | "EMAIL_ERROR";
 
 export default function Start(){
-    const { language } = useGlobalContext();
+    const { language, innerHeight } = useGlobalContext();
     const loginTexts = texts.get(language); 
     const [screen, setScreen] = useState<screenType>(() => "sign-in");
     const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
@@ -157,6 +157,36 @@ export default function Start(){
     }
 
 
+    ////Listener para remover foco do <input> quando o usuário aperta Enter/////////////////////////
+
+    useEffect(() => {
+        document.addEventListener('keydown', detectKeyDown);
+        return () => {
+            document.removeEventListener('keydown', detectKeyDown);
+        };
+    }, []);
+
+    const detectKeyDown = (e) => {
+        if (e.key !== 'Enter') return;
+        let allInputsOk = false;
+        switch(screen){
+            case "sign-in":
+                allInputsOk = checkSignInInputs();
+            break;
+            case "sign-up":
+                allInputsOk = checkSignUpInputs();
+            break;
+            case "forgot-password":
+                allInputsOk = isEmailValid(email.current);
+            break;
+        }
+        if(!allInputsOk) return;
+        onButtonClick();
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     useLayoutEffect(() => {
         vanish([emailRef.current, repPassRef.current]);
         move([
@@ -167,8 +197,7 @@ export default function Start(){
             hintRef.current, 
             buttonRef.current
         ], 90);
-    }, []);
-    
+    }, []);    
 
     useEffect(() => {
         const lang = texts.get(language);
@@ -187,7 +216,7 @@ export default function Start(){
             case 'sign-up':
                 setHintText(lang.signUpHint);
                 setButtonText(lang.buttonSignUp);
-                move([logoRef.current], -90, 1);
+                move([logoRef.current], -75, 1);
                 move([nameRef.current], 0, 1);
                 spawnAndMove([emailRef.current], 60, 1);
                 move([passRef.current], 120, 1);
@@ -226,7 +255,6 @@ export default function Start(){
         }
         handleButtonStatus();
     }, [screen, language]);
-
     
     return (
         <Background>
@@ -238,7 +266,7 @@ export default function Start(){
             <Content>
                 <TopContent>
                     <LogoDiv ref={logoRef}>
-                        <Logo color={colors.black} fontSize='50px'/>
+                        <Logo color={colors.black} fontSize={innerHeight > 750? '50px' : '45px'}/>
                     </LogoDiv>
                     <Credentials>
                         <Gsap ref={nameRef}>

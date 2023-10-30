@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { colors } from '../../colors';
 
 export const Container = styled.div`
   display: flex;
@@ -7,6 +8,9 @@ export const Container = styled.div`
   width: 100%;
   height: 80px;
   padding: 0 20px;
+  @media(max-height: 750px){
+    padding: 0 25px;
+  }
 `;
 
 export const Side = styled.div`
@@ -20,6 +24,11 @@ export const LeftSide = styled(Side)`
 `;
 export const RightSide = styled(Side)`
   gap: 20px;
+`;
+
+export const LanguageDiv = styled.div`
+  position: relative;
+  cursor: pointer;
 `;
 
 export const Gsap = styled.div``;

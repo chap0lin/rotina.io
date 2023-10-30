@@ -1,40 +1,27 @@
 import { Loader } from "react-feather";
-import { Background, Gsap, Text } from "./Loading.style";
-import { useLayoutEffect, useRef } from "react";
-import gsap from "gsap";
+import { AnimatedLoader, Background, Text } from "./Loading.style";
 import { colors } from "../../colors";
+import { languageOption } from "../../types";
+import { texts } from "./Loading.lang";
 
-export default function Loading(){
-    
-    const loaderRef = useRef(null);
-    
-    useLayoutEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.to(loaderRef.current, {
-                rotate: 360,
-                duration: 1.5,
-                repeat: -1,
-                ease: 'linear',
-            });
-        });
-        return () => {
-            ctx.revert();
-        };
-    }, []);
+interface props {
+    lang: languageOption;
+}
 
+export default function Loading({lang}: props){
     return (
         <Background>
             <Text>
-                Um momento...
+                {texts.get(lang).loading}
             </Text>
-            <Gsap ref={loaderRef}>
+            <AnimatedLoader>
                 <Loader
-                    width={100}
-                    height={100}
+                    width={'100%'}
+                    height={'100%'}
                     strokeWidth={1}
                     color={colors.black}
                 />
-            </Gsap>
+            </AnimatedLoader>
         </Background>
     )
 }

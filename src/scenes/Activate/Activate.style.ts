@@ -2,7 +2,9 @@ import styled from "@emotion/styled";
 import { colors } from "../../colors";
 
 export const Gsap = styled.div`
-    position: absolute;
+    width: 100%;
+    height: 100%;
+    position: fixed;
 `;
 
 export const FlexColumn = styled.div`

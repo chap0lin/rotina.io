@@ -1,14 +1,14 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../../contexts/GlobalContextProvider";
+import { spawn, vanish } from "../../functions/animation";
 import { texts } from "./Activate.lang";
 import Loading from "../../components/Loading";
 import api from "../../services/api";
 import Header from "../../components/Header";
 import Background from "../../components/Background";
 import Button from "../../components/Button";
-import { Bold, HintText, Texts, TopContent, WelcomeText } from "./Activate.style";
-
+import { Bold, Gsap, HintText, Texts, TopContent, WelcomeText } from "./Activate.style";
 
 type serverReply = "ERROR_DUPLICATE" | "ERROR_NO_PENDING_USER" | "USER_REGISTERED";
 
@@ -21,6 +21,20 @@ export default function Activate(){
     const id = queryString.get("id");
     const lang = queryString.get("lang");
     const activateTexts = texts.get(language); 
+
+    const contentRef = useRef(null);
+    const loadingRef = useRef(null);
+
+    useEffect(() => {
+        if(waitingForServer){
+            spawn(loadingRef.current);
+            vanish(contentRef.current);
+        } else {
+            vanish(loadingRef.current, 0.5);
+            spawn(contentRef.current, 1, 'flex');
+        }
+    }, [waitingForServer]);
+
 
     const handleServerReply = (reply: serverReply) => {
         if(reply.includes("USER_REGISTERED")){
@@ -55,7 +69,7 @@ export default function Activate(){
     return (
         <Background>
             <Header logo lang/>
-            <TopContent>
+            <TopContent ref={contentRef}>
                 <Texts>
                     <WelcomeText>
                         {username? activateTexts.welcome : activateTexts.hmmm}
@@ -77,7 +91,9 @@ export default function Activate(){
                     {username? activateTexts.ok : activateTexts.goBack}
                 </Button>
             </TopContent>
-            {waitingForServer && <Loading />}
+            <Gsap ref={loadingRef}>
+                <Loading lang={language}/>
+            </Gsap>
         </Background>
     )
 }

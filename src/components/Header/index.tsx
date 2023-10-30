@@ -1,14 +1,15 @@
-import { useRef, useEffect } from 'react';
-import { colors } from '../../colors';
-import { useGlobalContext } from '../../contexts/GlobalContextProvider';
-import { Container, Gsap, LeftSide, RightSide } from './Header.style';
-import { ArrowLeft, Globe, User } from 'react-feather';
-import Logo from '../Logo';
-import gsap from 'gsap';
+import { useRef, useEffect, useState } from "react";
+import { useGlobalContext } from "../../contexts/GlobalContextProvider";
+import { ArrowLeft, Globe, User } from "react-feather";
+import { colors } from "../../colors";
+import Logo from "../Logo";
+import gsap from "gsap";
+import LanguageSelector from "./components/LanguageSelector";
+import { Container, Gsap, LanguageDiv, LeftSide, RightSide } from "./Header.style";
 
 interface props {
-  showGoBackArrow?: boolean;
   goBackArrow?: () => void;
+  showGoBackArrow?: boolean;
   logo?: boolean;
   user?: boolean;
   lang?: boolean;
@@ -16,15 +17,12 @@ interface props {
 
 export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}: props) {
 
-  const { setLanguage } = useGlobalContext();
+  const { innerHeight, setLanguage } = useGlobalContext();
+  const [showLanguages, setShowLanguages] = useState<boolean>(() => false);
   const arrowRef = useRef(null);
 
   const toggleLanguage = () => {
-    setLanguage(prev => {
-      return (prev === 'en-us')
-      ? 'pt-br'
-      : 'en-us'
-    });
+    setShowLanguages(prev => !prev);
   }
 
   const handleArrowClick = () => {
@@ -45,8 +43,8 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
           <Gsap ref={arrowRef}>
             <ArrowLeft
               strokeWidth={1}
-              width={40}
-              height={40}
+              width={(innerHeight > 750)? 40 : 35}
+              height={(innerHeight > 750)? 40 : 35}
               color={colors.black}
               onClick={handleArrowClick}
             />
@@ -55,7 +53,7 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
         { logo && 
           <Logo
             color={colors.black}
-            fontSize={25}
+            fontSize={(innerHeight > 750)? 25 : 22}
           />
         }
       </LeftSide>
@@ -63,19 +61,22 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
         { user && 
           <User
             strokeWidth={1}
-            width={35}
-            height={35}
+            width={(innerHeight > 750)? 35 : 30}
+            height={(innerHeight > 750)? 35 : 30}
             color={colors.black}
           />
         }
         { lang &&
-          <Globe
-            strokeWidth={1}
-            width={35}
-            height={35}
-            color={colors.black}
-            onClick={toggleLanguage}
-          />
+          <LanguageDiv>
+            <Globe
+              strokeWidth={1}
+              width={(innerHeight > 750)? 35 : 30}
+              height={(innerHeight > 750)? 35 : 30}
+              color={colors.black}
+              onClick={toggleLanguage}
+            />
+            <LanguageSelector show={showLanguages} onClick={setLanguage}/>
+          </LanguageDiv>
         }
       </RightSide>
     </Container>

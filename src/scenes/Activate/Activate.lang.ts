@@ -1,4 +1,4 @@
-import { LanguageOption } from "../../types";
+import { languageOption } from "../../types";
 
 type textTypes = {
     ok: string;
@@ -10,7 +10,7 @@ type textTypes = {
     somethingWentWrong: string;
 }
 
-const texts = new Map<LanguageOption, textTypes>();
+const texts = new Map<languageOption, textTypes>();
 
 texts.set('pt-br', {
     ok: "pode deixar!",

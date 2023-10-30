@@ -1,4 +1,4 @@
-import { LanguageOption } from "../../types";
+import { languageOption } from "../../types";
 
 type textTypes = {
     user: string;
@@ -25,7 +25,7 @@ type textTypes = {
     goBack: string;
 }
 
-const texts = new Map<LanguageOption, textTypes>();
+const texts = new Map<languageOption, textTypes>();
 
 texts.set('pt-br', {
     user: 'Usuário',
@@ -71,7 +71,7 @@ texts.set('en-us', {
     nameAlreadyExists: 'Username already in use. Please insert a new one.',
     emailAlreadyExists: 'E-mail already in use. Please insert a new one.',
     emailNotRegistered: "There's no account associated with this e-mail.",
-    willSendSignUpEmail: `Almost there! We'je just sent an activation link to the given e-mail address. Access and click to complete your registration!`,
+    willSendSignUpEmail: `Almost there! We've just sent an activation link to the given e-mail address. Access and click to complete your registration!`,
     willSendRecoverEmail: `Great! We've just sent a recovery link to the given e-mail.`,
     somethingWentWrong: 'Something went wrong. Please try again later.',
     goBack: 'back to start',
