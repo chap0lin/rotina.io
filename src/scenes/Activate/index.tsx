@@ -1,0 +1,83 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useGlobalContext } from "../../contexts/GlobalContextProvider";
+import { texts } from "./Activate.lang";
+import Loading from "../../components/Loading";
+import api from "../../services/api";
+import Header from "../../components/Header";
+import Background from "../../components/Background";
+import Button from "../../components/Button";
+import { Bold, HintText, Texts, TopContent, WelcomeText } from "./Activate.style";
+
+
+type serverReply = "ERROR_DUPLICATE" | "ERROR_NO_PENDING_USER" | "USER_REGISTERED";
+
+export default function Activate(){
+    const navigate = useNavigate();
+    const { language, setLanguage } = useGlobalContext();
+    const [username, setUsername] = useState<string>();
+    const [waitingForServer, setWaitingForServer] = useState(() => true);
+    const [queryString, setQueryString] = useSearchParams();
+    const id = queryString.get("id");
+    const lang = queryString.get("lang");
+    const activateTexts = texts.get(language); 
+
+    const handleServerReply = (reply: serverReply) => {
+        if(reply.includes("USER_REGISTERED")){
+            const name = reply.split("=").at(-1);
+            if(name.length > 0){
+                setUsername(name);
+            }
+        } else {
+
+        }
+        setWaitingForServer(false);
+    }
+
+    const getRequest = (link: string, params: any) => {
+        setWaitingForServer(true);
+        api.get(link, {params}).then((resp) => {
+            handleServerReply(resp.data.msg);
+        }).catch((err) => {
+            setWaitingForServer(false);
+        });
+    }
+
+    useEffect(() => {
+        setLanguage((lang && lang === "en-us")? lang : "pt-br");
+        if(!id || id === ""){
+            navigate("/");
+        } else {
+            getRequest("/finish-signup", {id: id});
+        }
+    }, []);
+
+    return (
+        <Background>
+            <Header logo lang/>
+            <TopContent>
+                <Texts>
+                    <WelcomeText>
+                        {username? activateTexts.welcome : activateTexts.hmmm}
+                    </WelcomeText>
+                    <HintText>
+                        {username
+                            ? <> 
+                                {activateTexts.hello}
+                                <Bold>
+                                    {`, ${username.length > 0? username : "Fulano"}! `}    
+                                </Bold>
+                                {activateTexts.activationWasSuccessful}
+                            </>
+                            : activateTexts.somethingWentWrong
+                        }
+                    </HintText>
+                </Texts>
+                <Button onClick={() => navigate("/")}>
+                    {username? activateTexts.ok : activateTexts.goBack}
+                </Button>
+            </TopContent>
+            {waitingForServer && <Loading />}
+        </Background>
+    )
+}
