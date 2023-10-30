@@ -64,8 +64,6 @@ export const Description = styled.div`
   color: ${colors.black};
   font-size: 18px;
   overflow-y: scroll;
-  text-align: justify;
-  text-justify: inter-word;
   margin: 20px 0;
   ::-webkit-scrollbar {
     display: none;
@@ -77,4 +75,5 @@ export const Description = styled.div`
 
 export const WarningDescription = styled(Description)`
   flex-direction: row;
+  gap: 20px;
 `;

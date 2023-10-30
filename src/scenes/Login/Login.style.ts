@@ -1,8 +1,11 @@
 import styled from "@emotion/styled";
 import { colors } from "../../colors";
 
+export const Gsap = styled.div`
+    position: absolute;
+`;
+
 export const FlexColumn = styled.div`
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,11 +18,10 @@ export const Content = styled(FlexColumn)`
 `;
 
 export const TopContent = styled(FlexColumn)`
-    padding-top: 50%;
+    padding-top: 180px;
     position: relative;
     @media(max-height: 750px){
-        padding-top: 25%;
-        gap: 30px;
+        padding-top: 90px;
     }
 `;
 
@@ -36,13 +38,18 @@ export const DiscreteText = styled.p`
     color: ${colors.black};
 `;
 
+export const HintGsap = styled(Gsap)`
+    height: 80px;
+`;
+
 export const HintText = styled(DiscreteText)`
     cursor: pointer;
-    width: 100%;
-    max-width: 300px;
+    width: 100vw;
+    max-width: 320px;
     text-align: center;
     @media(max-height: 750px){
         margin-top: 0;
+        max-width: 280px;
     }
 `;
 
@@ -54,6 +61,3 @@ export const Bold = styled.span`
 
 export const LogoDiv = styled.div``;
 
-export const Gsap = styled.div`
-    position: absolute;
-`;

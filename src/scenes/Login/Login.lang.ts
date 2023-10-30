@@ -6,7 +6,7 @@ type textTypes = {
     password: string;
     repeatPassword: string;
     forgotMyPassword: string;
-    willSendEmail: string;
+    enterEmail: string;
     signUpHint: string;
     invalidEmail: string;
     newPasswordHint: string;
@@ -16,6 +16,13 @@ type textTypes = {
     buttonSignIn: string;
     buttonSend: string;
     goodToGo: string;
+    nameAlreadyExists: string;
+    emailAlreadyExists: string;
+    emailNotRegistered: string;
+    willSendSignUpEmail: string;
+    willSendRecoverEmail: string;
+    somethingWentWrong: string;
+    goBack: string;
 }
 
 const texts = new Map<LanguageOption, textTypes>();
@@ -26,7 +33,7 @@ texts.set('pt-br', {
     password: 'Senha',
     repeatPassword: 'Repetir senha',
     forgotMyPassword: 'esqueci minha senha :(',
-    willSendEmail: 'Entre com o seu e-mail registrado.',
+    enterEmail: 'entre com o seu e-mail registrado.',
     signUpHint: 'insira os seus dados nos campos acima para criar uma nova conta.',
     invalidEmail: 'formato de e-mail inválido.',
     newPasswordHint: 'a senha deve conter pelo menos 8 caracteres, sendo um deles especial.',
@@ -36,6 +43,13 @@ texts.set('pt-br', {
     buttonSignIn: 'entrar',
     buttonSend: 'enviar',
     goodToGo: 'tudo certo!',
+    nameAlreadyExists: 'Nome já em uso. Por favor insira outro.',
+    emailAlreadyExists: 'E-mail já em uso. Por favor insira outro.',
+    emailNotRegistered: "Não há nenhuma conta associada a este e-mail.",
+    willSendSignUpEmail: 'Quase lá! Acabamos de mandar um link de ativação para o e-mail informado. Acesse e clique para finalizar seu registro!',
+    willSendRecoverEmail: 'Legal! Enviamos um link para o e-mail fornecido. Abra-o e siga as instruções.',
+    somethingWentWrong: 'Alguma coisa deu errado. Tente novamente mais tarde.',
+    goBack: 'voltar p/ início',
 })
 
 texts.set('en-us', {
@@ -44,7 +58,7 @@ texts.set('en-us', {
     password: 'Password',
     repeatPassword: 'Repeat password',
     forgotMyPassword: 'I forgot my password :(',
-    willSendEmail: `Enter your registered account e-mail.`,
+    enterEmail: `enter your registered account e-mail.`,
     signUpHint: 'insert your information in the fields above to create a new account.',
     invalidEmail: 'invalid e-mail format.',
     newPasswordHint: 'password must contain at least 8 characters, with one being special.',
@@ -54,6 +68,13 @@ texts.set('en-us', {
     buttonSignIn: 'sign in',
     buttonSend: 'send',
     goodToGo: 'all good!',
+    nameAlreadyExists: 'Username already in use. Please insert a new one.',
+    emailAlreadyExists: 'E-mail already in use. Please insert a new one.',
+    emailNotRegistered: "There's no account associated with this e-mail.",
+    willSendSignUpEmail: `Almost there! We'je just sent an activation link to the given e-mail address. Access and click to complete your registration!`,
+    willSendRecoverEmail: `Great! We've just sent a recovery link to the given e-mail.`,
+    somethingWentWrong: 'Something went wrong. Please try again later.',
+    goBack: 'back to start',
 })
 
 export { texts };

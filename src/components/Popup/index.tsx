@@ -96,17 +96,18 @@ export default function Popup({
     height: height ? `${height}px` : 'auto',
     backgroundColor: backgroundColor ? backgroundColor : colors.white,
     border: border ? border : 'none',
+    paddingTop: (exit || title)? '20px' : 0,
     opacity: 0.95,
   };
 
   const getIcon = () => {
     switch (warningType) {
       case 'success':
-        return <CheckCircle color={iconColor?? colors.lime} width={24} height={24} />;
+        return <CheckCircle color={iconColor?? colors.lime} width={30} height={30} style={{flexShrink: 0}}/>;
       case 'alert':
-        return <AlertTriangle color={iconColor?? colors.gold} width={24} height={24} />;
+        return <AlertTriangle color={iconColor?? colors.gold} width={30} height={30} style={{flexShrink: 0}}/>;
       case 'failure':
-        return <XCircle color={iconColor?? colors.red} width={24} height={24} />;
+        return <XCircle color={iconColor?? colors.red} width={30} height={30} style={{flexShrink: 0}}/>;
       default:
         return null;
     }
