@@ -1,5 +1,5 @@
 import { keyframes } from "@emotion/react";
-import { colors } from "../../colors";
+import { colors } from "src/colors";
 import styled from "@emotion/styled";
 
 const rotate = keyframes`

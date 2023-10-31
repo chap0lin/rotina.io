@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { colors } from "../../colors";
+import { colors } from "src/colors";
 import { Loader } from "react-feather";
 import { Container, AnimatedLoader } from "./Button.style";
 

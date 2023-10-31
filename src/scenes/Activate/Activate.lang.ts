@@ -1,4 +1,4 @@
-import { languageOption } from "../../types";
+import { languageOption } from "src/types";
 
 type textTypes = {
     ok: string;

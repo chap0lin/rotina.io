@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors } from '../../colors';
+import { colors } from 'src/colors';
 
 const Container = styled.div`
   scale: 0;

@@ -1,7 +1,7 @@
-export * from './Background';
-export * from './Button';
-export * from './Credential';
-export * from './Header';
-export * from './Loading';
-export * from './Logo';
-export * from './Popup';
+export { default as Background } from "./Background";
+export { default as Header } from "./Header";
+export { default as Credential } from "./Credential";
+export { default as Button } from "./Button";
+export { default as Logo } from "./Logo";
+export { default as Popup } from "./Popup";
+export { default as Loading } from "./Loading";

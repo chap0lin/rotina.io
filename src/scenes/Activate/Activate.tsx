@@ -1,13 +1,10 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "../../contexts/GlobalContextProvider";
-import { spawn, vanish } from "../../functions/animation";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { spawn, vanish } from "src/functions/animation";
 import { texts } from "./Activate.lang";
-import Loading from "../../components/Loading";
-import api from "../../services/api";
-import Header from "../../components/Header";
-import Background from "../../components/Background";
-import Button from "../../components/Button";
+import { api } from "src/services/api";
+import { Loading, Header, Background, Button } from "components/index";
 import { Bold, Gsap, HintText, Texts, TopContent, WelcomeText } from "./Activate.style";
 
 type serverReply = "ERROR_DUPLICATE" | "ERROR_NO_PENDING_USER" | "USER_REGISTERED";

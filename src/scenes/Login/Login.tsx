@@ -1,16 +1,11 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { move, moveAndVanish, spawn, spawnAndMove, vanish } from "../../functions/animation";
-import { useGlobalContext } from "../../contexts/GlobalContextProvider";
-import { isEmailValid, isPasswordValid } from "../../functions";
-import { colors } from "../../colors";
+import { isEmailValid, isPasswordValid } from "src/functions";
+import { move, moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { colors } from "src/colors";
 import { texts } from "./Login.lang";
-import Background from "../../components/Background";
-import Header from "../../components/Header";
-import Credential from "../../components/Credential";
-import Button from "../../components/Button";
-import Logo from "../../components/Logo";
-import Popup from "../../components/Popup";
-import api from "../../services/api";
+import { api } from "src/services/api";
+import { Background, Header, Credential, Button, Logo, Popup } from "components/index";
 import { TopContent, Credentials, DiscreteText, BottomContent, Content, Bold, LogoDiv, Gsap, HintText, HintGsap } from "./Login.style";
 
 

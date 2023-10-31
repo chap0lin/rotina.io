@@ -1,4 +1,4 @@
-import { useGlobalContext } from "../../contexts/GlobalContextProvider";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Text } from "./Logo.style";
 
 interface props {

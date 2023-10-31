@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Start from "./scenes/Login";
-import Activate from "./scenes/Activate";
-import Recovery from "./scenes/Recovery";
+import Start from "scenes/Login";
+import Activate from "scenes/Activate";
+import Recovery from "scenes/Recovery";
 
 export default function Router(){
     return (

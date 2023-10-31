@@ -1,12 +1,12 @@
 import { useRef, useEffect, useState } from "react";
-import { useGlobalContext } from "../../contexts/GlobalContextProvider";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import { colors } from "../../colors";
-import Logo from "../Logo";
+import { languageOption } from "src/types";
+import { Logo } from "components/index";
+import { colors } from "src/colors";
 import gsap from "gsap";
 import LanguageSelector from "./components/LanguageSelector";
 import { Container, Gsap, LanguageDiv, LeftSide, RightSide } from "./Header.style";
-import { languageOption } from "../../types";
 
 interface props {
   goBackArrow?: () => void;

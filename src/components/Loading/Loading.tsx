@@ -1,7 +1,7 @@
-import { Loader } from "react-feather";
 import { AnimatedLoader, Background, Text } from "./Loading.style";
-import { colors } from "../../colors";
-import { languageOption } from "../../types";
+import { languageOption } from "src/types";
+import { Loader } from "react-feather";
+import { colors } from "src/colors";
 import { texts } from "./Loading.lang";
 
 interface props {

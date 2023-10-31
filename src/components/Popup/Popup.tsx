@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X, CheckCircle, AlertTriangle, XCircle } from 'react-feather';
-import { colors } from '../../colors';
+import { colors } from 'src/colors';
 import cookieIcon from './assets/cookie.png';
 import gsap from 'gsap';
 import { BottomContainer, Cookie, Description, Header, PopupContainer, Title, TopContainer, WarningDescription } from './Popup.style';

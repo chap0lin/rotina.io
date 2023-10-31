@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { colors } from "../../colors";
+import { colors } from "src/colors";
 
 export const Gsap = styled.div`
     width: 100%;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { Container, Input, Title } from "./Credential.style";
-import { colors } from '../../colors';
+import { colors } from 'src/colors';
 
 interface props {
     title: string;
