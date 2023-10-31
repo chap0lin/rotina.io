@@ -6,6 +6,7 @@ import Logo from "../Logo";
 import gsap from "gsap";
 import LanguageSelector from "./components/LanguageSelector";
 import { Container, Gsap, LanguageDiv, LeftSide, RightSide } from "./Header.style";
+import { languageOption } from "../../types";
 
 interface props {
   goBackArrow?: () => void;
@@ -21,7 +22,12 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
   const [showLanguages, setShowLanguages] = useState<boolean>(() => false);
   const arrowRef = useRef(null);
 
-  const toggleLanguage = () => {
+  const onLanguageSelection = (newLang: languageOption) => {
+    setLanguage(newLang);
+    setShowLanguages(false);
+  }
+
+  const onGlobeIconClick = () => {
     setShowLanguages(prev => !prev);
   }
 
@@ -73,9 +79,9 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
               width={(innerHeight > 750)? 35 : 30}
               height={(innerHeight > 750)? 35 : 30}
               color={colors.black}
-              onClick={toggleLanguage}
+              onClick={onGlobeIconClick}
             />
-            <LanguageSelector show={showLanguages} onClick={setLanguage}/>
+            <LanguageSelector show={showLanguages} onClick={onLanguageSelection}/>
           </LanguageDiv>
         }
       </RightSide>

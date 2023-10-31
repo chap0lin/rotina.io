@@ -1,6 +1,6 @@
 export type languageOption = 'en-us' | 'pt-br';
 
-export type languageSelectionType = {
-    flag: string;
-    text: languageOption;
+export type selectionType = {
+    icon: string;
+    text: string | languageOption;
 }

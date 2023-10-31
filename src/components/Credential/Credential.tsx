@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { Container, Input, Title } from "./Credential.style";
-import { colors } from '../../../../colors';
+import { colors } from '../../colors';
 
 interface props {
     title: string;
@@ -11,6 +11,8 @@ interface props {
     onChange: (e: string) => void;
 }
 
+const INPUT_LIMIT = 24;
+
 export default function Credential({title, safe, zIndex, disabled, onChange}: props){
 
     const [hide, setHide] = useState<boolean>(() => safe);
@@ -18,9 +20,10 @@ export default function Credential({title, safe, zIndex, disabled, onChange}: pr
     const EyeIcon = hide? EyeOff : Eye;
 
     const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const input = e.target.value.replace(/[<>]/g, "");
-        e.target.value = input;
-        input.trim();
+        const input = e.target.value.replace(/[<>]/g, "").trim();
+        e.target.value = (input.length <= INPUT_LIMIT)
+            ? input
+            : input.substring(0, INPUT_LIMIT);
         onChange(input);
         setHasInput(input.length > 0);
     }
