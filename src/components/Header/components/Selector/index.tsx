@@ -27,8 +27,8 @@ export default function Selector({optionList, show, onClick}: props){
 
   return (
     <Container ref={containerRef}>
-      {optionList.map(lang => (
-        <Option onClick={() => onClick(lang.text as languageOption)}>
+      {optionList.map((lang, index) => (
+        <Option key={index} onClick={() => onClick(lang.text as languageOption)}>
           <Icon src={lang.icon}/>
           <Text>
             {lang.text}

@@ -6,7 +6,7 @@ import { Logo } from "components/index";
 import { colors } from "src/colors";
 import gsap from "gsap";
 import LanguageSelector from "./components/LanguageSelector";
-import { Container, Gsap, LanguageDiv, LeftSide, RightSide } from "./Header.style";
+import { Clickable, Container, Gsap, LeftSide, RightSide } from "./Header.style";
 
 interface props {
   goBackArrow?: () => void;
@@ -47,13 +47,15 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
       <LeftSide>
         { goBackArrow && 
           <Gsap ref={arrowRef}>
-            <ArrowLeft
-              strokeWidth={1}
-              width={(innerHeight > 750)? 40 : 35}
-              height={(innerHeight > 750)? 40 : 35}
-              color={colors.black}
-              onClick={handleArrowClick}
-            />
+            <Clickable>
+              <ArrowLeft
+                strokeWidth={1}
+                width={(innerHeight > 750)? 40 : 35}
+                height={(innerHeight > 750)? 40 : 35}
+                color={colors.black}
+                onClick={handleArrowClick}
+              />
+            </Clickable>
           </Gsap>
         }
         { logo && 
@@ -73,7 +75,7 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
           />
         }
         { lang &&
-          <LanguageDiv>
+          <Clickable>
             <Globe
               strokeWidth={1}
               width={(innerHeight > 750)? 35 : 30}
@@ -82,7 +84,7 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
               onClick={onGlobeIconClick}
             />
             <LanguageSelector show={showLanguages} onClick={onLanguageSelection}/>
-          </LanguageDiv>
+          </Clickable>
         }
       </RightSide>
     </Container>

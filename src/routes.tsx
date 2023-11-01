@@ -9,7 +9,7 @@ export default function Router(){
             <Routes>
                 <Route path="/" element={<Start/>} />
                 <Route path="/activate" element={<Activate/>} />
-                <Route path="/recover" element={<Recovery/>} />
+                <Route path="/recovery" element={<Recovery/>} />
             </Routes>
         </BrowserRouter>
     )

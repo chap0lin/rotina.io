@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { spawn, vanish } from "src/functions/animation";
@@ -7,24 +7,34 @@ import { api } from "src/services/api";
 import { Loading, Header, Background, Button } from "components/index";
 import { Bold, Gsap, HintText, Texts, TopContent, WelcomeText } from "./Activate.style";
 
-type serverReply = "ERROR_DUPLICATE" | "ERROR_NO_PENDING_USER" | "USER_REGISTERED";
+type serverReply = 
+    "SUCCESS_REGISTERED_USER" |
+    "SUCCESS_VALID_PURPOSE" |
+    "ERROR_INVALID_PURPOSE" |
+    "ERROR_DUPLICATE_USER" |
+    "ERROR_NO_ACTIVATING_USER"
+;
+
+const getQueryString = () => {
+    const query = useSearchParams();
+    const id = query[0].get("id");
+    const lang = query[0].get("lang");
+    return ({ id, lang });
+}
 
 export default function Activate(){
     const navigate = useNavigate();
     const { language, setLanguage } = useGlobalContext();
     const [username, setUsername] = useState<string>();
     const [waitingForServer, setWaitingForServer] = useState(() => true);
-    const [queryString, setQueryString] = useSearchParams();
-    const id = queryString.get("id");
-    const lang = queryString.get("lang");
+    const { id, lang } = getQueryString();
     const activateTexts = texts.get(language); 
-
     const contentRef = useRef(null);
     const loadingRef = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if(waitingForServer){
-            spawn(loadingRef.current);
+            spawn(loadingRef.current, 0.5);
             vanish(contentRef.current);
         } else {
             vanish(loadingRef.current, 0.5);
@@ -34,22 +44,31 @@ export default function Activate(){
 
 
     const handleServerReply = (reply: serverReply) => {
-        if(reply.includes("USER_REGISTERED")){
-            const name = reply.split("=").at(-1);
-            if(name.length > 0){
-                setUsername(name);
-            }
-        } else {
-
+        switch(reply){
+            case "SUCCESS_VALID_PURPOSE":
+                getRequest("/finish-signup", {id: id});
+            break;
+            case "ERROR_INVALID_PURPOSE":
+            case "ERROR_DUPLICATE_USER":
+            case "ERROR_NO_ACTIVATING_USER":
+                setWaitingForServer(false);
+            break;
+            default:
+                if(reply.includes("SUCCESS_REGISTERED_USER")){
+                    const name = reply.split("=").at(-1);
+                    if(name.length > 0){
+                        setUsername(name);
+                    }
+                }
+            setWaitingForServer(false);
         }
-        setWaitingForServer(false);
     }
 
     const getRequest = (link: string, params: any) => {
         setWaitingForServer(true);
         api.get(link, {params}).then((resp) => {
             handleServerReply(resp.data.msg);
-        }).catch((err) => {
+        }).catch(() => {
             setWaitingForServer(false);
         });
     }
@@ -59,7 +78,7 @@ export default function Activate(){
         if(!id || id === ""){
             navigate("/");
         } else {
-            getRequest("/finish-signup", {id: id});
+            getRequest("/validate", {id: id, purpose: "activate"});
         }
     }, []);
 

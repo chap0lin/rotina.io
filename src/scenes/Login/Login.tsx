@@ -10,8 +10,22 @@ import { TopContent, Credentials, DiscreteText, BottomContent, Content, Bold, Lo
 
 
 const MIN_PASSWORD_SIZE = 8;
-type screenType = "sign-in" | "sign-up" | "forgot-password" | "sent-sign-up-email" | "sent-recovery-email";
-type serverReply = "USER_ADDED" | "USER_PENDING" | "ERROR" | "USERNAME_ALREADY_TAKEN" | "EMAIL_ALREADY_TAKEN" | "EMAIL_FOUND" | "EMAIL_NOT_FOUND" | "EMAIL_ERROR";
+type screenType = 
+    "sign-in" |
+    "sign-up" |
+    "forgot-password" |
+    "sent-sign-up-email" |
+    "sent-recovery-email"
+;
+type serverReplyType = 
+    "SUCCESS_ACTIVATING_USER" |
+    "SUCCESS_RECOVERING_USER" |
+    "ERROR" |
+    "ERROR_USERNAME_ALREADY_TAKEN" |
+    "ERROR_EMAIL_ALREADY_TAKEN" |
+    "ERROR_NO_REGISTERED_USER" |
+    "EMAIL_ERROR"
+;
 
 export default function Start(){
     const { language, innerHeight, keyPressed } = useGlobalContext();
@@ -43,13 +57,13 @@ export default function Start(){
         setPopupVisibility(true);
         setTimeout(() => {
             setPopupVisibility(false);
-        }, 3000);
+        }, 4000);
     }
 
     const getRequest = (link: string, params: any) => {
         setWaitingForServer(true);
         api.get(link, {params}).then((resp) => {
-            handleServerReply(resp.data.msg);
+            handleServerReplyType(resp.data.msg);
         }).catch((err) => {
             showPopup(loginTexts.somethingWentWrong);
             setWaitingForServer(false);
@@ -104,25 +118,25 @@ export default function Start(){
         setButtonDisabled(!checkAllInputs());
     }
 
-    const handleServerReply = (reply: serverReply) => {
+    const handleServerReplyType = (reply: serverReplyType) => {
         switch(reply){
-            case "USER_PENDING":
+            case "SUCCESS_ACTIVATING_USER":
                 setScreen("sent-sign-up-email");
             break;
-            case "EMAIL_FOUND":
+            case "SUCCESS_RECOVERING_USER":
                 setScreen('sent-recovery-email');
             break;
-            case "EMAIL_NOT_FOUND":
+            case "ERROR_NO_REGISTERED_USER":
                 showPopup(loginTexts.emailNotRegistered);
             break;
-            case "EMAIL_ERROR":
-                showPopup(loginTexts.somethingWentWrong);
-            break;
-            case "EMAIL_ALREADY_TAKEN":
+            case "ERROR_EMAIL_ALREADY_TAKEN":
                 showPopup(loginTexts.emailAlreadyExists);
             break;
-            case "USERNAME_ALREADY_TAKEN":
+            case "ERROR_USERNAME_ALREADY_TAKEN":
                 showPopup(loginTexts.nameAlreadyExists);
+            break;
+            default:
+                showPopup(loginTexts.somethingWentWrong);
             break;
         }
         setWaitingForServer(false);
@@ -132,7 +146,7 @@ export default function Start(){
     const onButtonClick = () => {
         switch(screen){
             case 'sign-up':
-                getRequest("/new-user", {
+                getRequest("/activate", {
                     name: username.current,
                     password: password.current,
                     email: email.current,
@@ -140,7 +154,7 @@ export default function Start(){
                 });
             break;
             case "forgot-password":
-                getRequest("/recover", {
+                getRequest("/recovery", {
                     email: email.current,
                     lang: language,
                 });

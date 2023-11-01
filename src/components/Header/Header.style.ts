@@ -25,9 +25,10 @@ export const RightSide = styled(Side)`
   gap: 20px;
 `;
 
-export const LanguageDiv = styled.div`
-  position: relative;
+export const Clickable = styled.div`
   cursor: pointer;
+  position: relative;
 `;
+
 
 export const Gsap = styled.div``;
