@@ -1,11 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import { languageOption } from "src/types";
-import { Logo } from "components/index";
+import { LanguageSelector } from "./components/index";
+import { Logo, Blur } from "components/index";
 import { colors } from "src/colors";
-import gsap from "gsap";
-import LanguageSelector from "./components/LanguageSelector";
+import { languageOption } from "src/types";
+import { spawn, vanish } from "src/functions/animation";
 import { Clickable, Container, Gsap, LeftSide, RightSide } from "./Header.style";
 
 interface props {
@@ -22,6 +22,10 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
   const [showLanguages, setShowLanguages] = useState<boolean>(() => false);
   const arrowRef = useRef(null);
 
+  const clear = () => {
+    setShowLanguages(false);
+  }
+
   const onLanguageSelection = (newLang: languageOption) => {
     setLanguage(newLang);
     setShowLanguages(false);
@@ -36,14 +40,14 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
   }
 
   useEffect(() => {
-    gsap.to(arrowRef.current, {
-      opacity: showGoBackArrow? 1 : 0,
-      duration: 1,
-    });
-  }, [showGoBackArrow]);
+    (showGoBackArrow && !showLanguages)
+    ? spawn(arrowRef.current, 1)
+    : vanish(arrowRef.current, 1);
+  }, [showGoBackArrow, showLanguages]);
 
   return (
     <Container>
+      <Blur show={showLanguages} onClick={clear}/>
       <LeftSide>
         { goBackArrow && 
           <Gsap ref={arrowRef}>

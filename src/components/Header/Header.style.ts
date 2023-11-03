@@ -28,6 +28,7 @@ export const RightSide = styled(Side)`
 export const Clickable = styled.div`
   cursor: pointer;
   position: relative;
+  z-index: 100;
 `;
 
 

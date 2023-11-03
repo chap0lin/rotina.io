@@ -6,7 +6,7 @@ import { Icon, Option, Container, Text } from "./Selector.style";
 interface props {
   optionList: selectionType[];
   show: boolean;
-  onClick: (lang: languageOption) => void;
+  onClick: (lang: string) => void;
 }
 
 export default function Selector({optionList, show, onClick}: props){
@@ -28,7 +28,10 @@ export default function Selector({optionList, show, onClick}: props){
   return (
     <Container ref={containerRef}>
       {optionList.map((lang, index) => (
-        <Option key={index} onClick={() => onClick(lang.text as languageOption)}>
+        <Option key={index} onClick={(e) => {
+          e.stopPropagation();
+          onClick(lang.text);
+        }}>
           <Icon src={lang.icon}/>
           <Text>
             {lang.text}
