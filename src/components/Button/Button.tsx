@@ -13,18 +13,22 @@ interface props {
     disabled?: boolean;
     loading?: boolean;
     focus?: boolean;
+    borderRadius?: number | string;
+    padding?: number | string;
 }
 
-export default function Button({onClick, focus, children, background, color, width, height, disabled, loading}: props){
+export default function Button({onClick, focus, children, background, color, width, height, disabled, loading, borderRadius, padding}: props){
     
     const buttonRef = useRef(null);
 
     const buttonStyle = {
-        width: width ?? '180px',
-        height: height ?? '50px',
+        width: width ?? "180px",
+        height: height ?? "50px",
         color: color ?? colors.white,
         background: background ?? colors.black,
         opacity: disabled? 0.4 : 1,
+        borderRadius: borderRadius?? "20px",
+        padding: padding?? "10px 20px",
     }
     
     const handleClick = () => {
@@ -41,7 +45,7 @@ export default function Button({onClick, focus, children, background, color, wid
 
     const content = (loading)
     ? <AnimatedLoader>
-        <Loader width={'100%'} height={'100%'} color={colors.white}/>
+        <Loader width={"100%"} height={"100%"} color={colors.white}/>
       </AnimatedLoader>
     : children;
 

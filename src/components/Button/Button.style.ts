@@ -12,8 +12,6 @@ const rotate = keyframes`
 
 export const Container = styled.button`
     font-size: 18px;
-    border-radius: 20px;
-    padding: 10px 20px;
     border: none;
     outline: none;
     cursor: pointer;
