@@ -25,21 +25,15 @@ export const Gsap = styled.div`
 `;
 
 export const MainContent = styled(FlexColumn)`
-    padding: 30px;    
-    padding-top: 40px;
+    padding: 30px;
     position: relative;
     flex: 1;
-    @media(max-height: 750px){
-        padding-top: 30px;
-    }
 `;
 
 export const TopTexts = styled(FlexColumn)`
     gap: 20px;
-    margin-bottom: 50px;
     @media(max-height: 750px){
         gap: 16px;
-        margin-bottom: 30px;
     }
 `;
 
@@ -55,9 +49,11 @@ export const BigTitle = styled(Text)`
 export const SubTitle = styled(Text)`
     text-align: left;
     font-size: 17px;
+    height: 80px;
     opacity: 0.8;
     @media(max-height: 750px){
         font-size: 15px;
+        height: 70px;
     }
 `;
 
