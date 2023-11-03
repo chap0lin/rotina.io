@@ -61,6 +61,11 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     }
   }, []);
 
+  useEffect(() => {
+    const lang = language.split("-").at(0);
+    document.documentElement.lang = lang;
+  }, [language]);
+
   const { children } = props;
 
   const value: GlobalContextValue = {
