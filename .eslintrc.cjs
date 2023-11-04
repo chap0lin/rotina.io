@@ -4,6 +4,10 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   ignorePatterns: ['/dist/**', '/src/serviceWorkers/**'],
   root: true,
+  rules: {
+    "no-case-declarations": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+  },
   env: {
     node: true,
   },

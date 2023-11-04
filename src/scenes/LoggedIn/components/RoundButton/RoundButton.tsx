@@ -9,8 +9,6 @@ interface props {
 }
 
 export default function RoundButton({onClick}: props){
-    
-    const buttonRef = useRef(null);
     const iconRef = useRef(null);
 
     const onButtonClick = () => {

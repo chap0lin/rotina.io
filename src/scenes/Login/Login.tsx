@@ -64,7 +64,7 @@ export default function Start(){
         setWaitingForServer(true);
         api.get(link, {params}).then((resp) => {
             handleServerReplyType(resp.data.msg);
-        }).catch((err) => {
+        }).catch(() => {
             showPopup(loginTexts.somethingWentWrong);
             setWaitingForServer(false);
         });

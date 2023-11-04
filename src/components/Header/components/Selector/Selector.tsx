@@ -1,4 +1,4 @@
-import { languageOption, selectionType } from "src/types";
+import { selectionType } from "src/types";
 import { useLayoutEffect, useRef } from "react";
 import { scaleAndVanish, spawnAndScale, vanish } from "src/functions/animation";
 import { Icon, Option, Container, Text } from "./Selector.style";

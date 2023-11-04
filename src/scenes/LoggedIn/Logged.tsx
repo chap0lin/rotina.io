@@ -46,7 +46,7 @@ const dummyActivities: ActivityType[] = [
 
 
 export default function LoggedInScreen(){
-    const { language, innerHeight } = useGlobalContext();
+    const { language } = useGlobalContext();
     const [ activities, setActivities ] = useState<ActivityType[]>(() => dummyActivities);
     const [ happeningNow, setHappeningNow ] = useState<ActivityType | undefined>();
     const [ hour, minute ] = useTime();
