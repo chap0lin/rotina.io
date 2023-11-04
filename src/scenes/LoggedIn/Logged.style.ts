@@ -69,13 +69,7 @@ export const Section = styled(FlexColumn)`
     width: 100%;
     flex: 1;
     gap: 20px;
-    align-items: center;
     max-height: 250px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    ::-webkit-scrollbar {
-        display: none;
-    }
     @media(max-height: 750px){
         max-height: 200px;
         gap: 12px;
@@ -91,20 +85,25 @@ export const SectionTitle = styled(Text)`
     }
 `;
 
-
-export const BottomContent = styled.div`
-    position: fixed;
+export const SectionContent = styled(FlexColumn)`
     width: 100%;
-    height: 80px;
-    padding: 0 15px;
-    z-index: 50;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: flex-start;
-    background: linear-gradient(180deg, #FFFFFF00 30%, #FFFFFFFF 100%);
-    @media(max-height: 750px){
-        height: 70px;
+    flex: 1;
+    gap: 20px;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 75%, transparent 100%);
+    ::-webkit-scrollbar {
+        display: none;
     }
-`;  
+`;
+
+export const Snap = styled.div`
+    scroll-snap-align: start;
+`;
+
+export const SectionSpacer = styled.div`
+    flex-shrink: 0;
+    height: 20%;
+`;

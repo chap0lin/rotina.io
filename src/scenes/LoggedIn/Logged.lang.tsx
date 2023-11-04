@@ -6,7 +6,7 @@ type textTypes = {
     placeholders: string[];
     happeningNow: string;
     whatsNext: string;
-    nothingHappening: string;
+    nothingHappening: string | string[];
     createActivity: string | string[];
     somethingWentWrong: string;
 }
@@ -27,7 +27,7 @@ texts.set('pt-br', {
     ],
     happeningNow: "Rolando agora",
     whatsNext: "A seguir",
-    nothingHappening: "Nada. Parece que você está livre!",
+    nothingHappening: ["No momento, nada.", "Parece que você está livre!"],
     createActivity: ["Quer inserir uma nova atividade?", "Basta apertar o botão abaixo."],
     somethingWentWrong: "Parece que alguma coisa deu errado. E se você tentar mais tarde?",
 })
@@ -46,7 +46,7 @@ texts.set('en-us', {
     ],
     happeningNow: "Happening now",
     whatsNext: "What's next",
-    nothingHappening: "Nothing. Looks like you're free!",
+    nothingHappening: ["Well, nothing.", "Looks like you're free!"],
     createActivity: ["Wanna create a new activity?", "Just press the button below."],
     somethingWentWrong: "Looks like something went wrong. Maybe try again later?",
 })

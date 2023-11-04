@@ -1,17 +1,20 @@
 import { colors } from "src/colors";
-import { Container, PlaceText, Placeholder } from "./ActivityCard.style";
+import { timeType } from "src/types";
+import { stringifyTime } from "src/functions/time";
+import { Container, PlaceText, Placeholder, What, WhatAndWho, When, WhenAndWhere, Where, Who } from "./ActivityCard.style";
 
 interface props {
     what?: string;
     who?: string;
     where?: string;
-    when?: string;
+    startsAt?: timeType;
+    endsAt?: timeType;
     color?: string;
     highlighted?: boolean;
     placeholder?: string | string[];
 }
 
-export default function ActivityCard({what, who, where, when, color, highlighted, placeholder}: props){
+export default function ActivityCard({what, who, where, startsAt, endsAt, color, highlighted, placeholder}: props){
     
     const bgColor = color ?? colors.grey;
 
@@ -47,6 +50,17 @@ export default function ActivityCard({what, who, where, when, color, highlighted
     
     return (
         <Container style={cardStyle}>
+            <WhatAndWho>
+                {what && <What style={{color: cardStyle.color}}>{what}</What>}
+                {who && <Who style={{color: cardStyle.color}}>{who}</Who>}
+            </WhatAndWho>
+            <WhenAndWhere>
+                <When style={{color: cardStyle.color}}>
+                    {startsAt && stringifyTime(startsAt)}
+                    {endsAt && " - " + stringifyTime(endsAt)}
+                </When>
+                {where && <Where style={{color: cardStyle.color}}>{where}</Where>}
+            </WhenAndWhere>
         </Container>
     )
 }
