@@ -20,8 +20,10 @@ export const isBefore = (time: timeType, target: timeType) => {
     return (time.minute <= target.minute);
 }
 
-export const isAfter = (time: timeType, target: timeType) => {
+export const isAfter = (time: timeType, target: timeType, afterExclusive?: boolean) => {
     if (time.hour < target.hour) return false;
     if (time.hour > target.hour) return true;
+    
+    if(afterExclusive) return (time.minute > target.minute); 
     return (time.minute >= target.minute);
 }

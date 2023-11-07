@@ -20,7 +20,7 @@ const getSubtitle = (language: languageOption) => {
 }
 
 const getLaterActivities = (activities: ActivityType[], now: timeType) => {
-    return activities.filter((act) => isAfter(act.startsAt, now));
+    return activities.filter((act) => isAfter(act.startsAt, now, true));
 }
 
 type serverReplyType = 
