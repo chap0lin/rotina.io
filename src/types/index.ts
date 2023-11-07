@@ -5,6 +5,11 @@ export type selectionType = {
     text: string | languageOption;
 }
 
+export type userType = {
+    name: string,
+    password: string,
+}
+
 export type timeType = {
     hour: number,
     minute: number,

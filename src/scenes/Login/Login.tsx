@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { isEmailValid, isPasswordValid } from "src/functions";
 import { move, moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
@@ -7,7 +8,6 @@ import { texts } from "./Login.lang";
 import { api } from "src/services/api";
 import { Background, Header, Credential, Button, Logo, Popup } from "components/index";
 import { TopContent, Credentials, DiscreteText, BottomContent, Content, Bold, LogoDiv, Gsap, HintText, HintGsap } from "./Login.style";
-
 
 const MIN_PASSWORD_SIZE = 8;
 type screenType = 
@@ -18,30 +18,33 @@ type screenType =
     "sent-recovery-email"
 ;
 type serverReplyType = 
+    "SUCCESS" |
+    "SUCCESS_LOGGED_IN" |
     "SUCCESS_ACTIVATING_USER" |
     "SUCCESS_RECOVERING_USER" |
     "ERROR" |
     "ERROR_USERNAME_ALREADY_TAKEN" |
     "ERROR_EMAIL_ALREADY_TAKEN" |
     "ERROR_NO_REGISTERED_USER" |
-    "EMAIL_ERROR"
+    "ERROR_EMAIL" |
+    "ERROR_AUTHENTICATION" |
+    "ERROR_MISSING_CREDENTIALS"
 ;
 
-export default function Start(){
-    const { language, innerHeight, keyPressed } = useGlobalContext();
+export default function Login(){
+    const navigate = useNavigate();
+    const { language, innerHeight, keyPressed , setUser, showPopup} = useGlobalContext();
     const loginTexts = texts.get(language); 
     const [screen, setScreen] = useState<screenType>(() => "sign-in");
     const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
     const [buttonText, setButtonText] = useState<string>(() => loginTexts.buttonSignIn);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(() => true);
     const [waitingForServer, setWaitingForServer] = useState<boolean>(() => false);
-    const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
-    const [popupText, setPopupText] = useState<string>(() => "");
 
-    const username = useRef<string>('');
-    const email = useRef<string>('');
-    const password = useRef<string>('');
-    const repPassword = useRef<string>('');
+    const username = useRef<string>("");
+    const email = useRef<string>("");
+    const password = useRef<string>("");
+    const repPassword = useRef<string>("");
 
     const logoRef = useRef(null);
     const nameRef = useRef(null);
@@ -52,28 +55,29 @@ export default function Start(){
     const signUpRef = useRef(null);
     const buttonRef = useRef(null);
 
-    const showPopup = (message: string) => {
-        setPopupText(message);
-        setPopupVisibility(true);
-        setTimeout(() => {
-            setPopupVisibility(false);
-        }, 4000);
-    }
-
-    const getRequest = (link: string, params: any) => {
+    const getRequest = (link: string, params: any, catchCall?: () => void) => {
         setWaitingForServer(true);
         api.get(link, {params}).then((resp) => {
-            handleServerReplyType(resp.data.msg);
+            handleServerReply(resp.data.msg);
+            setWaitingForServer(false);
         }).catch(() => {
-            showPopup(loginTexts.somethingWentWrong);
+            catchCall && catchCall();
             setWaitingForServer(false);
         });
+    }
+
+    const login = () => {
+        setUser({
+            name: username.current,
+            password: password.current,
+        });
+        navigate("/logged");
     }
 
     const checkSignInInputs = () => {
         return (
             username.current.length > 0 &&
-            password.current.length > 0
+            isPasswordValid(password.current, MIN_PASSWORD_SIZE)
         );
     }
 
@@ -108,8 +112,8 @@ export default function Start(){
 
     const checkAllInputs = () => {
         switch(screen){
-            case 'sign-in': return checkSignInInputs();
-            case 'sign-up': return checkSignUpInputs();
+            case "sign-in": return checkSignInInputs();
+            case "sign-up": return checkSignUpInputs();
             default: return isEmailValid(email.current);
         }
     }
@@ -118,13 +122,19 @@ export default function Start(){
         setButtonDisabled(!checkAllInputs());
     }
 
-    const handleServerReplyType = (reply: serverReplyType) => {
+    const handleServerReply = (reply: serverReplyType) => {
         switch(reply){
+            case "SUCCESS_LOGGED_IN":
+                login();
+            break;
             case "SUCCESS_ACTIVATING_USER":
                 setScreen("sent-sign-up-email");
             break;
             case "SUCCESS_RECOVERING_USER":
-                setScreen('sent-recovery-email');
+                setScreen("sent-recovery-email");
+            break;
+            case "ERROR_AUTHENTICATION":
+                showPopup(loginTexts.noAccount);
             break;
             case "ERROR_NO_REGISTERED_USER":
                 showPopup(loginTexts.emailNotRegistered);
@@ -139,13 +149,18 @@ export default function Start(){
                 showPopup(loginTexts.somethingWentWrong);
             break;
         }
-        setWaitingForServer(false);
     }
 
 
     const onButtonClick = () => {
         switch(screen){
-            case 'sign-up':
+            case "sign-in":
+                getRequest("/login", {
+                    name: username.current,
+                    password: password.current,
+                });
+            break;
+            case "sign-up":
                 getRequest("/activate", {
                     name: username.current,
                     password: password.current,
@@ -167,7 +182,7 @@ export default function Start(){
     }
 
     useEffect(() => {
-        if (keyPressed === 'Enter' && checkAllInputs()){
+        if (keyPressed === "Enter" && checkAllInputs()){
             onButtonClick();
         }
     }, [keyPressed]);
@@ -187,7 +202,7 @@ export default function Start(){
     useLayoutEffect(() => {
         const lang = texts.get(language);
         switch(screen){
-            case 'sign-in':
+            case "sign-in":
                 setHintText(lang.forgotMyPassword);
                 setButtonText(lang.buttonSignIn);
                 spawnAndMove([nameRef.current], 90, 1);
@@ -198,7 +213,7 @@ export default function Start(){
                 moveAndVanish([emailRef.current, repPassRef.current], 90, 1);
                 spawn([signUpRef.current], 1);
             break;
-            case 'sign-up':
+            case "sign-up":
                 setHintText(lang.signUpHint);
                 setButtonText(lang.buttonSignUp);
                 move([logoRef.current], -75, 1);
@@ -210,7 +225,7 @@ export default function Start(){
                 move([buttonRef.current], 340, 1);
                 vanish([signUpRef.current], 1);
             break;
-            case 'forgot-password':
+            case "forgot-password":
                 setHintText(lang.enterEmail);
                 setButtonText(lang.buttonSend);
                 spawn([emailRef.current], 1);
@@ -220,9 +235,9 @@ export default function Start(){
                 move([buttonRef.current], 240, 1);
                 vanish([signUpRef.current], 1);
             break;
-            case 'sent-sign-up-email':
-            case 'sent-recovery-email':
-                const text = (screen === 'sent-sign-up-email')
+            case "sent-sign-up-email":
+            case "sent-recovery-email":
+                const text = (screen === "sent-sign-up-email")
                 ? lang.willSendSignUpEmail
                 : lang.willSendRecoverEmail; 
                 setHintText(text);
@@ -246,13 +261,13 @@ export default function Start(){
         <Background>
             <Header
                 lang
-                showGoBackArrow={(!waitingForServer) && (screen === 'sign-up' || screen === 'forgot-password')}
-                goBackArrow={() => setScreen('sign-in')}
+                showGoBackArrow={(!waitingForServer) && (screen === "sign-up" || screen === "forgot-password")}
+                goBackArrow={() => setScreen("sign-in")}
             />
             <Content>
                 <TopContent>
                     <LogoDiv ref={logoRef}>
-                        <Logo color={colors.black} fontSize={innerHeight > 750? '50px' : '45px'}/>
+                        <Logo color={colors.black} fontSize={innerHeight > 750? "50px" : "45px"}/>
                     </LogoDiv>
                     <Credentials>
                         <Gsap ref={nameRef}>
@@ -305,8 +320,8 @@ export default function Start(){
                     <HintGsap ref={hintRef}>
                         <HintText onClick={() => {
                             (!waitingForServer) &&
-                            (screen === 'sign-in') &&
-                            setScreen('forgot-password')
+                            (screen === "sign-in") &&
+                            setScreen("forgot-password")
                         }}>
                             {hintText}
                         </HintText>
@@ -320,22 +335,12 @@ export default function Start(){
                 <BottomContent>
                     <DiscreteText ref={signUpRef}>
                         {loginTexts.haventSignedUpYet}&nbsp;
-                        <Bold onClick={() => (!waitingForServer && setScreen('sign-up'))}>
+                        <Bold onClick={() => (!waitingForServer && setScreen("sign-up"))}>
                             {loginTexts.buttonSignUp}
                         </Bold>
                     </DiscreteText>
                 </BottomContent>
             </Content>
-            <Popup
-                description={popupText}
-                show={popupVisibility}
-                type='warning'
-                warningType="failure"
-                exitIconColor={colors.black}
-                descriptionColor={colors.black}
-                backgroundColor={colors.white}
-                border={`2px solid ${colors.red}`}
-            />
         </Background>
     )
 }

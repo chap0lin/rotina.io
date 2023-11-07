@@ -1,2 +1,2 @@
-import LoggedInScreen from "./Logged";
-export default LoggedInScreen;
+import LoggedIn from "./Logged";
+export default LoggedIn;

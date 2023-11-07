@@ -32,16 +32,6 @@ export default function Activate(){
     const contentRef = useRef(null);
     const loadingRef = useRef(null);
 
-    useLayoutEffect(() => {
-        if(waitingForServer){
-            spawn(loadingRef.current, 0.5);
-            vanish(contentRef.current);
-        } else {
-            vanish(loadingRef.current, 0.5);
-            spawn(contentRef.current, 1, 'flex');
-        }
-    }, [waitingForServer]);
-
 
     const handleServerReply = (reply: serverReply) => {
         switch(reply){
@@ -55,23 +45,34 @@ export default function Activate(){
             break;
             default:
                 if(reply.includes("SUCCESS_REGISTERED_USER")){
-                    const name = reply.split("=").at(-1);
+                    const name = reply.split("==").at(-1);
                     if(name.length > 0){
                         setUsername(name);
                     }
                 }
-            setWaitingForServer(false);
+            break;
         }
     }
 
-    const getRequest = (link: string, params: any) => {
+    const getRequest = (link: string, params: any, catchCall?: () => void) => {
         setWaitingForServer(true);
         api.get(link, {params}).then((resp) => {
             handleServerReply(resp.data.msg);
         }).catch(() => {
+            catchCall && catchCall();
             setWaitingForServer(false);
         });
     }
+
+    useLayoutEffect(() => {
+        if(waitingForServer){
+            spawn(loadingRef.current, 0.5);
+            vanish(contentRef.current);
+        } else {
+            vanish(loadingRef.current, 0.5);
+            spawn(contentRef.current, 1, 'flex');
+        }
+    }, [waitingForServer]);
 
     useEffect(() => {
         setLanguage((lang && lang === "en-us")? lang : "pt-br");
@@ -108,7 +109,7 @@ export default function Activate(){
                 </Button>
             </TopContent>
             <Gsap ref={loadingRef}>
-                <Loading lang={language}/>
+                <Loading />
             </Gsap>
         </Background>
     )

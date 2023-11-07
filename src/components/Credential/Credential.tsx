@@ -40,7 +40,7 @@ export default function Credential({title, safe, zIndex, disabled, onChange}: pr
             <Input type={hide? "password" : "text"} onChange={updateInput} disabled={disabled}/>
             { safe && hasInput &&
                 <EyeIcon
-                    style={{flexShrink: 0}}
+                    style={{flexShrink: 0, cursor: 'pointer'}}
                     opacity={0.6}
                     color={colors.black}
                     width={15}

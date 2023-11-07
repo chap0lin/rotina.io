@@ -4,7 +4,6 @@ import { colors } from "src/colors";
 
 export const IconContainer = styled.div`
     position: fixed;
-    z-index: 22;
     right: 15px;
     bottom: 15px;
     width: 72px;

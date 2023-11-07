@@ -69,9 +69,9 @@ export const Section = styled(FlexColumn)`
     width: 100%;
     flex: 1;
     gap: 20px;
-    max-height: 250px;
+    height: 250px;
     @media(max-height: 750px){
-        max-height: 200px;
+        height: 200px;
         gap: 12px;
     }
 `;
@@ -101,9 +101,4 @@ export const SectionContent = styled(FlexColumn)`
 
 export const Snap = styled.div`
     scroll-snap-align: start;
-`;
-
-export const SectionSpacer = styled.div`
-    flex-shrink: 0;
-    height: 20%;
 `;

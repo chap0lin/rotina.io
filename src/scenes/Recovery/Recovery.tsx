@@ -245,7 +245,7 @@ export default function Recovery(){
                 </Gsap>
             </Content>
             <LoadingDiv ref={loadingRef}>
-                <Loading lang={language}/>
+                <Loading/>
             </LoadingDiv>
         </Background>
     )
