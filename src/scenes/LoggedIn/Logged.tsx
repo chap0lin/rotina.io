@@ -1,27 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ActivityType, languageOption } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { ActivityType, languageOption, timeType } from "src/types";
+import { useNavigate } from "react-router-dom";
 import { spawn, vanish } from "src/functions/animation";
 import { api } from "src/services/api";
 import { texts } from "./Logged.lang";
 import { useTime } from "src/hooks/time";
 import { isAfter, isBefore } from "src/functions/time";
-import RoundButton from "./components/RoundButton";
-import { ActivityCard, Background, Header, Loading, Popup } from "src/components";
-import { BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, SectionContent, Gsap } from "./Logged.style";
+import { Background, Header, Loading } from "src/components";
+import { HappeningNow, HappeningLater, RoundButton } from "./components/index";
+import { BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, Gsap } from "./Logged.style";
 
-const date = new Date();
-const dayIndex = date.getDay();
-
-const getSubtitle = (language: languageOption) => {
-    const subtitles = texts.get(language).placeholders;
-    return subtitles[dayIndex];
-}
-
-const getLaterActivities = (activities: ActivityType[], now: timeType) => {
-    return activities.filter((act) => isAfter(act.startsAt, now, true));
-}
 
 type serverReplyType = 
     "SUCCESS" |
@@ -40,12 +29,12 @@ export default function LoggedIn(){
     const [ happeningNow, setHappeningNow ] = useState<ActivityType | undefined>();
     const [waitingForServer, setWaitingForServer] = useState<boolean>(() => false);
 
+    const date = new Date();
+    const dayIndex = date.getDay();
     const mainContentRef = useRef(null);
     const loadingRef = useRef(null);
-
     const loggedTexts = texts.get(language);
-    const subtitle = getSubtitle(language);
-    const laterActivities = getLaterActivities(activities, {hour, minute});
+
 
     const getRequest = (link: string, params: any, catchCall?: () => void) => {
         setWaitingForServer(true);
@@ -58,10 +47,6 @@ export default function LoggedIn(){
         });
     }
 
-    const HappeningActivity = () => {
-        if(happeningNow) return <ActivityCard {...happeningNow} highlighted/>
-        return <ActivityCard placeholder={loggedTexts.nothingHappening}/>
-    }
 
     const getActivitiesFromServerReply = (reply: serverReplyType) => {
         const stringifiedActivities = reply.split("==").at(1);
@@ -71,6 +56,7 @@ export default function LoggedIn(){
         }
         setActivities(JSON.parse(stringifiedActivities));
     }
+
 
     const handleServerReply = (reply: serverReplyType) => {
         switch(reply){
@@ -86,6 +72,7 @@ export default function LoggedIn(){
             break;
         }
     }
+
 
     useEffect(() => {
         if(!user){
@@ -130,34 +117,23 @@ export default function LoggedIn(){
                         </BigBold>
                     </BigTitle>
                     <SubTitle>
-                        {subtitle}
+                        {loggedTexts.placeholders[dayIndex]}
                     </SubTitle>
                 </TopTexts>
                 <Section style={{height: (innerHeight / 3)}}>
                     <SectionTitle>
                         {loggedTexts.happeningNow}
                     </SectionTitle>
-                    <SectionContent>
-                        <HappeningActivity />
-                    </SectionContent>
+                    <HappeningNow
+                        happeningNow={happeningNow}
+                        onNotesClick={() => null}
+                    />
                 </Section>
                 <Section>
                     <SectionTitle>
                         {loggedTexts.whatsNext}
                     </SectionTitle>
-                    <SectionContent style={{height: (innerHeight / 3)}}>
-                        {laterActivities.map((act, index) => (
-                            <ActivityCard
-                                {...act}
-                                key={index}
-                            />
-                        ))}
-                        <ActivityCard
-                            highlighted={false}
-                            placeholder={loggedTexts.createActivity}
-                        />
-                        <ActivityCard empty />
-                    </SectionContent>
+                    <HappeningLater activities={activities}/>
                 </Section>
             </MainContent>
             <RoundButton onClick={() => null}/>

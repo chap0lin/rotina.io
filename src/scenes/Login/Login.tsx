@@ -6,7 +6,7 @@ import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { colors } from "src/colors";
 import { texts } from "./Login.lang";
 import { api } from "src/services/api";
-import { Background, Header, Credential, Button, Logo, Popup } from "components/index";
+import { Background, Header, Credential, Button, Logo } from "components/index";
 import { TopContent, Credentials, DiscreteText, BottomContent, Content, Bold, LogoDiv, Gsap, HintText, HintGsap } from "./Login.style";
 
 const MIN_PASSWORD_SIZE = 8;

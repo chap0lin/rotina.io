@@ -18,6 +18,7 @@ const Bold = styled.span`
     color: ${colors.black};
 `;
 
+
 export const Gsap = styled.div`
     width: 100%;
     height: 100%;
@@ -82,20 +83,6 @@ export const SectionTitle = styled(Text)`
     font-weight: 600;
     @media(max-height: 750px){
         font-size: 18px;
-    }
-`;
-
-export const SectionContent = styled(FlexColumn)`
-    width: 100%;
-    flex: 1;
-    gap: 20px;
-    align-items: center;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 75%, transparent 100%);
-    ::-webkit-scrollbar {
-        display: none;
     }
 `;
 
