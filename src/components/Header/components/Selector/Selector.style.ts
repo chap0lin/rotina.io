@@ -33,7 +33,6 @@ export const Text = styled.p`
     margin: 0;
     padding: 0;
     white-space: nowrap;
-    text-transform: uppercase;
     cursor: pointer;
     :hover{
         color: ${colors.lightBlue};

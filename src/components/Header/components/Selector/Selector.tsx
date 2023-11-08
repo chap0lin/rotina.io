@@ -6,10 +6,16 @@ import { Icon, Option, Container, Text } from "./Selector.style";
 interface props {
   optionList: selectionType[];
   show: boolean;
+  uppercase?: boolean;
   onClick: (lang: string) => void;
 }
 
-export default function Selector({optionList, show, onClick}: props){
+const getIcon = (element: string | JSX.Element) => {
+  if(typeof element === "string") return <Icon src={element}/>
+  return element;
+}
+
+export default function Selector({optionList, show, uppercase, onClick}: props){
 
   const containerRef = useRef(null);
 
@@ -27,14 +33,14 @@ export default function Selector({optionList, show, onClick}: props){
 
   return (
     <Container ref={containerRef}>
-      {optionList.map((lang, index) => (
+      {optionList.map((option, index) => (
         <Option key={index} onClick={(e) => {
           e.stopPropagation();
-          onClick(lang.text);
+          onClick(option.text);
         }}>
-          <Icon src={lang.icon}/>
-          <Text>
-            {lang.text}
+          {getIcon(option.icon)}
+          <Text style={{textTransform: (uppercase? "uppercase" : "unset")}}>
+            {option.text}
           </Text>
         </Option>
       ))}

@@ -1,7 +1,7 @@
 export type languageOption = "en-us" | "pt-br";
 
 export type selectionType = {
-    icon: string;
+    icon: string | JSX.Element;
     text: string | languageOption;
 }
 

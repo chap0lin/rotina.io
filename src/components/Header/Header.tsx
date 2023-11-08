@@ -1,7 +1,7 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import { LanguageSelector } from "./components/index";
+import { LanguageSelector, UserSelector } from "./components/index";
 import { Logo, Blur } from "components/index";
 import { colors } from "src/colors";
 import { languageOption } from "src/types";
@@ -19,35 +19,51 @@ interface props {
 export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}: props) {
 
   const { innerHeight, setLanguage } = useGlobalContext();
-  const [showLanguages, setShowLanguages] = useState<boolean>(() => false);
+  const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(() => false);
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
   const arrowRef = useRef(null);
 
-  const clear = () => {
-    setShowLanguages(false);
-  }
+  const isAnyMenuShowing = (showLanguagesMenu || showUserMenu);
 
   const onLanguageSelection = (newLang: languageOption) => {
     setLanguage(newLang);
-    setShowLanguages(false);
+    setShowLanguagesMenu(false);
   }
 
-  const onGlobeIconClick = () => {
-    setShowLanguages(prev => !prev);
+  const onUserSelection = (option: string) => {
+    setShowUserMenu(false);
   }
 
-  const handleArrowClick = () => {
+  const clear = () => {
+    setShowLanguagesMenu(false);
+    setShowUserMenu(false);
+  }
+
+  const handleUserIconClick = () => {
+    setShowUserMenu(prev => !prev);
+  }
+
+  const handleGlobeIconClick = () => {
+    setShowLanguagesMenu(prev => !prev);
+  }
+
+  const handleArrowIconClick = () => {
     showGoBackArrow && goBackArrow();
   }
 
-  useEffect(() => {
-    (showGoBackArrow && !showLanguages)
+  useLayoutEffect(() => {
+    vanish(arrowRef.current);
+  }, []);
+
+  useLayoutEffect(() => {
+    (showGoBackArrow && !showLanguagesMenu)
     ? spawn(arrowRef.current, 1)
     : vanish(arrowRef.current, 1);
-  }, [showGoBackArrow, showLanguages]);
+  }, [showGoBackArrow, showLanguagesMenu]);
 
   return (
     <Container>
-      <Blur show={showLanguages} onClick={clear}/>
+      <Blur show={isAnyMenuShowing} onClick={clear}/>
       <LeftSide>
         { goBackArrow && 
           <Gsap ref={arrowRef}>
@@ -57,7 +73,7 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
                 width={(innerHeight > 750)? 40 : 35}
                 height={(innerHeight > 750)? 40 : 35}
                 color={colors.black}
-                onClick={handleArrowClick}
+                onClick={handleArrowIconClick}
               />
             </Clickable>
           </Gsap>
@@ -65,18 +81,22 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
         { logo && 
           <Logo
             color={colors.black}
-            fontSize={(innerHeight > 750)? 25 : 22}
+            fontSize={(innerHeight > 750)? 25 : 24}
           />
         }
       </LeftSide>
       <RightSide>
         { user && 
-          <User
-            strokeWidth={1}
-            width={(innerHeight > 750)? 35 : 30}
-            height={(innerHeight > 750)? 35 : 30}
-            color={colors.black}
-          />
+          <Clickable>
+            <User
+              strokeWidth={1}
+              width={(innerHeight > 750)? 35 : 30}
+              height={(innerHeight > 750)? 35 : 30}
+              color={colors.black}
+              onClick={handleUserIconClick}
+            />
+            <UserSelector show={showUserMenu} onClick={onUserSelection}/>
+          </Clickable>
         }
         { lang &&
           <Clickable>
@@ -85,9 +105,9 @@ export default function Header({showGoBackArrow, logo, user, lang, goBackArrow}:
               width={(innerHeight > 750)? 35 : 30}
               height={(innerHeight > 750)? 35 : 30}
               color={colors.black}
-              onClick={onGlobeIconClick}
+              onClick={handleGlobeIconClick}
             />
-            <LanguageSelector show={showLanguages} onClick={onLanguageSelection}/>
+            <LanguageSelector show={showLanguagesMenu} onClick={onLanguageSelection}/>
           </Clickable>
         }
       </RightSide>

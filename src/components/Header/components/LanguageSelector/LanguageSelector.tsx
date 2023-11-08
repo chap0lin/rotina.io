@@ -24,6 +24,7 @@ export default function LanguageSelector({show, onClick}: props){
       optionList={languages}
       onClick={onClick}
       show={show}
+      uppercase
     />
   )
 }

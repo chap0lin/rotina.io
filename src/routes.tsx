@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Start, Login, Activate, Recovery, LoggedIn } from "scenes/index";
+import { Start, Login, Activate, Recovery, Logged } from "scenes/index";
 
 export default function Router(){
     return (
@@ -9,7 +9,7 @@ export default function Router(){
                 <Route path="/login" element={<Login/>} />
                 <Route path="/activate" element={<Activate/>} />
                 <Route path="/recovery" element={<Recovery/>} />
-                <Route path="/logged" element={<LoggedIn/>} />
+                <Route path="/logged" element={<Logged/>} />
             </Routes>
         </BrowserRouter>
     )
