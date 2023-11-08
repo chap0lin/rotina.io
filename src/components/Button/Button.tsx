@@ -5,7 +5,7 @@ import { Container, AnimatedLoader } from "./Button.style";
 
 interface props {
     onClick: () => void;
-    children: JSX.Element | string;
+    children: JSX.Element | JSX.Element[] | string;
     background?: string;
     color?: string;
     width?: number | string;

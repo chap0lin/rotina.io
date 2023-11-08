@@ -1,7 +1,7 @@
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ActivityCard } from "src/components";
 import { ActivityType } from "src/types";
-import { Section } from "./HappeningLater.style";
+import { EmptyFooter, Section } from "./HappeningLater.style";
 import { texts } from "./HappeningLater.lang";
 import { useTime } from "src/hooks/time";
 import { isAfter } from "src/functions/time";
@@ -11,7 +11,7 @@ interface props {
 }
 
 export default function HappeningLater({activities}: props){
-    const { language } = useGlobalContext();
+    const { language, innerHeight } = useGlobalContext();
     const [hour, minute] = useTime();
     const happeningTexts = texts.get(language);
 
@@ -31,7 +31,7 @@ export default function HappeningLater({activities}: props){
                 highlighted={false}
                 placeholder={happeningTexts.createActivity}
             />
-            <ActivityCard empty />
+            <EmptyFooter style={{height: (innerHeight / 6)}}/>
         </Section>
     )
 }

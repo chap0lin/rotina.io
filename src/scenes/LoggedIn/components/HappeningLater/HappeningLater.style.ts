@@ -15,3 +15,7 @@ export const Section = styled.div`
         display: none;
     }
 `;
+
+export const EmptyFooter = styled.div`
+    flex-shrink: 0;
+`;

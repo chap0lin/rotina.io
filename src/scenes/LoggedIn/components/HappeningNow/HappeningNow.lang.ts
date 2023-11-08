@@ -8,7 +8,7 @@ type textTypes = {
 const texts = new Map<languageOption, textTypes>();
 
 texts.set('pt-br', {
-    notes: "anotações",
+    notes: "notas",
     nothingHappening: ["No momento, nada.", "Parece que você está livre!"],
 })
 

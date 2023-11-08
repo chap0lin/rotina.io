@@ -95,5 +95,3 @@ export const Where = styled(Text)`
         font-size: 15px;
     }
 `;
-
-export const EmptyContent = styled(Container)``;

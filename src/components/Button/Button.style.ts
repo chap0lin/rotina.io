@@ -11,12 +11,20 @@ const rotate = keyframes`
 `;
 
 export const Container = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     font-size: 18px;
     border: none;
     outline: none;
     cursor: pointer;
     :focus{
       outline: none;
+    }
+    @media(max-height: 750px){
+      font-size: 16px;
+      gap: 6px;
     }
 `;
 

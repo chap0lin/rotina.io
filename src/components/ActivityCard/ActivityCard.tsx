@@ -1,7 +1,7 @@
 import { colors } from "src/colors";
 import { timeType } from "src/types";
 import { stringifyTime } from "src/functions/time";
-import { Container, EmptyContent, PlaceText, Placeholder, What, WhatAndWho, When, WhenAndWhere, Where, Who } from "./ActivityCard.style";
+import { Container, PlaceText, Placeholder, What, WhatAndWho, When, WhenAndWhere, Where, Who } from "./ActivityCard.style";
 
 interface props {
     what?: string;
@@ -12,10 +12,9 @@ interface props {
     color?: string;
     highlighted?: boolean;
     placeholder?: string | string[];
-    empty?: boolean;
 }
 
-export default function ActivityCard({what, who, where, startsAt, endsAt, color, highlighted, placeholder, empty}: props){
+export default function ActivityCard({what, who, where, startsAt, endsAt, color, highlighted, placeholder}: props){
     
     const bgColor = color ?? colors.grey;
 
@@ -44,10 +43,6 @@ export default function ActivityCard({what, who, where, startsAt, endsAt, color,
             </Placeholder>
         )        
     }
-
-    if(empty) return (
-        <EmptyContent />
-    )
 
     if(placeholder) return (
         <PlaceholderContent />
