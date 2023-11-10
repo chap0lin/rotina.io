@@ -29,32 +29,36 @@ export const MainContent = styled(FlexColumn)`
     padding: 30px;
     position: relative;
     flex: 1;
+    @media(max-height: 750px){
+        padding-top: 15px;
+    }
 `;
 
 export const TopTexts = styled(FlexColumn)`
-    gap: 20px;
+    height: 120px;
     @media(max-height: 750px){
-        gap: 16px;
+        height: 110px;
     }
 `;
 
 export const BigTitle = styled(Text)`
     text-align: left;
     font-size: 35px;
+    height: 40px;
     font-weight: 400;
+    white-space: nowrap;
     @media(max-height: 750px){
         font-size: 30px;
+        height: 35px;
     }
 `;  
 
 export const SubTitle = styled(Text)`
     text-align: left;
     font-size: 17px;
-    height: 80px;
     opacity: 0.8;
     @media(max-height: 750px){
         font-size: 15px;
-        height: 70px;
     }
 `;
 

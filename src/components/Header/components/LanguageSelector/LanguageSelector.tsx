@@ -1,7 +1,7 @@
 import { languageOption, selectionType } from "src/types";
 import brazilFlag from "assets/icons/brazil.png";
 import usaFlag from "assets/icons/usa.png";
-import Selector from "../Selector";
+import { Selector } from "../index";
 
 const languages: selectionType[] = [
   {

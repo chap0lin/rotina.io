@@ -6,6 +6,7 @@ type textTypes = {
     hmmm: string;
     welcome: string;
     goBack: string;
+    johnDoe: string;
     activationWasSuccessful: string;
     somethingWentWrong: string;
 }
@@ -18,6 +19,7 @@ texts.set('pt-br', {
     hmmm: "Hmmm...",
     welcome: "Seja bem vindo!",
     goBack: "voltar",
+    johnDoe: "Fulano",
     activationWasSuccessful: "Sua conta por aqui foi criada com sucesso e está pronta para uso. Experimente fazer o login agora!",
     somethingWentWrong: "Parece que alguma coisa deu errado. E se você tentar mais tarde?"
 })
@@ -28,6 +30,7 @@ texts.set('en-us', {
     hmmm: "Hmmm...",
     welcome: "Welcome aboard!",
     goBack: "go back",
+    johnDoe: "John Doe",
     activationWasSuccessful: "Your account has been successfuly created and is now ready to go! Try signing in now!",
     somethingWentWrong: "Looks like something went wrong. Maybe try again later?"
 })

@@ -5,12 +5,13 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   position: absolute;
-  botttom: 0;
+  top: 40px;
+  right: 0;
   border-radius: 10px 0 10px 10px;
   background: ${colors.black};
   padding: 10px;
-  right: 0;
   cursor: default;
+  z-index: 100;
 `;
 
 export const Option = styled.div`

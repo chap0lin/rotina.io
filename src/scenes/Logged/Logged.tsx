@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ActivityType, languageOption } from "src/types";
+import { activityType, languageOption } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useNavigate } from "react-router-dom";
-import { spawn, vanish } from "src/functions/animation";
+import { move, resize, spawn, vanish } from "src/functions/animation";
 import { api } from "src/services/api";
 import { texts } from "./Logged.lang";
 import { useTime } from "src/hooks/time";
@@ -23,17 +23,22 @@ type serverReplyType =
 
 export default function LoggedIn(){
     const navigate = useNavigate();
-    const { language, innerHeight, user, setUser, showPopup } = useGlobalContext();
+    const { language, innerHeight, user, showPopup } = useGlobalContext();
     const [ hour, minute ] = useTime();
-    const [ activities, setActivities ] = useState<ActivityType[]>([]);
-    const [ happeningNow, setHappeningNow ] = useState<ActivityType | undefined>();
-    const [waitingForServer, setWaitingForServer] = useState<boolean>(() => false);
+    const [ activities, setActivities ] = useState<activityType[]>([]);
+    const [ happeningNow, setHappeningNow ] = useState<activityType | undefined>();
+    const [ waitingForServer, setWaitingForServer ] = useState<boolean>(() => true);
+    const [ receivedFirstContent, setReceivedFirstContent ] = useState<boolean>(() => false);
 
     const date = new Date();
     const dayIndex = date.getDay();
     const mainContentRef = useRef(null);
     const loadingRef = useRef(null);
     const loggedTexts = texts.get(language);
+
+    const nowTitleRef = useRef(null);
+    const laterTitleRef = useRef(null);
+    const laterSectionRef = useRef(null);
 
 
     const getRequest = (link: string, params: any, catchCall?: () => void) => {
@@ -66,6 +71,7 @@ export default function LoggedIn(){
                 showPopup(loggedTexts.somethingWentWrong);
             break;
             default:
+                setReceivedFirstContent(true);
                 if(reply.includes("SUCCESS_ACTIVITIES")){
                     getActivitiesFromServerReply(reply);
                 }
@@ -75,23 +81,19 @@ export default function LoggedIn(){
 
 
     useEffect(() => {
+        let timer: NodeJS.Timeout;
         if(!user){
             navigate("/login");
         } else {
-            getRequest("/get-activities", {...user});   
+            timer = setInterval(() => {                     //TODO dummy interval. Leave only the getRequestMethod
+                getRequest("/get-activities", {...user});  
+            }, 10000); 
+        }
+
+        return () => {
+            clearInterval(timer);
         }
     }, []);
-
-
-    useLayoutEffect(() => {
-        if(waitingForServer === true){
-            vanish([mainContentRef.current, loadingRef.current]);
-            spawn(loadingRef.current, 1);
-        } else {
-            vanish(loadingRef.current, 1);
-            spawn(mainContentRef.current, 1);
-        }
-    }, [waitingForServer]);
 
 
     useEffect(() => {
@@ -104,9 +106,35 @@ export default function LoggedIn(){
     }, [activities, hour, minute]);
 
 
+    useEffect(() => {
+        const dy = (innerHeight > 750)? -50 : -30;
+        const newHeight = (innerHeight > 750? 250 : 200) - dy;
+        move(laterSectionRef.current, {y: (happeningNow)? 0: dy}, 0.5);
+        resize(laterSectionRef.current, {height: newHeight}, 0.5);
+    }, [happeningNow, innerHeight]);
+
+
+    useLayoutEffect(() => {
+        if(!receivedFirstContent){
+            vanish([mainContentRef.current, loadingRef.current]);
+            spawn(loadingRef.current, 1);
+        } else {
+            vanish(loadingRef.current, 1);
+            spawn(mainContentRef.current, 1, 0.15);
+            move(nowTitleRef.current, {x: 0}, 1, 0.15);
+            move(laterTitleRef.current, {x: 0}, 1, 0.7);
+        }
+    }, [receivedFirstContent]);
+
+
+    useLayoutEffect(() => {
+        move(nowTitleRef.current, {x: -400});
+        move(laterTitleRef.current, {x: -400});
+    }, []);
+
     return (
         <Background>
-            <Header logo user/>
+            <Header logo user show={receivedFirstContent}/>
             <MainContent ref={mainContentRef}>
                 <TopTexts>
                     <BigTitle>
@@ -121,19 +149,23 @@ export default function LoggedIn(){
                     </SubTitle>
                 </TopTexts>
                 <Section style={{height: (innerHeight / 3)}}>
-                    <SectionTitle>
+                    <SectionTitle ref={nowTitleRef}>
                         {loggedTexts.happeningNow}
                     </SectionTitle>
                     <HappeningNow
+                        show={receivedFirstContent}
                         happeningNow={happeningNow}
                         onNotesClick={() => null}
                     />
                 </Section>
-                <Section>
-                    <SectionTitle>
+                <Section ref={laterSectionRef}>
+                    <SectionTitle ref={laterTitleRef}>
                         {loggedTexts.whatsNext}
                     </SectionTitle>
-                    <HappeningLater activities={activities}/>
+                    <HappeningLater
+                        show={receivedFirstContent}
+                        activities={activities}
+                    />
                 </Section>
             </MainContent>
             <RoundButton onClick={() => null}/>

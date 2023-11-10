@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { colors } from "src/colors";
 import { Loader } from "react-feather";
+import { fade } from "src/functions/animation";
 import { Container, AnimatedLoader } from "./Button.style";
 
 interface props {
@@ -12,12 +13,11 @@ interface props {
     height?: number | string;
     disabled?: boolean;
     loading?: boolean;
-    focus?: boolean;
     borderRadius?: number | string;
     padding?: number | string;
 }
 
-export default function Button({onClick, focus, children, background, color, width, height, disabled, loading, borderRadius, padding}: props){
+export default function Button({onClick, children, background, color, width, height, disabled, loading, borderRadius, padding}: props){
     
     const buttonRef = useRef(null);
 
@@ -25,8 +25,7 @@ export default function Button({onClick, focus, children, background, color, wid
         width: width ?? "180px",
         height: height ?? "50px",
         color: color ?? colors.white,
-        background: background ?? colors.black,
-        opacity: disabled? 0.4 : 1,
+        backgroundColor: background ?? colors.black,
         borderRadius: borderRadius?? "20px",
         padding: padding?? "10px 20px",
     }
@@ -35,13 +34,14 @@ export default function Button({onClick, focus, children, background, color, wid
         onClick();
     }
 
-    useEffect(() => {
-        if(focus === true){
-            buttonRef.current.focus();
-        } else {
-            buttonRef.current.blur();
-        }
-    }, [focus]);
+    useLayoutEffect(() => {
+        fade(
+            buttonRef.current,
+            disabled ? 0.4 : 1,
+            0.5
+        );
+    }, [disabled]);
+
 
     const content = (loading)
     ? <AnimatedLoader>

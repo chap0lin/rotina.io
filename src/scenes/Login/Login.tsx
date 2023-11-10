@@ -40,6 +40,7 @@ export default function Login(){
     const [buttonText, setButtonText] = useState<string>(() => loginTexts.buttonSignIn);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(() => true);
     const [waitingForServer, setWaitingForServer] = useState<boolean>(() => false);
+    const canGoBack = (!waitingForServer) && (screen === "sign-up" || screen === "forgot-password");
 
     const username = useRef<string>("");
     const email = useRef<string>("");
@@ -196,7 +197,7 @@ export default function Login(){
             repPassRef.current,
             hintRef.current, 
             buttonRef.current
-        ], 90);
+        ], {y: 90});
     }, []);    
 
     useLayoutEffect(() => {
@@ -205,24 +206,24 @@ export default function Login(){
             case "sign-in":
                 setHintText(lang.forgotMyPassword);
                 setButtonText(lang.buttonSignIn);
-                spawnAndMove([nameRef.current], 90, 1);
-                spawnAndMove([passRef.current], 150, 1);
-                move([logoRef.current], 0, 1);
-                move([hintRef.current], 220, 1);
-                move([buttonRef.current], 300, 1);
-                moveAndVanish([emailRef.current, repPassRef.current], 90, 1);
+                spawnAndMove([nameRef.current], {y: 90}, 1);
+                spawnAndMove([passRef.current], {y: 150}, 1);
+                move([logoRef.current], {y: 0}, 1);
+                move([hintRef.current], {y: 220}, 1);
+                move([buttonRef.current], {y: 300}, 1);
+                moveAndVanish([emailRef.current, repPassRef.current], {y: 90}, 1);
                 spawn([signUpRef.current], 1);
             break;
             case "sign-up":
                 setHintText(lang.signUpHint);
                 setButtonText(lang.buttonSignUp);
-                move([logoRef.current], -75, 1);
-                move([nameRef.current], 0, 1);
-                spawnAndMove([emailRef.current], 60, 1);
-                move([passRef.current], 120, 1);
-                spawnAndMove([repPassRef.current], 180, 1);
-                move([hintRef.current], 260, 1);
-                move([buttonRef.current], 340, 1);
+                move([logoRef.current], {y: -75}, 1);
+                move([nameRef.current], {y: 0}, 1);
+                spawnAndMove([emailRef.current], {y: 60}, 1);
+                move([passRef.current], {y: 120}, 1);
+                spawnAndMove([repPassRef.current], {y: 180}, 1);
+                move([hintRef.current], {y: 260}, 1);
+                move([buttonRef.current], {y: 340}, 1);
                 vanish([signUpRef.current], 1);
             break;
             case "forgot-password":
@@ -230,9 +231,9 @@ export default function Login(){
                 setButtonText(lang.buttonSend);
                 spawn([emailRef.current], 1);
                 vanish([nameRef.current], 1);
-                moveAndVanish([passRef.current], 90, 1);
-                move([hintRef.current], 160, 1);
-                move([buttonRef.current], 240, 1);
+                moveAndVanish([passRef.current], {y: 90}, 1);
+                move([hintRef.current], {y: 160}, 1);
+                move([buttonRef.current], {y: 240}, 1);
                 vanish([signUpRef.current], 1);
             break;
             case "sent-sign-up-email":
@@ -247,10 +248,10 @@ export default function Login(){
                     emailRef.current,
                     passRef.current,
                     repPassRef.current,
-                ], 0, 1);
-                move([logoRef.current], 0, 1);
-                move([hintRef.current], 90, 1);
-                move([buttonRef.current], 190, 1);
+                ], {y: 0}, 1);
+                move([logoRef.current], {y: 0}, 1);
+                move([hintRef.current], {y: 90}, 1);
+                move([buttonRef.current], {y: 190}, 1);
             break;
         }
         handleButtonStatus();
@@ -261,13 +262,14 @@ export default function Login(){
         <Background>
             <Header
                 lang
-                showGoBackArrow={(!waitingForServer) && (screen === "sign-up" || screen === "forgot-password")}
-                goBackArrow={() => setScreen("sign-in")}
+                arrow={
+                    (screen === "sign-up" || screen === "forgot-password")? () => setScreen("sign-in"): null
+                }
             />
             <Content>
                 <TopContent>
                     <LogoDiv ref={logoRef}>
-                        <Logo color={colors.black} fontSize={innerHeight > 750? "50px" : "45px"}/>
+                        <Logo color={colors.black} fontSize={innerHeight > 750? 50 : 45}/>
                     </LogoDiv>
                     <Credentials>
                         <Gsap ref={nameRef}>

@@ -15,11 +15,21 @@ export type timeType = {
     minute: number,
 }
 
-export type ActivityType = {
+export type activityType = {
     what: string;
     who: string;
     where: string;
     startsAt: timeType;
     endsAt: timeType;
     color: string;
+}
+
+export type coordinateType = {
+    x?: number,
+    y?: number,
+}
+
+export type sizeType = {
+    width?: number,
+    height?: number
 }

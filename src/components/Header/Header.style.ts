@@ -8,6 +8,8 @@ export const Container = styled.div`
   width: 100%;
   height: 80px;
   padding: 0 20px;
+  position: relative;
+  z-index: 100;
   @media(max-height: 750px){
     height: 72px;
   }
@@ -26,11 +28,10 @@ export const RightSide = styled(Side)`
   gap: 20px;
 `;
 
-export const Clickable = styled.div`
-  cursor: pointer;
+export const Gsap = styled.div`
   position: relative;
-  z-index: 100;
 `;
 
-
-export const Gsap = styled.div``;
+export const Clickable = styled(Side)`
+  cursor: pointer;
+`;

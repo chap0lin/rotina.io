@@ -154,7 +154,7 @@ export default function Recovery(){
             repPassRef.current,
             hintRef.current, 
             buttonRef.current
-        ], 120);
+        ], {y: 120});
     }, []);
 
 
@@ -170,11 +170,11 @@ export default function Recovery(){
                     setHintText(lang.newPasswordHint);
                     setButtonText(lang.send);
                     setButtonDisabled(!checkInputs());
-                    spawnAndMove([titleRef.current], 0, 1);
-                    spawnAndMove([passRef.current], 70, 1);
-                    spawnAndMove([repPassRef.current], 130, 1);
-                    spawnAndMove([hintRef.current], 190, 1);
-                    spawnAndMove([buttonRef.current], 280, 1);
+                    spawnAndMove([titleRef.current], {y: 0}, 1);
+                    spawnAndMove([passRef.current], {y: 70}, 1);
+                    spawnAndMove([repPassRef.current], {y: 130}, 1);
+                    spawnAndMove([hintRef.current], {y: 190}, 1);
+                    spawnAndMove([buttonRef.current], {y: 280}, 1);
                 break;
                 default:
                     if(screen === "success"){
@@ -187,13 +187,13 @@ export default function Recovery(){
                         setButtonText(lang.goBack);
                     }
                     setButtonDisabled(false);
-                    spawnAndMove([titleRef.current], 45, 1);
-                    spawnAndMove([hintRef.current], 100, 1);
-                    spawnAndMove([buttonRef.current], 205, 1);
+                    spawnAndMove([titleRef.current], {y: 45}, 1);
+                    spawnAndMove([hintRef.current], {y: 100}, 1);
+                    spawnAndMove([buttonRef.current], {y: 205}, 1);
                     moveAndVanish([
                         passRef.current,
                         repPassRef.current
-                    ], 120, 1);
+                    ], {y: 120}, 1);
                 break;
             }
         }

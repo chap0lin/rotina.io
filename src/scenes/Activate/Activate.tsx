@@ -70,7 +70,7 @@ export default function Activate(){
             vanish(contentRef.current);
         } else {
             vanish(loadingRef.current, 0.5);
-            spawn(contentRef.current, 1, 'flex');
+            spawn(contentRef.current, 1, 0, 'flex');
         }
     }, [waitingForServer]);
 
@@ -96,7 +96,7 @@ export default function Activate(){
                             ? <> 
                                 {activateTexts.hello}
                                 <Bold>
-                                    {`, ${username.length > 0? username : "Fulano"}! `}    
+                                    {`, ${username.length > 0? username : activateTexts.johnDoe}! `}    
                                 </Bold>
                                 {activateTexts.activationWasSuccessful}
                             </>
