@@ -7,7 +7,7 @@ interface props {
   optionList: selectionType[];
   show: boolean;
   uppercase?: boolean;
-  onClick: (lang: string) => void;
+  onClick: (option: string) => void;
 }
 
 const getIcon = (element: string | JSX.Element) => {

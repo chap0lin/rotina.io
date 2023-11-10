@@ -5,7 +5,7 @@ export default function Router(){
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Start/>} />
+                <Route path="/" element={<Login/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/activate" element={<Activate/>} />
                 <Route path="/recovery" element={<Recovery/>} />

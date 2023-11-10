@@ -115,3 +115,16 @@ export const resize = (what: gsap.TweenTarget, newSize: sizeType, duration?: num
         delay: delay?? 0,
     });
 }
+
+export const reactToClick = (what: gsap.TweenTarget, onClick: () => void, duration?: number, delay?: number) => {
+    gsap.timeline().to(what, {
+        rotate: -90,
+        ease: 'back',
+        duration: duration? (duration / 2) : 0.5,
+        delay: delay?? 0,
+    }).to(what, {
+        rotate: 0,
+        ease: 'back',
+        duration: duration? (duration / 2) : 0.5,
+    }).call(onClick);
+}

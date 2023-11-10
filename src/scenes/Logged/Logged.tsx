@@ -60,6 +60,7 @@ export default function LoggedIn(){
             return;
         }
         setActivities(JSON.parse(stringifiedActivities));
+        setReceivedFirstContent(true);
     }
 
 
@@ -71,7 +72,6 @@ export default function LoggedIn(){
                 showPopup(loggedTexts.somethingWentWrong);
             break;
             default:
-                setReceivedFirstContent(true);
                 if(reply.includes("SUCCESS_ACTIVITIES")){
                     getActivitiesFromServerReply(reply);
                 }
@@ -81,16 +81,21 @@ export default function LoggedIn(){
 
 
     useEffect(() => {
+        let firstSend: NodeJS.Timeout;
         let timer: NodeJS.Timeout;
         if(!user){
             navigate("/login");
         } else {
-            timer = setInterval(() => {                     //TODO dummy interval. Leave only the getRequestMethod
+            firstSend = setTimeout(() => {                  //TODO delete. Leave only the getRequest method (without any interval)
+                getRequest("/get-activities", {...user}); 
+            }, 2000);
+            timer = setInterval(() => {                     //TODO delete.
                 getRequest("/get-activities", {...user});  
             }, 10000); 
         }
 
         return () => {
+            clearInterval(firstSend);
             clearInterval(timer);
         }
     }, []);
@@ -109,8 +114,8 @@ export default function LoggedIn(){
     useEffect(() => {
         const dy = (innerHeight > 750)? -50 : -30;
         const newHeight = (innerHeight > 750? 250 : 200) - dy;
-        move(laterSectionRef.current, {y: (happeningNow)? 0: dy}, 0.5);
-        resize(laterSectionRef.current, {height: newHeight}, 0.5);
+        move(laterSectionRef.current, {y: (happeningNow)? 0: dy}, 1);
+        resize(laterSectionRef.current, {height: newHeight}, 1);
     }, [happeningNow, innerHeight]);
 
 
@@ -168,7 +173,9 @@ export default function LoggedIn(){
                     />
                 </Section>
             </MainContent>
-            <RoundButton onClick={() => null}/>
+            <RoundButton show={receivedFirstContent} onClick={
+                () => showPopup("//TODO")
+            }/>
             <Gsap ref={loadingRef}>
                 <Loading />
             </Gsap>

@@ -18,7 +18,7 @@ interface props {
 
 export default function Header({show, logo, user, lang, arrow}: props) {
 
-  const { innerHeight, setLanguage } = useGlobalContext();
+  const { language, innerHeight, setLanguage, showPopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(() => false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
   const isAnyMenuShowing = (showLanguagesMenu || showUserMenu);
@@ -47,6 +47,7 @@ export default function Header({show, logo, user, lang, arrow}: props) {
 
   const handleUserSelection = (option: string) => {
     setShowUserMenu(prev => !prev);
+    showPopup("//TODO");
   }
 
   const handleUserIconClick = () => {

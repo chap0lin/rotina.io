@@ -13,7 +13,6 @@ export const Container = styled.div`
     flex-direction: column;
     border-radius: 15px;
     width: 85%;
-    max-width: 300px;
     height: 140px;
     padding: 10px;
     scroll-snap-align: start;

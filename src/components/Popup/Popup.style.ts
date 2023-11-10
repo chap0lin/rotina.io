@@ -33,7 +33,8 @@ export const PopupContainer = styled.div`
   border-radius: 15px;
   background: ${colors.white};
   opacity: 0.95;
-  @media (max-height: 740px) {
+  @media (max-height: 750px) {
+    padding: 15px 15px 0 15px;
     width: 330px;
   }
 `;
@@ -62,14 +63,15 @@ export const Description = styled.div`
   justify-content: space-between;
   max-height: 600px;
   color: ${colors.black};
-  font-size: 18px;
+  font-size: 17px;
   overflow-y: scroll;
   margin: 20px 0;
   ::-webkit-scrollbar {
     display: none;
   }
-  @media (max-height: 740px) {
+  @media (max-height: 750px) {
     max-height: 450px;
+    font-size: 16px;
   }
 `;
 

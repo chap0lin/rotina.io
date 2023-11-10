@@ -24,17 +24,26 @@ export const Section = styled.div`
     }
 `;
 
-export const Activities = styled(FlexColumn)`
+export const Gsap = styled(FlexColumn)`
+    width: 100%;
     position: relative;
 `;
 
-export const GsapCard = styled(FlexColumn)`
+export const GsapActivity = styled(Gsap)`
     position: absolute;
+`;
+
+export const GsapHappening = styled(Gsap)`
+    z-index: 2;
+`;
+
+export const GsapButton = styled(Gsap)`
+    z-index: 1;
 `;
 
 export const ButtonText = styled.p`
     font-size: 18px;
-    color: ${colors.darkWhite};
+    color: ${colors.white};
     @media(max-height: 750px){
         font-size: 16px;
     }

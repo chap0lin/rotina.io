@@ -1,27 +1,30 @@
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { Plus } from "react-feather";
 import { colors } from "src/colors";
 import { IconContainer } from "./RoundButton.style";
-import gsap from "gsap";
-
+import { reactToClick, spawn, vanish } from "src/functions/animation";
 interface props {
+    show: boolean;
     onClick: () => void;
 }
 
-export default function RoundButton({onClick}: props){
+export default function RoundButton({show, onClick}: props){
     const iconRef = useRef(null);
 
     const onButtonClick = () => {
-        gsap.timeline().to(iconRef.current, {
-            rotate: -90,
-            duration: 1,
-            ease: 'elastic',
-        }).to(iconRef.current, {
-            rotate: 0,
-            duration: 0,
-        }).call(onClick);
+        reactToClick(iconRef.current, onClick, 0.5);
     }
     
+    useLayoutEffect(() => {
+        vanish(iconRef.current);
+    }, []);
+
+    useLayoutEffect(() => {
+        (show)
+        ? spawn(iconRef.current, 1)
+        : vanish(iconRef.current, 1);
+    }, [show]);
+
     return(
         <IconContainer ref={iconRef} onClick={onButtonClick}>
             <Plus
