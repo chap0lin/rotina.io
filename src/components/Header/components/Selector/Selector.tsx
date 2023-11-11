@@ -11,20 +11,24 @@ interface props {
 }
 
 const getIcon = (element: string | JSX.Element) => {
-  if(typeof element === "string") return <Icon src={element}/>
+  if (typeof element === "string") return <Icon src={element} />;
   return element;
-}
+};
 
-export default function Selector({optionList, show, uppercase, onClick}: props){
-
+export default function Selector({
+  optionList,
+  show,
+  uppercase,
+  onClick,
+}: props) {
   const containerRef = useRef(null);
 
   useLayoutEffect(() => {
     vanish(containerRef.current);
-  }, [])
+  }, []);
 
   useLayoutEffect(() => {
-    if(show){
+    if (show) {
       spawnAndScale(containerRef.current, 1, 0.25, "flex");
     } else {
       scaleAndVanish(containerRef.current, 0, 0.25);
@@ -34,16 +38,18 @@ export default function Selector({optionList, show, uppercase, onClick}: props){
   return (
     <Container ref={containerRef}>
       {optionList.map((option, index) => (
-        <Option key={index} onClick={(e) => {
-          e.stopPropagation();
-          onClick(option.text);
-        }}>
+        <Option
+          key={index}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick(option.text);
+          }}>
           {getIcon(option.icon)}
-          <Text style={{textTransform: (uppercase? "uppercase" : "unset")}}>
+          <Text style={{ textTransform: uppercase ? "uppercase" : "unset" }}>
             {option.text}
           </Text>
         </Option>
       ))}
     </Container>
-  )
+  );
 }

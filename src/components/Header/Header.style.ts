@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
 export const Container = styled.div`
   display: flex;
@@ -10,7 +10,7 @@ export const Container = styled.div`
   padding: 0 20px;
   position: relative;
   z-index: 100;
-  @media(max-height: 750px){
+  @media (max-height: 750px) {
     height: 72px;
   }
 `;

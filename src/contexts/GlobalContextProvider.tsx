@@ -1,15 +1,15 @@
 import {
-    createContext,
-    ReactNode,
-    useContext,
-    useState,
-    useEffect,
-  } from "react";
-  import gsap from "gsap";
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
+import gsap from "gsap";
 import { languageOption, userType } from "../types";
 import { colors } from "src/colors";
 import { Popup } from "src/components";
-  
+
 interface GlobalContextValue {
   keyPressed: string;
   innerHeight: number;
@@ -41,13 +41,15 @@ export function useGlobalContext() {
   if (typeof context !== "undefined") {
     return context;
   } else {
-    console.log("Global Context cannot be accessed from here.")
+    console.log("Global Context cannot be accessed from here.");
   }
 }
-  
+
 export default function GlobalProvider(props: GlobalProviderProps) {
   const [language, setLanguage] = useState<languageOption>(() => "pt-br");
-  const [innerHeight, setInnerHeight] = useState<number>(() => window.innerHeight);
+  const [innerHeight, setInnerHeight] = useState<number>(
+    () => window.innerHeight
+  );
   const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [user, setUser] = useState<userType>(() => null);
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
@@ -59,24 +61,24 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
   const handleKey = (e: KeyboardEvent) => {
     setKeyPressed(e.key);
-  }
+  };
 
   const showPopup = (message: string, timeout?: number) => {
     setPopupText(message);
     setPopupVisibility(true);
     setTimeout(() => {
-        setPopupVisibility(false);
-    }, timeout?? 4000);
-}
+      setPopupVisibility(false);
+    }, timeout ?? 4000);
+  };
 
   useEffect(() => {
     gsap.config({ nullTargetWarn: false });
     window.addEventListener("resize", handleResize);
-    document.addEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
     return () => {
       window.removeEventListener("resize", handleResize);
-      document.removeEventListener('keydown', handleKey);
-    }
+      document.removeEventListener("keydown", handleKey);
+    };
   }, []);
 
   useEffect(() => {
@@ -108,8 +110,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
         descriptionColor={colors.black}
         backgroundColor={colors.white}
         border={`2px solid ${colors.red}`}
-    />
+      />
     </GlobalContext.Provider>
   );
 }
-  

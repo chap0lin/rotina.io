@@ -22,20 +22,20 @@ export const Option = styled.div`
 `;
 
 export const Icon = styled.img`
-    width: 20px;
-    height: 20px;
-    object-fit: cover;
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
 `;
 
 export const Text = styled.p`
-    font-size: 15px;
-    font-weight: 400;
-    color: ${colors.white};
-    margin: 0;
-    padding: 0;
-    white-space: nowrap;
-    cursor: pointer;
-    :hover{
-        color: ${colors.lightBlue};
-    }
+  font-size: 15px;
+  font-weight: 400;
+  color: ${colors.white};
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  :hover {
+    color: ${colors.lightBlue};
+  }
 `;

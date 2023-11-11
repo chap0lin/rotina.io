@@ -1,8 +1,8 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
 export const Text = styled.p`
-    font-family: Motley;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-family: Motley;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

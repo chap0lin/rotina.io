@@ -3,23 +3,22 @@ import { Blurry } from "./BlurFix.style";
 import { spawn, vanish } from "src/functions/animation";
 
 interface props {
-    show: boolean;
-    onClick: () => void;
+  show: boolean;
+  onClick: () => void;
 }
 
 const TRANSITION_PERIOD = 0.25;
 
-export default function BlurFix({show, onClick}: props){
+export default function BlurFix({ show, onClick }: props) {
+  const blurRef = useRef(null);
 
-    const blurRef = useRef(null);
+  useLayoutEffect(() => {
+    show
+      ? spawn(blurRef.current, TRANSITION_PERIOD)
+      : vanish(blurRef.current, TRANSITION_PERIOD);
+  }, [show]);
 
-    useLayoutEffect(() => {
-        show
-        ? spawn(blurRef.current, TRANSITION_PERIOD)
-        : vanish(blurRef.current, TRANSITION_PERIOD);
-    }, [show]);
-
-    return <Blurry ref={blurRef} onClick={onClick}/>
+  return <Blurry ref={blurRef} onClick={onClick} />;
 }
 
 /* TODO

@@ -19,7 +19,7 @@
       "src/*": ["./src/*"],
       "assets/*": ["./src/assets/*"],
       "scenes/*": ["./src/scenes/*"],
-      "components/*": ["./src/components/*"],
+      "components/*": ["./src/components/*"]
     }
   },
   "include": ["src"],

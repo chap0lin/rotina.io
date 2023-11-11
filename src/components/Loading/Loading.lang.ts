@@ -1,18 +1,17 @@
 import { languageOption } from "src/types";
 
 type textTypes = {
-    loading: string;
-}
+  loading: string;
+};
 
 const texts = new Map<languageOption, textTypes>();
 
-texts.set('pt-br', {
-    loading: "Um momento... Segura aí!",
-})
+texts.set("pt-br", {
+  loading: "Um momento... Segura aí!",
+});
 
-texts.set('en-us', {
-    loading: "Loading... Hang on!",
-})
+texts.set("en-us", {
+  loading: "Loading... Hang on!",
+});
 
 export { texts };
-

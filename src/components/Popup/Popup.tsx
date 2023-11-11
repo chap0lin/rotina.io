@@ -1,13 +1,22 @@
-import { useEffect, useRef } from 'react';
-import { X, CheckCircle, AlertTriangle, XCircle } from 'react-feather';
-import { colors } from 'src/colors';
-import cookieIcon from './assets/cookie.png';
-import gsap from 'gsap';
-import { BottomContainer, Cookie, Description, Header, PopupContainer, Title, TopContainer, WarningDescription } from './Popup.style';
+import { useEffect, useRef } from "react";
+import { X, CheckCircle, AlertTriangle, XCircle } from "react-feather";
+import { colors } from "src/colors";
+import cookieIcon from "./assets/cookie.png";
+import gsap from "gsap";
+import {
+  BottomContainer,
+  Cookie,
+  Description,
+  Header,
+  PopupContainer,
+  Title,
+  TopContainer,
+  WarningDescription,
+} from "./Popup.style";
 
 interface PopupProps {
-  type: 'info' | 'warning' | 'cookies';
-  warningType?: 'success' | 'alert' | 'failure';
+  type: "info" | "warning" | "cookies";
+  warningType?: "success" | "alert" | "failure";
   height?: number;
   title?: string;
   description: JSX.Element | string;
@@ -47,13 +56,13 @@ export default function Popup({
         scale: 1,
         top: 85,
         duration: 0.6,
-        ease: 'power2',
+        ease: "power2",
       }
     : {
         scale: 1,
         bottom: 20,
         duration: 0.6,
-        ease: 'power2',
+        ease: "power2",
       };
 
   const hideProps = comesFromTop
@@ -61,26 +70,26 @@ export default function Popup({
         scale: 0,
         top: -280,
         duration: 0.6,
-        ease: 'power2',
+        ease: "power2",
       }
     : {
         scale: 0,
         bottom: -280,
         duration: 0.6,
-        ease: 'power2',
+        ease: "power2",
       };
 
   const releasePopup = () => {
     let ref = infoRef;
-    if (type === 'warning') ref = warningRef;
-    if (type === 'cookies') ref = cookieRef;
+    if (type === "warning") ref = warningRef;
+    if (type === "cookies") ref = cookieRef;
     gsap.to(ref.current, releaseProps);
   };
 
   const hidePopup = () => {
     let ref = infoRef;
-    if (type === 'warning') ref = warningRef;
-    if (type === 'cookies') ref = cookieRef;
+    if (type === "warning") ref = warningRef;
+    if (type === "cookies") ref = cookieRef;
     gsap.to(ref.current, hideProps);
   };
 
@@ -93,28 +102,49 @@ export default function Popup({
   }, [show]);
 
   const popupStyle = {
-    height: height ? `${height}px` : 'auto',
+    height: height ? `${height}px` : "auto",
     backgroundColor: backgroundColor ? backgroundColor : colors.white,
-    border: border ? border : 'none',
-    paddingTop: (exit || title)? '20px' : 0,
+    border: border ? border : "none",
+    paddingTop: exit || title ? "20px" : 0,
     opacity: 0.95,
   };
 
   const getIcon = () => {
     switch (warningType) {
-      case 'success':
-        return <CheckCircle color={iconColor?? colors.lime} width={30} height={30} style={{flexShrink: 0}}/>;
-      case 'alert':
-        return <AlertTriangle color={iconColor?? colors.gold} width={30} height={30} style={{flexShrink: 0}}/>;
-      case 'failure':
-        return <XCircle color={iconColor?? colors.red} width={30} height={30} style={{flexShrink: 0}}/>;
+      case "success":
+        return (
+          <CheckCircle
+            color={iconColor ?? colors.lime}
+            width={30}
+            height={30}
+            style={{ flexShrink: 0 }}
+          />
+        );
+      case "alert":
+        return (
+          <AlertTriangle
+            color={iconColor ?? colors.gold}
+            width={30}
+            height={30}
+            style={{ flexShrink: 0 }}
+          />
+        );
+      case "failure":
+        return (
+          <XCircle
+            color={iconColor ?? colors.red}
+            width={30}
+            height={30}
+            style={{ flexShrink: 0 }}
+          />
+        );
       default:
         return null;
     }
   };
 
   switch (type) {
-    case 'cookies':
+    case "cookies":
       return (
         <BottomContainer ref={cookieRef}>
           <PopupContainer>
@@ -129,7 +159,7 @@ export default function Popup({
           </PopupContainer>
         </BottomContainer>
       );
-    case 'warning':
+    case "warning":
       return (
         <BottomContainer ref={warningRef}>
           <PopupContainer style={popupStyle}>
@@ -142,19 +172,17 @@ export default function Popup({
         </BottomContainer>
       );
     default:
-      const Container = comesFromTop? TopContainer : BottomContainer;
+      const Container = comesFromTop ? TopContainer : BottomContainer;
 
       return (
-        <Container
-          ref={infoRef}>
+        <Container ref={infoRef}>
           <PopupContainer style={popupStyle}>
             <Header>
-              <Title
-                style={titleColor ? { color: titleColor } : {}}>
+              <Title style={titleColor ? { color: titleColor } : {}}>
                 {title}
               </Title>
               <X
-                color={exitIconColor?? colors.black}
+                color={exitIconColor ?? colors.black}
                 width="24px"
                 strokeWidth="5px"
                 onClick={exit}
