@@ -48,11 +48,11 @@ export const HintGsap = styled(Gsap)`
 export const HintText = styled(DiscreteText)`
     cursor: pointer;
     width: 100vw;
-    max-width: 320px;
+    max-width: 305px;
     text-align: center;
     @media(max-height: 750px){
         margin-top: 0;
-        max-width: 280px;
+        max-width: 270px;
     }
 `;
 

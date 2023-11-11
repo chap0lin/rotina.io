@@ -75,7 +75,7 @@ texts.set("en-us", {
     emailAlreadyExists: "E-mail already in use. Please insert a new one.",
     emailNotRegistered: "There's no account associated with this e-mail.",
     willSendSignUpEmail: `Almost there! We"ve just sent an activation link to the given e-mail address. Access and click to complete your registration!`,
-    willSendRecoverEmail: `Great! We"ve just sent a recovery link to the given e-mail.`,
+    willSendRecoverEmail: `Great! We've just sent a recovery link to the given e-mail.`,
     somethingWentWrong: "Something went wrong. Please try again later.",
     goBack: "back to start",
 })

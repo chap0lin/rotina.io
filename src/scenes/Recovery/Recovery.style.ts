@@ -37,11 +37,11 @@ export const HintText = styled.p`
     font-size: 16px;
     color: ${colors.black};
     width: 100vw;
-    max-width: 320px;
+    max-width: 310px;
     text-align: center;
     @media(max-height: 750px){
         margin-top: 0;
-        max-width: 280px;
+        max-width: 270px;
     }
 `;
 

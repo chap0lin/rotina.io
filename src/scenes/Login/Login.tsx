@@ -320,11 +320,18 @@ export default function Login(){
                         </Gsap>
                     </Credentials>
                     <HintGsap ref={hintRef}>
-                        <HintText onClick={() => {
-                            (!waitingForServer) &&
-                            (screen === "sign-in") &&
-                            setScreen("forgot-password")
-                        }}>
+                        <HintText
+                            onClick={() => {
+                                (!waitingForServer) &&
+                                (screen === "sign-in") &&
+                                setScreen("forgot-password")
+                            }}
+                            style={
+                                (screen.includes("sent"))
+                                ? {maxWidth: (innerHeight < 750? "290px" : "320px")}
+                                : null
+                            }
+                        >
                             {hintText}
                         </HintText>
                     </HintGsap>

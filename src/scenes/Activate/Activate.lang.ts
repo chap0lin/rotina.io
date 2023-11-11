@@ -31,7 +31,7 @@ texts.set('en-us', {
     welcome: "Welcome aboard!",
     goBack: "go back",
     johnDoe: "John Doe",
-    activationWasSuccessful: "Your account has been successfuly created and is now ready to go! Try signing in now!",
+    activationWasSuccessful: "Your Routine.io account has been created and is now ready to go! Try to sign in now!",
     somethingWentWrong: "Looks like something went wrong. Maybe try again later?"
 })
 
