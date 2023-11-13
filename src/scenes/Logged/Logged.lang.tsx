@@ -6,7 +6,7 @@ type textTypes = {
   placeholders: string[];
   happeningNow: string;
   whatsNext: string;
-  errorFetchingActivities: string;
+  errorFetchingData: string;
   somethingWentWrong: string;
 };
 
@@ -36,8 +36,8 @@ texts.set("pt-br", {
   whatsNext: "A seguir",
   somethingWentWrong:
     "Parece que alguma coisa deu errado. E se você tentar mais tarde?",
-  errorFetchingActivities:
-    "Sentimos muito, mas não foi possível obter suas atividades no momento. E se você tentar mais tarde?",
+  errorFetchingData:
+    "Sentimos muito, mas não foi possível obter suas informações no momento. E se você tentar mais tarde?",
 });
 
 texts.set("en-us", {
@@ -63,8 +63,8 @@ texts.set("en-us", {
   happeningNow: "Happening now",
   whatsNext: "What's next",
   somethingWentWrong: "Looks like something went wrong. Maybe try again later?",
-  errorFetchingActivities:
-    "We're sorry, but it we couldn't fetch your activities right now. Maybe try again later?",
+  errorFetchingData:
+    "We're sorry, but it we couldn't fetch your data right now. Maybe try again later?",
 });
 
 export { texts };

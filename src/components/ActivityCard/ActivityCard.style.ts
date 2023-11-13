@@ -78,7 +78,7 @@ export const WhenAndWhere = styled.div`
 `;
 
 export const When = styled(Text)`
-  width: auto;
+  width: 50%;
   font-size: 16px;
   font-weight: 600;
   @media (max-height: 750px) {
@@ -87,9 +87,10 @@ export const When = styled(Text)`
 `;
 
 export const Where = styled(Text)`
-  width: auto;
+  text-align: right;
   font-size: 16px;
   font-weight: 400;
+  width: 50%;
   @media (max-height: 750px) {
     font-size: 15px;
   }

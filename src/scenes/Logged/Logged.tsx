@@ -22,7 +22,7 @@ import {
 
 type serverReplyType =
   | "SUCCESS"
-  | "SUCCESS_ACTIVITIES"
+  | "SUCCESS_DATA"
   | "ERROR"
   | "ERROR_NO_REGISTERED_USER"
   | "ERROR_MISSING_CREDENTIALS";
@@ -31,8 +31,11 @@ export default function LoggedIn() {
   const navigate = useNavigate();
   const { language, innerHeight, user, showPopup } = useGlobalContext();
   const [hour, minute] = useTime();
-  const [activities, setActivities] = useState<activityType[]>([]);
+  const [todoList, setTodoList] = useState<activityType[]>([]);
+  const [activityList, setActivityList] = useState<activityType[]>(() => []);
+  const [shoppingList, setShoppingList] = useState<activityType[]>(() => []);
   const [happeningNow, setHappeningNow] = useState<activityType | undefined>();
+  const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>();
   const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
   const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(
     () => false
@@ -40,13 +43,12 @@ export default function LoggedIn() {
 
   const date = new Date();
   const dayIndex = date.getDay();
-  const mainContentRef = useRef(null);
   const loadingRef = useRef(null);
-  const loggedTexts = texts.get(language);
-
   const nowTitleRef = useRef(null);
   const laterTitleRef = useRef(null);
+  const mainContentRef = useRef(null);
   const laterSectionRef = useRef(null);
+  const loggedTexts = texts.get(language);
 
   const getRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
@@ -62,14 +64,16 @@ export default function LoggedIn() {
       });
   };
 
-  const getActivitiesFromServerReply = (reply: serverReplyType) => {
-    const stringifiedActivities = reply.split("==").at(1);
-    if (!stringifiedActivities) {
-      showPopup(loggedTexts.errorFetchingActivities);
+  const getDataFromServerReply = (reply: serverReplyType) => {
+    const stringifiedData = reply.split("==");
+    if (!stringifiedData || stringifiedData.length < 4) {
+      showPopup(loggedTexts.errorFetchingData);
       return;
     }
-    setActivities(JSON.parse(stringifiedActivities));
-    setReceivedFirstContent(true);
+    setActivityList(JSON.parse(stringifiedData.at(1)));
+    setTodoList(JSON.parse(stringifiedData.at(2)));
+    setShoppingList(JSON.parse(stringifiedData.at(3)));
+    setTimeout(() => setReceivedFirstContent(true), 2000);
   };
 
   const handleServerReply = (reply: serverReplyType) => {
@@ -80,8 +84,8 @@ export default function LoggedIn() {
         showPopup(loggedTexts.somethingWentWrong);
         break;
       default:
-        if (reply.includes("SUCCESS_ACTIVITIES")) {
-          getActivitiesFromServerReply(reply);
+        if (reply.includes("SUCCESS_DATA")) {
+          getDataFromServerReply(reply);
         }
         break;
     }
@@ -91,13 +95,13 @@ export default function LoggedIn() {
     if (!user) {
       navigate("/login");
     } else {
-      getRequest("/get-activities", { ...user });
+      getRequest("/get-user-data", { ...user });
     }
   }, []);
 
   useEffect(() => {
     setHappeningNow(
-      activities
+      activityList
         .filter((act) => {
           return (
             isBefore(act.startsAt, { hour, minute }) &&
@@ -106,7 +110,14 @@ export default function LoggedIn() {
         })
         .at(0)
     );
-  }, [activities, hour, minute]);
+    setHappeningLater(
+      activityList.filter((act) =>
+        isAfter(act.startsAt, { hour, minute }, true)
+      ).sort((a, b) => (
+        (a.startsAt.hour*60 + a.startsAt.minute) - (b.startsAt.hour*60 + a.startsAt.minute)
+      ))
+    );
+  }, [activityList, hour, minute]);
 
   useEffect(() => {
     const dy = innerHeight > 750 ? -50 : -30;
@@ -151,14 +162,17 @@ export default function LoggedIn() {
           <HappeningNow
             show={receivedFirstContent}
             happeningNow={happeningNow}
-            onNotesClick={() => null}
+            onNotesClick={() => showPopup("//TODO")}
           />
         </Section>
         <Section ref={laterSectionRef}>
           <SectionTitle ref={laterTitleRef}>
             {loggedTexts.whatsNext}
           </SectionTitle>
-          <HappeningLater show={receivedFirstContent} activities={activities} />
+          <HappeningLater
+            show={receivedFirstContent}
+            happeningLater={happeningLater}
+          />
         </Section>
       </MainContent>
       <RoundButton
