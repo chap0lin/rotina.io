@@ -2,6 +2,8 @@
 
 Repositório do front-end do app Rotina.io (web app)
 
+[JIRA BOARD](https://chap0lin.atlassian.net/jira/software/projects/ROTINA/boards/7)
+
 ## Setup inicial
 
 Versão do Node.js: 18.17.0
