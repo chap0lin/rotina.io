@@ -13,6 +13,7 @@ import { Popup } from "src/components";
 interface GlobalContextValue {
   keyPressed: string;
   innerHeight: number;
+  innerWidth: number;
   user: userType | null;
   language: languageOption;
   setUser: React.Dispatch<React.SetStateAction<userType>>;
@@ -27,6 +28,7 @@ interface GlobalProviderProps {
 const initialValues: GlobalContextValue = {
   keyPressed: "",
   innerHeight: 768,
+  innerWidth: 1366,
   user: null,
   language: "pt-br",
   setUser: () => null,
@@ -47,6 +49,9 @@ export function useGlobalContext() {
 
 export default function GlobalProvider(props: GlobalProviderProps) {
   const [language, setLanguage] = useState<languageOption>(() => "pt-br");
+  const [innerWidth, setInnerWidth] = useState<number>(
+    () => window.innerWidth
+  );
   const [innerHeight, setInnerHeight] = useState<number>(
     () => window.innerHeight
   );
@@ -90,6 +95,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
   const value: GlobalContextValue = {
     keyPressed,
+    innerWidth,
     innerHeight,
     user,
     language,

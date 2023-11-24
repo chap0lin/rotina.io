@@ -2,7 +2,6 @@
 
 export const isEmailValid = (email: string) => {
   const regex = /\S+@\S+\.\S+/;
-  console.log(regex.test(email));
   return regex.test(email);
 };
 
