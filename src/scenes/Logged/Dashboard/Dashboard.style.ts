@@ -97,7 +97,3 @@ export const SectionTitle = styled(Text)`
     font-size: 18px;
   }
 `;
-
-export const Snap = styled.div`
-  scroll-snap-align: start;
-`;

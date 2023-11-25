@@ -4,7 +4,7 @@ import { texts } from "./HappeningLater.lang";
 import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { EmptyFooter, Section } from "./HappeningLater.style";
+import { EmptyFooter, Section, Snap } from "./HappeningLater.style";
 
 interface props {
   show: boolean;
@@ -27,12 +27,16 @@ export default function HappeningLater({ show, happeningLater }: props) {
   return (
     <Section style={{ height: innerHeight / 3 }} ref={sectionRef}>
       {happeningLater && happeningLater.map((act, index) => (
-        <ActivityCard {...act} key={index} />
+        <Snap>
+          <ActivityCard {...act} key={index} />
+        </Snap>
       ))}
-      <ActivityCard
-        highlighted={false}
-        placeholder={happeningTexts.createActivity}
-      />
+      <Snap>
+        <ActivityCard
+          highlighted={false}
+          placeholder={happeningTexts.createActivity}
+        />
+      </Snap>
       <EmptyFooter style={{ height: innerHeight / 6 }} />
     </Section>
   );

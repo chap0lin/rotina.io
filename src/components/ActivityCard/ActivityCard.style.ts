@@ -15,7 +15,6 @@ export const Container = styled.div`
   width: 85%;
   height: 140px;
   padding: 10px;
-  scroll-snap-align: start;
   @media (max-height: 750px) {
     height: 110px;
   }

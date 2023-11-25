@@ -3,6 +3,8 @@ import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { useNavigate } from "react-router-dom";
 import { activityType } from "src/types";
+import { emptyWeek } from "src/constants";
+import { useTime } from "src/hooks/time";
 import { texts } from "./Logged.lang";
 import { api } from "src/services/api";
 import { Background, Header, Loading } from "src/components";
@@ -23,10 +25,12 @@ type screens = "dashboard" | "activities" | "new-activity" ;
 export default function Logged() {
   const navigate = useNavigate();
   const { language, user, innerWidth, showPopup } = useGlobalContext();
-  const [todoList, setTodoList] = useState<string[]>([]);
+  const [ hour ] = useTime();
   const [screen, setScreen] = useState<screens>(() => "dashboard");
-  const [activityList, setActivityList] = useState<activityType[]>(() => []);
+  const [dayIndex, setDayIndex] = useState<number>(0);
+  const [todoList, setTodoList] = useState<string[]>([]);
   const [shoppingList, setShoppingList] = useState<string[]>(() => []);
+  const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => emptyWeek);
   const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
   const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(
     () => false
@@ -37,6 +41,8 @@ export default function Logged() {
   const activitiesRef = useRef(null);
   const newActivityRef = useRef(null);
   const loggedTexts = texts.get(language);
+
+   
 
   const getRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
@@ -58,7 +64,7 @@ export default function Logged() {
       showPopup(loggedTexts.errorFetchingData);
       return;
     }
-    setActivityList(JSON.parse(stringifiedData.at(1)));
+    setWeekActivities(JSON.parse(stringifiedData.at(1)));
     setTodoList(JSON.parse(stringifiedData.at(2)));
     setShoppingList(JSON.parse(stringifiedData.at(3)));
     setTimeout(() => setReceivedFirstContent(true), 2000);
@@ -80,17 +86,22 @@ export default function Logged() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-        setReceivedFirstContent(true);
-    }, 2000);
-
-    // if (!user) {                                         //TODO get back to this when dashboard component ajustments are done
-    //   navigate("/login");
-    // } else {
-    //   getRequest("/get-user-data", { ...user });
-    // }
+    if (!user) {                                         
+      navigate("/login");
+    } else {
+      getRequest("/get-user-data", { ...user });
+    }
   }, []);
 
+  useEffect(() => {
+    const date = new Date();
+    setDayIndex((date.getDay() + 6) % 7);       //here, 0 equals monday and 6 equals sunday. Fuck the system
+  }, [hour]);
+
+  useLayoutEffect(() => {
+    spawnAndMove(dashboardRef.current, {x: 0});
+    moveAndVanish([activitiesRef.current, newActivityRef.current], {x: 1.4 * innerWidth});
+  }, []);
 
   useLayoutEffect(() => {
     if (!receivedFirstContent) {
@@ -99,12 +110,6 @@ export default function Logged() {
       vanish(loadingRef.current, 1);
     }
   }, [receivedFirstContent]);
-
-
-  useLayoutEffect(() => {
-    spawnAndMove(dashboardRef.current, {x: 0});
-    moveAndVanish([activitiesRef.current, newActivityRef.current], {x: 1.4 * innerWidth});
-  }, []);
 
   useLayoutEffect(()=> {
     switch(screen){
@@ -136,15 +141,19 @@ export default function Logged() {
       <BigContainer>
         <SmallContainer ref={dashboardRef}>
             <Dashboard
+                todayIndex={dayIndex}
                 show={receivedFirstContent}
-                activityList={activityList}
+                weekActivities={weekActivities}
                 shoppingList={shoppingList}
                 todoList={todoList}
                 onAddbuttonClick={() => setScreen("activities")}
             />
         </SmallContainer>
         <SmallContainer ref={activitiesRef}>
-            <Activities/>
+            <Activities
+              todayIndex={dayIndex}
+              weekActivities={weekActivities}
+            />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
             <NewActivity/>

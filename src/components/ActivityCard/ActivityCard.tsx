@@ -22,6 +22,7 @@ interface props {
   color?: string;
   highlighted?: boolean;
   placeholder?: string | string[];
+  noSnap?: boolean;
 }
 
 export default function ActivityCard({

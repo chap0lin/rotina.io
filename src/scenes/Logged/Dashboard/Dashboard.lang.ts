@@ -13,13 +13,13 @@ const texts = new Map<languageOption, textTypes>();
 texts.set("pt-br", {
   todayIs: "Hoje é",
   days: [
-    "Domingo!",
     "Segunda!",
     "Terça!",
     "Quarta!",
     "Quinta!",
     "Sexta!",
     "Sábado!",
+    "Domingo!",
   ],
   placeholders: [
     "A vida é uma montanha-russa e nós somos os gritos.",
@@ -37,13 +37,13 @@ texts.set("pt-br", {
 texts.set("en-us", {
   todayIs: "Today is",
   days: [
-    "Sunday!",
     "Monday!",
     "Tuesday!",
     "Wednesday!",
     "Thursday!",
     "Friday!",
     "Saturday!",
+    "Sunday!",
   ],
   placeholders: [
     "Life is a roller coaster and we are the screams.",

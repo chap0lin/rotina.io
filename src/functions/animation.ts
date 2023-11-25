@@ -158,6 +158,20 @@ export const scaleAndVanish = (
     });
 };
 
+export const scale = (
+  what: gsap.TweenTarget,
+  newScale: number,
+  duration?: number,
+  delay?: number
+) => {
+  gsap.to(what, {
+    scale: newScale,
+    ease: "back",
+    duration: duration ?? 0,
+    delay: delay ?? 0,
+  });
+};
+
 export const resize = (
   what: gsap.TweenTarget,
   newSize: sizeType,
@@ -186,10 +200,11 @@ export const reactToClick = (
       duration: duration ? duration / 2 : 0.5,
       delay: delay ?? 0,
     })
+    .call(onClick)
     .to(what, {
       rotate: 0,
       ease: "back",
       duration: duration ? duration / 2 : 0.5,
-    })
-    .call(onClick);
+    });
+    
 };

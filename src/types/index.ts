@@ -24,6 +24,11 @@ export type activityType = {
   color: string;
 };
 
+export type dayType = {
+  day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+  activities: activityType[];
+}
+
 export type coordinateType = {
   x?: number;
   y?: number;

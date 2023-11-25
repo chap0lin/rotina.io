@@ -19,3 +19,10 @@ export const Section = styled.div`
 export const EmptyFooter = styled.div`
   flex-shrink: 0;
 `;
+
+export const Snap = styled.div`
+  scroll-snap-align: start;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;

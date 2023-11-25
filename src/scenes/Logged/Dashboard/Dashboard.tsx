@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { move, resize, spawn, vanish } from "src/functions/animation";
-import { activityType } from "src/types";
+import { activityType, dayType } from "src/types";
 import { texts } from "./Dashboard.lang";
 import { useTime } from "src/hooks/time";
 import { isAfter, isBefore } from "src/functions/time";
@@ -18,21 +18,20 @@ import {
 } from "./Dashboard.style";
 
 interface props {
+  todayIndex: number;
   show: boolean;
-  activityList: activityType[],
+  weekActivities: activityType[][],
   todoList: string[],
   shoppingList: string[],
   onAddbuttonClick: () => void,
 }
 
-export default function Dashboard({show, activityList, todoList, shoppingList, onAddbuttonClick} : props) {
+export default function Dashboard({todayIndex, show, weekActivities, todoList, shoppingList, onAddbuttonClick} : props) {
   const { language, innerHeight, showPopup } = useGlobalContext();
   const [hour, minute] = useTime();
   const [happeningNow, setHappeningNow] = useState<activityType | undefined>();
   const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>();
 
-  const date = new Date();
-  const dayIndex = date.getDay();
   const nowTitleRef = useRef(null);
   const laterTitleRef = useRef(null);
   const mainContentRef = useRef(null);
@@ -41,6 +40,7 @@ export default function Dashboard({show, activityList, todoList, shoppingList, o
 
 
   useEffect(() => {
+    const activityList = weekActivities? weekActivities[todayIndex] : [];
     setHappeningNow(
       activityList
         .filter((act) => {
@@ -58,7 +58,7 @@ export default function Dashboard({show, activityList, todoList, shoppingList, o
         (a.startsAt.hour*60 + a.startsAt.minute) - (b.startsAt.hour*60 + a.startsAt.minute)
       ))
     );
-  }, [activityList, hour, minute]);
+  }, [weekActivities, hour, minute]);
 
   useEffect(() => {
     const dy = innerHeight > 750 ? -50 : -30;
@@ -89,9 +89,9 @@ export default function Dashboard({show, activityList, todoList, shoppingList, o
           <BigTitle>
             {loggedTexts.todayIs}
             &nbsp;
-            <BigBold>{loggedTexts.days[dayIndex]}</BigBold>
+            <BigBold>{loggedTexts.days[todayIndex]}</BigBold>
           </BigTitle>
-          <SubTitle>{loggedTexts.placeholders[dayIndex]}</SubTitle>
+          <SubTitle>{loggedTexts.placeholders[todayIndex]}</SubTitle>
         </TopTexts>
         <Section style={{ height: innerHeight / 3 }}>
           <SectionTitle ref={nowTitleRef}>
