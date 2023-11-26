@@ -1,11 +1,11 @@
 import { activityType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { texts } from "./Activities.lang";
-import ButtonBar from "./components/ButtonBar/ButtonBar";
-import DayViewer from "./components/DayViewer";
 import { useState } from "react";
 import { areActivitiesEqual } from "src/functions";
-import { Background, ButtonBarContainer, Hint, MainContainer } from "./Activities.style";
+import ButtonBar from "./components/ButtonBar/ButtonBar";
+import DayViewer from "./components/DayViewer";
+import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
 
 interface props {
     todayIndex: number;
@@ -20,7 +20,7 @@ export default function Activities({todayIndex, weekActivities}: props){
     const onActivitySelect = (selected: activityType) => {
         setSelectedActivity((prev) => (
             areActivitiesEqual(prev, selected)? null : selected
-        ))
+        ));
     }
 
     const deselectActivities = () => {
@@ -32,27 +32,27 @@ export default function Activities({todayIndex, weekActivities}: props){
             <Hint>
                 {activitiesTexts.manageActivities}
             </Hint>
-            <MainContainer>
+            <Carousel onScroll={deselectActivities}>
+                <CarouselEdge />
                 {weekActivities.map((dayActivities, index) => (
                     <DayViewer
                         key={index}
+                        activities={dayActivities}
                         isToday={todayIndex === index}
                         day={activitiesTexts.days.at(index)}
-                        activities={dayActivities}
                         selectedActivity={selectedActivity}
                         onActivitySelect={onActivitySelect}
                     />
                 ))}
-            </MainContainer>
+                <CarouselEdge />
+            </Carousel>
             <ButtonBarContainer>
                 <ButtonBar 
                     activitySelected={!!selectedActivity}
-                    onLeftArrowClick={() => null}
-                    onAcceptClick={deselectActivities}
-                    onAddClick={() => null}   
+                    onAcceptClick={deselectActivities}  
                     onEditClick={() => null}
                     onDeleteClick={() => null}
-                    onRightArrowClick={() => null}
+                    onAddClick={() => null}
                 />
             </ButtonBarContainer>
         </Background>

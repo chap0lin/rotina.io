@@ -7,9 +7,10 @@ const Full = styled.div`
 `;
 
 export const OuterSpacer = styled(Full)`
-    padding: 0 40px;
     flex-shrink: 0;
     scroll-snap-align: center;
+    display: flex;
+    justify-content: center;
 `;
 
 export const Container = styled(Full)`
@@ -40,7 +41,7 @@ export const Badge = styled.p`
     min-width: 60px;
     border-radius: 20px 20px 5px 20px;
     color: ${colors.white};
-    background: ${colors.orange};
+    background: ${colors.acqua};
     position: absolute;
     right: 10px;
     display: flex;
@@ -72,4 +73,3 @@ export const ActivityContainer = styled.div`
 export const InnerSpacer = styled(Full)`
     flex-shrink: 0;
 `;
-

@@ -15,6 +15,7 @@ export const Container = styled.div`
   width: 85%;
   height: 140px;
   padding: 10px;
+  transition: background 0.25s;
   @media (max-height: 750px) {
     height: 110px;
   }

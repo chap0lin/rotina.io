@@ -1,10 +1,8 @@
-import { colors } from "src/colors";
 import { activityType } from "src/types";
-import { ActivityCard, Wave } from "src/components";
+import { ActivityCard, Button } from "src/components";
 import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Activities, ActivityContainer, Badge, Container, InnerSpacer, OuterSpacer, Title, TitleContainer } from "./DayViewer.style";
-
 interface props {
     day: string,
     isToday: boolean,
@@ -14,9 +12,11 @@ interface props {
 }
 
 export default function DayViewer({day, isToday, activities, selectedActivity, onActivitySelect}: props){
+    const { language, innerHeight, innerWidth } = useGlobalContext();
+
     return (
         <OuterSpacer>
-            <Container>
+            <Container style={{maxWidth: 0.8 * innerWidth}}>
                 <TitleContainer>
                     <Title>
                         {day} 
@@ -27,7 +27,7 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                         </Badge>
                     }
                 </TitleContainer>
-                <Activities style={{height: 400}}>
+                <Activities style={{height: (innerHeight > 750)? 450 : 400}}>
                     {activities.map((activity, index) => (
                         <ActivityContainer key={index} onClick={() => onActivitySelect(activity)}>
                             <ActivityCard
@@ -36,7 +36,7 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                             />
                         </ActivityContainer>
                     ))}
-                    <InnerSpacer style={{height: 300}}/>
+                    <InnerSpacer style={{height: (innerHeight > 750)? 320 : 300}}/>
                 </Activities>
             </Container>
         </OuterSpacer>

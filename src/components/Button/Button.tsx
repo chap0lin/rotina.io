@@ -13,6 +13,7 @@ interface props {
   height?: number | string;
   disabled?: boolean;
   loading?: boolean;
+  border?: string;
   borderRadius?: number | string;
   padding?: number | string;
 }
@@ -26,6 +27,7 @@ export default function Button({
   height,
   disabled,
   loading,
+  border,
   borderRadius,
   padding,
 }: props) {
@@ -36,6 +38,7 @@ export default function Button({
     height: height ?? "50px",
     color: color ?? colors.white,
     backgroundColor: background ?? colors.black,
+    border: border?? "none",
     borderRadius: borderRadius ?? "20px",
     padding: padding ?? "10px 20px",
   };

@@ -23,12 +23,22 @@ export const Hint = styled.p`
     display: flex;
 `;
 
-export const MainContainer = styled(Full)`
+export const Carousel = styled(Full)`
     display: flex;
+    gap: 20px;
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
     ::-webkit-scrollbar {
         display: none;
+    }
+`;
+
+export const CarouselEdge = styled.div`
+    width: 40px,
+    height: 100%,
+    flexShrink: 0,
+    @media(max-height: 750px){
+        width: 32px;
     }
 `;
 
