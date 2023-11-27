@@ -1,7 +1,7 @@
 import { activityType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { texts } from "./Activities.lang";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { areActivitiesEqual } from "src/functions";
 import ButtonBar from "./components/ButtonBar/ButtonBar";
 import DayViewer from "./components/DayViewer";
@@ -17,14 +17,23 @@ export default function Activities({todayIndex, weekActivities}: props){
     const activitiesTexts = texts.get(language);
     const [selectedActivity, setSelectedActivity] = useState<activityType | null>(() => null);
 
+    const selectedActivityScroll = useRef<number>(0);
+    const carouselRef = useRef(null);
+
+    const deselectActivities = () => {
+        setSelectedActivity(null);
+    }
+
     const onActivitySelect = (selected: activityType) => {
+        selectedActivityScroll.current = carouselRef.current.scrollLeft;
         setSelectedActivity((prev) => (
             areActivitiesEqual(prev, selected)? null : selected
         ));
     }
 
-    const deselectActivities = () => {
-        setSelectedActivity(null);
+    const onCarouselScroll = () => {
+        const delta = selectedActivityScroll.current - carouselRef.current.scrollLeft; 
+        (Math.abs(delta) > (innerWidth)/2) && deselectActivities();
     }
 
     return (
@@ -32,7 +41,7 @@ export default function Activities({todayIndex, weekActivities}: props){
             <Hint>
                 {activitiesTexts.manageActivities}
             </Hint>
-            <Carousel onScroll={deselectActivities}>
+            <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
                 <CarouselEdge />
                 {weekActivities.map((dayActivities, index) => (
                     <DayViewer
