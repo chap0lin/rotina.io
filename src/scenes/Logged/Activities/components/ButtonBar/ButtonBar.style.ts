@@ -7,7 +7,6 @@ export const ButtonsContainer = styled.div`
     justify-content: center;
     width: 100%;
     height: 60px;
-    padding: 0 10px;
     margin-top: 10px;
     border-radius: 20px;
     position: relative;
@@ -22,7 +21,6 @@ export const Gsap = styled.div`
     align-items: center;
     position: absolute;
     cursor: pointer;
-    top: 0;
     left: 0;
 `;
 
@@ -30,18 +28,27 @@ export const AddButton = styled(Gsap)`
     left: unset;
     right: 0;
     height: 50px;
-    margin: 5px 0;
     background: black;
     border-radius: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
+    @media(max-height: 750px){
+        height: 43px;
+    }
 `;
 
 export const AddText = styled.p`
     color: ${colors.white};
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
+    line-height: 14px;
+    @media(max-height: 750px){
+        font-size: 16px;
+    }
 `;
 
 export const AddIcon = styled.div``;

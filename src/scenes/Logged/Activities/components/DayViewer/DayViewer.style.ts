@@ -18,6 +18,7 @@ export const Container = styled(Full)`
     border-radius: 20px;
     border: 1px solid ${colors.black};
     overflow: hidden;
+    max-width: calc(100% - 80px);
 `;
 
 export const TitleContainer = styled.div`
@@ -28,12 +29,18 @@ export const TitleContainer = styled.div`
     justify-content: center;
     background: ${colors.black};
     position: relative;
+    @media(max-height: 750px){
+        height: 50px;
+    }
 `;
 
 export const Title = styled.p`
     font-size: 24px;
     font-weight: bold;
     color: ${colors.white};
+    @media(max-height: 750px){
+        font-size: 22px;
+    }
 `;
 
 export const Badge = styled.p`

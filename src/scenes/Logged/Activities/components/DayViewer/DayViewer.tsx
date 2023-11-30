@@ -12,11 +12,11 @@ interface props {
 }
 
 export default function DayViewer({day, isToday, activities, selectedActivity, onActivitySelect}: props){
-    const { language, innerHeight, innerWidth } = useGlobalContext();
+    const { innerHeight } = useGlobalContext();
 
     return (
         <OuterSpacer>
-            <Container style={{maxWidth: 0.8 * innerWidth}}>
+            <Container>
                 <TitleContainer>
                     <Title>
                         {day} 
@@ -27,7 +27,7 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                         </Badge>
                     }
                 </TitleContainer>
-                <Activities style={{height: (innerHeight > 750)? 450 : 400}}>
+                <Activities style={{height: (innerHeight > 750)? 450 : 300}}>
                     {activities.map((activity, index) => (
                         <ActivityContainer key={index} onClick={() => onActivitySelect(activity)}>
                             <ActivityCard
@@ -36,7 +36,7 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                             />
                         </ActivityContainer>
                     ))}
-                    <InnerSpacer style={{height: (innerHeight > 750)? 320 : 300}}/>
+                    <InnerSpacer style={{height: (innerHeight > 750)? 320 : 280}}/>
                 </Activities>
             </Container>
         </OuterSpacer>

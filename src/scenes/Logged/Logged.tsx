@@ -1,17 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { Background, Header, Loading } from "src/components";
 import { useNavigate } from "react-router-dom";
 import { activityType } from "src/types";
 import { emptyWeek } from "src/constants";
 import { useTime } from "src/hooks/time";
 import { texts } from "./Logged.lang";
 import { api } from "src/services/api";
-import { Background, Header, Loading } from "src/components";
-import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
 import Dashboard from "./Dashboard";
 import Activities from "./Activities";
-import NewActivity from "./NewActivity";
+import ActivityDetails from "./ActivityDetails";
+import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
+import { areActivitiesEqual } from "src/functions";
 
 type serverReplyType =
   | "SUCCESS"
@@ -20,7 +21,7 @@ type serverReplyType =
   | "ERROR_NO_REGISTERED_USER"
   | "ERROR_MISSING_CREDENTIALS";
 
-type screens = "dashboard" | "activities" | "new-activity" ;
+type screens = "dashboard" | "activities" | "activity-details" ;
 
 export default function Logged() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function Logged() {
   const [todoList, setTodoList] = useState<string[]>([]);
   const [shoppingList, setShoppingList] = useState<string[]>(() => []);
   const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => emptyWeek);
+  const [editingActivity, setEditingActivity] = useState<activityType | null>(() => null);
   const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
   const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(
     () => false
@@ -42,7 +44,34 @@ export default function Logged() {
   const newActivityRef = useRef(null);
   const loggedTexts = texts.get(language);
 
-   
+  const goBack = () => {
+    setScreen(prev => {
+      switch(prev){
+        case "activity-details": return "activities";
+        case "activities": return "dashboard";
+        default: return prev;
+      }
+    });
+  }
+
+  const deleteSelectedActivity = (whichOne: activityType) => {
+    //TODO create a confirmation popup
+    for(let i = 0; i < weekActivities.length; i++){
+        const deleteIndex = weekActivities[i].findIndex(act => areActivitiesEqual(act, whichOne));
+        if(deleteIndex > -1){
+          const newWeek = [...weekActivities];
+          newWeek[i].splice(deleteIndex, 1);
+          setWeekActivities(newWeek);
+          //TODO send updated selection to server
+          return;
+        }
+    }
+}
+
+  const goToActivityDetails = (activity: activityType | null) => {
+    setEditingActivity(activity);
+    setScreen("activity-details");
+  }
 
   const getRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
@@ -122,7 +151,7 @@ export default function Logged() {
             spawnAndMove(activitiesRef.current, {x: 0}, 1);
             moveAndVanish(newActivityRef.current, {x: 1.4 * innerWidth}, 1);
         break;
-        case "new-activity":
+        case "activity-details":
             moveAndVanish(dashboardRef.current, {x: -1.4 * innerWidth}, 1);
             moveAndVanish(activitiesRef.current, {x: -1.4 * innerWidth}, 1);
             spawnAndMove(newActivityRef.current, {x: 0}, 1);
@@ -136,7 +165,7 @@ export default function Logged() {
         logo
         user
         show={receivedFirstContent}
-        arrow={screen === "dashboard" ? null : () => setScreen("dashboard")}
+        arrow={screen === "dashboard" ? null : goBack}
       />
       <BigContainer>
         <SmallContainer ref={dashboardRef}>
@@ -153,10 +182,12 @@ export default function Logged() {
             <Activities
               todayIndex={dayIndex}
               weekActivities={weekActivities}
+              onActivityDetailsClick={goToActivityDetails}
+              onActivityDeleteClick={deleteSelectedActivity}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
-            <NewActivity/>
+            <ActivityDetails currentlyEditing={editingActivity}/>
         </SmallContainer>
       </BigContainer>
       <Gsap ref={loadingRef}>

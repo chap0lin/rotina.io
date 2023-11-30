@@ -15,9 +15,13 @@ interface props {
     onDeleteClick: () => void;
 }
 
+const ANIMATION_DELAY = 1;
+
 export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, onEditClick, onDeleteClick}: props){
     const { language, innerHeight } = useGlobalContext();
-    const iconSize = (innerHeight > 750) ? 50 : 40; 
+    const iconSize = (innerHeight > 750) ? 50 : 43;
+    const iconSpacing = (innerHeight > 750)? 70 : 60;
+    const addButtonResize = (innerHeight > 750)? [150, 120] : [130, 100];
     const barTexts = texts.get(language);
 
     const addRef = useRef(null);
@@ -36,7 +40,7 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
 
     useEffect(() => {
         if(!activitySelected){
-            resize(addRef.current, {width: 150}, 1);
+            resize(addRef.current, {width: addButtonResize[0]}, ANIMATION_DELAY);
             fadeOut([
                 editRef.current,
                 acceptRef.current,
@@ -48,14 +52,14 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                 deleteRef.current,
             ], {x: 0}, 1);
         } else {
-            resize(addRef.current, {width: 120}, 1);
+            resize(addRef.current, {width: addButtonResize[1]}, ANIMATION_DELAY);
             fadeIn([
                 editRef.current,
                 acceptRef.current,
                 deleteRef.current,
             ], 0.5);
-            move(deleteRef.current, {x: 75}, 1);
-            move(editRef.current, {x: 150}, 1); 
+            move(deleteRef.current, {x: iconSpacing}, ANIMATION_DELAY);
+            move(editRef.current, {x: 2 * iconSpacing}, ANIMATION_DELAY); 
         }
     }, [activitySelected]);
 
@@ -69,7 +73,7 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                     <Plus
                         width={0.6 * iconSize}
                         height={0.6 * iconSize}
-                        strokeWidth={0.8}
+                        strokeWidth={1.4}
                         color={colors.white}
                     />
                 </AddIcon>

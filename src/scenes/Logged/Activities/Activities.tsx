@@ -1,8 +1,8 @@
-import { activityType } from "src/types";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { texts } from "./Activities.lang";
 import { useRef, useState } from "react";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { areActivitiesEqual } from "src/functions";
+import { activityType } from "src/types";
+import { texts } from "./Activities.lang";
 import ButtonBar from "./components/ButtonBar/ButtonBar";
 import DayViewer from "./components/DayViewer";
 import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
@@ -10,9 +10,11 @@ import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./
 interface props {
     todayIndex: number;
     weekActivities: activityType[][];
+    onActivityDeleteClick: (activity: activityType) => void;
+    onActivityDetailsClick: (currentActivity: activityType | null) => void;
 }
 
-export default function Activities({todayIndex, weekActivities}: props){
+export default function Activities({todayIndex, weekActivities, onActivityDeleteClick, onActivityDetailsClick}: props){
     const { language } = useGlobalContext();
     const activitiesTexts = texts.get(language);
     const [selectedActivity, setSelectedActivity] = useState<activityType | null>(() => null);
@@ -33,7 +35,7 @@ export default function Activities({todayIndex, weekActivities}: props){
 
     const onCarouselScroll = () => {
         const delta = selectedActivityScroll.current - carouselRef.current.scrollLeft; 
-        (Math.abs(delta) > (innerWidth)/2) && deselectActivities();
+        (Math.abs(delta) > (0.75 * innerWidth)) && deselectActivities();
     }
 
     return (
@@ -59,9 +61,9 @@ export default function Activities({todayIndex, weekActivities}: props){
                 <ButtonBar 
                     activitySelected={!!selectedActivity}
                     onAcceptClick={deselectActivities}  
-                    onEditClick={() => null}
-                    onDeleteClick={() => null}
-                    onAddClick={() => null}
+                    onDeleteClick={() => onActivityDeleteClick(selectedActivity)}
+                    onAddClick={() => onActivityDetailsClick(null)}
+                    onEditClick={() => onActivityDetailsClick(selectedActivity)}
                 />
             </ButtonBarContainer>
         </Background>

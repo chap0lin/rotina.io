@@ -21,6 +21,10 @@ export const Hint = styled.p`
     font-size: 20px;
     color: ${colors.black};
     display: flex;
+    @media(max-height: 750px){
+        font-size: 18px;
+        margin-top: 0;
+    }
 `;
 
 export const Carousel = styled(Full)`
