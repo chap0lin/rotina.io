@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Background, Header, Loading } from "src/components";
+import { areActivitiesEqual } from "src/functions";
 import { useNavigate } from "react-router-dom";
 import { activityType } from "src/types";
 import { emptyWeek } from "src/constants";
@@ -10,9 +11,8 @@ import { texts } from "./Logged.lang";
 import { api } from "src/services/api";
 import Dashboard from "./Dashboard";
 import Activities from "./Activities";
-import ActivityDetails from "./ActivityDetails";
+import ActivitySettings from "./ActivitySettings";
 import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
-import { areActivitiesEqual } from "src/functions";
 
 type serverReplyType =
   | "SUCCESS"
@@ -21,7 +21,7 @@ type serverReplyType =
   | "ERROR_NO_REGISTERED_USER"
   | "ERROR_MISSING_CREDENTIALS";
 
-type screens = "dashboard" | "activities" | "activity-details" ;
+type screens = "dashboard" | "activities" | "activity-settings" ;
 
 export default function Logged() {
   const navigate = useNavigate();
@@ -44,10 +44,19 @@ export default function Logged() {
   const newActivityRef = useRef(null);
   const loggedTexts = texts.get(language);
 
+  const getDefaultDay = () => {
+    for(let i = 0; i < 7; i++){
+      if(weekActivities[i].find(activity => (
+        areActivitiesEqual(activity, editingActivity))
+      )) return i;
+    }
+    return dayIndex;
+  }
+
   const goBack = () => {
     setScreen(prev => {
       switch(prev){
-        case "activity-details": return "activities";
+        case "activity-settings": return "activities";
         case "activities": return "dashboard";
         default: return prev;
       }
@@ -68,9 +77,9 @@ export default function Logged() {
     }
 }
 
-  const goToActivityDetails = (activity: activityType | null) => {
+  const goToActivitySettings = (activity: activityType | null) => {
     setEditingActivity(activity);
-    setScreen("activity-details");
+    setScreen("activity-settings");
   }
 
   const getRequest = (link: string, params: any, catchCall?: () => void) => {
@@ -151,7 +160,7 @@ export default function Logged() {
             spawnAndMove(activitiesRef.current, {x: 0}, 1);
             moveAndVanish(newActivityRef.current, {x: 1.4 * innerWidth}, 1);
         break;
-        case "activity-details":
+        case "activity-settings":
             moveAndVanish(dashboardRef.current, {x: -1.4 * innerWidth}, 1);
             moveAndVanish(activitiesRef.current, {x: -1.4 * innerWidth}, 1);
             spawnAndMove(newActivityRef.current, {x: 0}, 1);
@@ -182,12 +191,12 @@ export default function Logged() {
             <Activities
               todayIndex={dayIndex}
               weekActivities={weekActivities}
-              onActivityDetailsClick={goToActivityDetails}
+              onActivitySettingsClick={goToActivitySettings}
               onActivityDeleteClick={deleteSelectedActivity}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
-            <ActivityDetails currentlyEditing={editingActivity}/>
+            <ActivitySettings today={getDefaultDay()} currentlyEditing={editingActivity}/>
         </SmallContainer>
       </BigContainer>
       <Gsap ref={loadingRef}>

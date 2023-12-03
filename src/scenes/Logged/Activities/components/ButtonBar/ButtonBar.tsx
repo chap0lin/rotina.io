@@ -4,7 +4,7 @@ import { texts } from "./ButtonBar.lang";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Check, Edit2, Plus, XCircle } from "react-feather";
 import { fadeIn, fadeOut, move, reactToClick, resize } from "src/functions/animation";
-import CustomCircleIcon from "./components/CheckCircle2";
+import CustomCircleIcon from "../../../../../components/CustomCircleIcon";
 import { AddButton, AddIcon, AddText, ButtonsContainer, Gsap } from "./ButtonBar.style";
 
 interface props {

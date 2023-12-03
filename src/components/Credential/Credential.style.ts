@@ -4,7 +4,6 @@ import { colors } from "src/colors";
 export const Container = styled.div`
   width: 100vw;
   height: 40px;
-  border: 1px solid ${colors.grey};
   border-radius: 10px;
   padding: 0 10px;
   display: flex;

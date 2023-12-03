@@ -208,3 +208,17 @@ export const reactToClick = (
     });
     
 };
+
+export const rotate = (
+  what: gsap.TweenTarget,
+  angle: number,
+  duration?: number,
+  delay?: number
+) => {
+  gsap.to(what, {
+    rotate: angle,
+    ease: "back",
+    duration: duration ?? 0,
+    delay: delay ?? 0,
+  });
+}

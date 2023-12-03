@@ -11,10 +11,10 @@ interface props {
     todayIndex: number;
     weekActivities: activityType[][];
     onActivityDeleteClick: (activity: activityType) => void;
-    onActivityDetailsClick: (currentActivity: activityType | null) => void;
+    onActivitySettingsClick: (currentActivity: activityType | null) => void;
 }
 
-export default function Activities({todayIndex, weekActivities, onActivityDeleteClick, onActivityDetailsClick}: props){
+export default function Activities({todayIndex, weekActivities, onActivityDeleteClick, onActivitySettingsClick}: props){
     const { language } = useGlobalContext();
     const activitiesTexts = texts.get(language);
     const [selectedActivity, setSelectedActivity] = useState<activityType | null>(() => null);
@@ -24,6 +24,11 @@ export default function Activities({todayIndex, weekActivities, onActivityDelete
 
     const deselectActivities = () => {
         setSelectedActivity(null);
+    }
+
+    const newActivity = () => {
+        deselectActivities();
+        onActivitySettingsClick(null);
     }
 
     const onActivitySelect = (selected: activityType) => {
@@ -61,9 +66,9 @@ export default function Activities({todayIndex, weekActivities, onActivityDelete
                 <ButtonBar 
                     activitySelected={!!selectedActivity}
                     onAcceptClick={deselectActivities}  
+                    onAddClick={newActivity}
                     onDeleteClick={() => onActivityDeleteClick(selectedActivity)}
-                    onAddClick={() => onActivityDetailsClick(null)}
-                    onEditClick={() => onActivityDetailsClick(selectedActivity)}
+                    onEditClick={() => onActivitySettingsClick(selectedActivity)}
                 />
             </ButtonBarContainer>
         </Background>

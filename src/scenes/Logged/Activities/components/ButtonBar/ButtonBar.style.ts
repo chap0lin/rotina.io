@@ -46,6 +46,7 @@ export const AddText = styled.p`
     justify-content: center;
     font-size: 18px;
     line-height: 14px;
+    user-select: none;
     @media(max-height: 750px){
         font-size: 16px;
     }
