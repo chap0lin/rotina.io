@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { stringifyTime } from "src/functions/time";
-import { activityType } from "src/types";
+import { stringifyTime, parseTime, isEqual, isAfter } from "src/functions/time";
+import { activityType, timeType } from "src/types";
 import { colors } from "src/colors";
 import { texts } from "./ActivitySettings.lang";
 import Preview from "./components/Preview";
 import ColorOption from "./components/ColorOption";
-import { Background, ColorPalette, DayOption, Edit, Hint, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
+import { Background, ColorPalette, DayOption, Edit, Hint, HourInput, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
 
 interface props {
     currentlyEditing: activityType | null;
-    today: number;
+    getDay: (activity: activityType) => number;
+    checkConflicts: (day: number, activity: activityType) => activityType;
+    onConfirmClick: (day: number, activity: activityType) => void;
+    onDiscardClick: () => void;
 }
 
 const colorsAvailable = [
@@ -26,14 +29,15 @@ const colorsAvailable = [
 type whatType = {what: string};
 type whereType = {where: string};
 type whoType = {who: string};
-type startType = {start: string};
-type endType = {end: string};
+type startType = {startsAt: timeType};
+type endType = {endsAt: timeType};
 type colorType = {color: string};
 type propertyType = whatType | whereType | whoType | startType | endType | colorType;
 
-export default function ActivityDetails({today, currentlyEditing}: props){
+export default function ActivitySettings({currentlyEditing, getDay, checkConflicts, onConfirmClick, onDiscardClick}: props){
     const { language } = useGlobalContext();
     const [selectedDay, setSelectedDay] = useState<number>(() => 0);
+    const [timeCheckMessage, setTimeCheckMessage] = useState<string | null>(() => null);
     const [newActivity, setNewActivity] = useState<activityType>(() => ({...currentlyEditing}));
     const detailsTexts = texts.get(language); 
 
@@ -44,18 +48,48 @@ export default function ActivityDetails({today, currentlyEditing}: props){
     const startRef = useRef(null);
     const endRef = useRef(null);
 
-    const resetInputs = () => {
+    const resetAll = () => {
         whatRef.current.value = "";
         whoRef.current.value = "";
         whereRef.current.value = "";
-        whenRef.current.value = today;
-        startRef.current.value = "00:00";
-        endRef.current.value = "00:00";
+        whenRef.current.value = 0;
+        startRef.current.value = "12:00";
+        endRef.current.value = "14:00";
+        
+        setNewActivity({...detailsTexts.exampleActivity});
+        setSelectedDay(whenRef.current.value);
+    }
+
+    const confirmUpdateOrCreate = () => {
+        onConfirmClick(selectedDay, newActivity);
     }
 
     const updateActivity = (property: propertyType) => {
         setNewActivity((prev) => ({...prev, ...property}));
     }
+
+    const discardChanges = () => {
+        onDiscardClick();
+    }
+
+    useEffect(() => {
+        newActivity &&
+        newActivity.startsAt &&
+        newActivity.endsAt && 
+        setTimeCheckMessage(() => {
+            if(isEqual(newActivity.startsAt, newActivity.endsAt)) return detailsTexts.timesAreEqual;
+            if(isAfter(newActivity.startsAt, newActivity.endsAt)) return detailsTexts.timesAreInverted;
+            const conflict = checkConflicts(selectedDay, newActivity);
+            if(conflict) return `
+                ${detailsTexts.timesConflict}
+                ${stringifyTime(conflict.startsAt)}
+                - ${stringifyTime(conflict.endsAt)}.
+            `;
+            return null;
+        });
+
+    }, [newActivity, selectedDay, language]);
+    
 
     useEffect(() => {
         if(currentlyEditing){
@@ -63,13 +97,14 @@ export default function ActivityDetails({today, currentlyEditing}: props){
             whatRef.current.value = curr.what;
             whereRef.current.value = curr.where;
             whoRef.current.value = curr.who;
-            whenRef.current.value = today;
+            whenRef.current.value = getDay(currentlyEditing);
             startRef.current.value = stringifyTime(curr.startsAt);
             endRef.current.value = stringifyTime(curr.endsAt);
+
             setNewActivity(curr);
+            setSelectedDay(whenRef.current.value);
         } else {
-            resetInputs();
-            setNewActivity(detailsTexts.exampleActivity);
+            resetAll();
         }
     }, [currentlyEditing, language]);
 
@@ -108,43 +143,45 @@ export default function ActivityDetails({today, currentlyEditing}: props){
                         placeholder={detailsTexts.where}
                         onChange={(e) => updateActivity({where: e.target.value})}
                     />
-                    <Weekdays ref={whenRef} placeholder={detailsTexts.when}>
+                    <Weekdays
+                        ref={whenRef}
+                        placeholder={detailsTexts.when}
+                        onChange={(event) => setSelectedDay(Number.parseInt(event.target.value))}
+                    >
                         {detailsTexts.daysOfTheWeek.map((day, index) => (
                             <DayOption
                                 key={index}
                                 value={`${index}`}
-                                onClick={() => setSelectedDay(index)}
                             >
                                 {day}
                             </DayOption>
                         ))}
                     </Weekdays>
                     <HourInputs>
-                        <Input
+                        <HourInput
                             type={"time"}
                             ref={startRef}
                             placeholder={detailsTexts.start}
-                            onChange={(e) => updateActivity({start: e.target.value})}
+                            onChange={(e) => updateActivity({startsAt: parseTime(e.target.value)})}
                         />
                         <HourInputText>
                             {detailsTexts.to}
                         </HourInputText>
-                        <Input
+                        <HourInput
                             type={"time"}
                             ref={endRef}
                             placeholder={detailsTexts.end}
-                            onChange={(e) => updateActivity({end: e.target.value})}
+                            onChange={(e) => updateActivity({endsAt: parseTime(e.target.value)})}
                         />
                     </HourInputs>
                 </Inputs>
             </Edit>
-            <Hint>
-                {detailsTexts.preview}
-            </Hint>
             <Preview
+                title={detailsTexts.preview}
+                errorMsg={timeCheckMessage}
                 activity={newActivity}
-                onConfirmClick={() => null}
-                onDiscardClick={() => null}
+                onConfirm={confirmUpdateOrCreate}
+                onDiscard={discardChanges}
             />
         </Background>
     )

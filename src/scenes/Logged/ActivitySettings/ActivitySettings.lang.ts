@@ -12,8 +12,12 @@ type textTypes = {
   to: string;
   end: string;
   preview: string;
+  timesAreEqual: string;
+  timesConflict: string;
+  timesAreInverted: string;
   exampleActivity: activityType;
   daysOfTheWeek:string[];
+  today: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
@@ -29,8 +33,11 @@ texts.set("pt-br", {
     to: "até",
     end: "Fim",
     preview: "Pré-visualizar",
+    timesAreInverted: "Algo de errado não está certo.",
+    timesConflict: "Conflito com outra atividade, que ocorre no intervalo ",
+    timesAreEqual: "Os horários não podem ser iguais.",
     exampleActivity: {
-      what: "Levar Vovó ao Jiu-Jitsu",
+      what: "Levar a vó ao Jiu-Jitsu",
       where: "espaço sideral",
       who: "Vovó Gertrudes",
       startsAt: {hour: 12, minute: 0},
@@ -45,7 +52,8 @@ texts.set("pt-br", {
       "Sexta",
       "Sábado",
       "Domingo",
-    ]
+    ],
+    today: "hoje",
 });
 
 texts.set("en-us", {
@@ -59,6 +67,9 @@ texts.set("en-us", {
     to: "to",
     end: "End",
     preview: "Preview",
+    timesAreInverted: "These times are incompatible.",
+    timesConflict: "Conflict with another activity that happens at ",
+    timesAreEqual: "Times cannot be equal.",
     exampleActivity: {
       what: "Take Granny to Jiu-Jitsu",
       where: "Outer Space",
@@ -75,7 +86,8 @@ texts.set("en-us", {
       "Friday",
       "Saturday",
       "Sunday",
-    ]
+    ],
+    today: "today",
 });
 
 export { texts };

@@ -23,10 +23,10 @@ interface props {
   weekActivities: activityType[][],
   todoList: string[],
   shoppingList: string[],
-  onAddbuttonClick: () => void,
+  onCalendarClick: () => void,
 }
 
-export default function Dashboard({todayIndex, show, weekActivities, todoList, shoppingList, onAddbuttonClick} : props) {
+export default function Dashboard({todayIndex, show, weekActivities, todoList, shoppingList, onCalendarClick} : props) {
   const { language, innerHeight, showPopup } = useGlobalContext();
   const [hour, minute] = useTime();
   const [happeningNow, setHappeningNow] = useState<activityType | undefined>();
@@ -115,7 +115,7 @@ export default function Dashboard({todayIndex, show, weekActivities, todoList, s
       </MainContent>
       <RoundButton
         show={show}
-        onClick={onAddbuttonClick}
+        onClick={onCalendarClick}
       />
     </Background>
   );

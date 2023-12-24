@@ -13,6 +13,7 @@ import Dashboard from "./Dashboard";
 import Activities from "./Activities";
 import ActivitySettings from "./ActivitySettings";
 import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
+import { isAfter, isBefore } from "src/functions/time";
 
 type serverReplyType =
   | "SUCCESS"
@@ -32,7 +33,7 @@ export default function Logged() {
   const [todoList, setTodoList] = useState<string[]>([]);
   const [shoppingList, setShoppingList] = useState<string[]>(() => []);
   const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => emptyWeek);
-  const [editingActivity, setEditingActivity] = useState<activityType | null>(() => null);
+  const [selectedActivity, setSelectedActivity] = useState<activityType | null>(() => null);
   const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
   const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(
     () => false
@@ -44,13 +45,13 @@ export default function Logged() {
   const newActivityRef = useRef(null);
   const loggedTexts = texts.get(language);
 
-  const getDefaultDay = () => {
+  const getActivityDay = (targetActivity: activityType) => {
     for(let i = 0; i < 7; i++){
       if(weekActivities[i].find(activity => (
-        areActivitiesEqual(activity, editingActivity))
+        areActivitiesEqual(activity, targetActivity))
       )) return i;
     }
-    return dayIndex;
+    return -1;
   }
 
   const goBack = () => {
@@ -63,24 +64,58 @@ export default function Logged() {
     });
   }
 
-  const deleteSelectedActivity = (whichOne: activityType) => {
-    //TODO create a confirmation popup
-    for(let i = 0; i < weekActivities.length; i++){
-        const deleteIndex = weekActivities[i].findIndex(act => areActivitiesEqual(act, whichOne));
-        if(deleteIndex > -1){
-          const newWeek = [...weekActivities];
-          newWeek[i].splice(deleteIndex, 1);
-          setWeekActivities(newWeek);
-          //TODO send updated selection to server
-          return;
-        }
-    }
-}
+  const toggleSelectedActivity = (activity: activityType) => {
+    setSelectedActivity((prev) => {
+      return areActivitiesEqual(activity, prev)? null : activity
+    });
+  }
 
-  const goToActivitySettings = (activity: activityType | null) => {
-    setEditingActivity(activity);
+  const updateActivities = (day: number, newOrEditedActivity: activityType) => {
+    if(!areActivitiesEqual(selectedActivity, newOrEditedActivity) || (day !== getActivityDay(selectedActivity))){
+      selectedActivity && deleteSelectedActivity();
+      weekActivities[day].push(newOrEditedActivity);
+      weekActivities[day].sort((a, b) => (isBefore(a.startsAt,b.startsAt)? -1 : 1));
+      setSelectedActivity(null); 
+    }
+    goBack();
+  }
+
+  const deleteSelectedActivity = () => {
+    //TODO create a confirmation popup
+    const weekIndex = getActivityDay(selectedActivity);
+    const weekdayIndex = weekActivities[weekIndex].findIndex(act => areActivitiesEqual(act, selectedActivity));
+    if(weekIndex > -1){
+      const newWeek = [...weekActivities];
+      newWeek[weekIndex].splice(weekdayIndex, 1);
+      setWeekActivities(newWeek);
+      setSelectedActivity(null);
+      //TODO send updated selection to server
+      return;
+    }
+  }
+
+  const checkConflicts = (day: number, candidate: activityType): activityType => {
+    const existing = weekActivities[day].find(activity => (
+      isBefore(candidate.startsAt, activity.endsAt) &&
+      isAfter(candidate.endsAt, activity.startsAt)
+    ));
+
+    if(!existing || areActivitiesEqual(existing, selectedActivity)) return null;
+    return existing;
+  }
+
+  const editSelectedActivity = () => {
+    selectedActivity && setScreen("activity-settings");
+  }
+
+  const createNewActivity = () => {
+    setSelectedActivity(null);
     setScreen("activity-settings");
   }
+
+
+  //COMUNICAÇÃO COM SERVIDOR/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   const getRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
@@ -123,6 +158,10 @@ export default function Logged() {
     }
   };
 
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
   useEffect(() => {
     if (!user) {                                         
       navigate("/login");
@@ -131,15 +170,23 @@ export default function Logged() {
     }
   }, []);
 
+
   useEffect(() => {
     const date = new Date();
     setDayIndex((date.getDay() + 6) % 7);       //here, 0 equals monday and 6 equals sunday. Fuck the system
   }, [hour]);
 
+
+  useEffect(() => {
+    console.log("selected activity day is " + getActivityDay(selectedActivity));
+  }, [selectedActivity]);
+
+
   useLayoutEffect(() => {
     spawnAndMove(dashboardRef.current, {x: 0});
     moveAndVanish([activitiesRef.current, newActivityRef.current], {x: 1.4 * innerWidth});
   }, []);
+
 
   useLayoutEffect(() => {
     if (!receivedFirstContent) {
@@ -174,7 +221,7 @@ export default function Logged() {
         logo
         user
         show={receivedFirstContent}
-        arrow={screen === "dashboard" ? null : goBack}
+        arrow={screen !== "activities" ? null : goBack}
       />
       <BigContainer>
         <SmallContainer ref={dashboardRef}>
@@ -184,19 +231,29 @@ export default function Logged() {
                 weekActivities={weekActivities}
                 shoppingList={shoppingList}
                 todoList={todoList}
-                onAddbuttonClick={() => setScreen("activities")}
+                onCalendarClick={() => setScreen("activities")}
             />
         </SmallContainer>
         <SmallContainer ref={activitiesRef}>
             <Activities
               todayIndex={dayIndex}
               weekActivities={weekActivities}
-              onActivitySettingsClick={goToActivitySettings}
-              onActivityDeleteClick={deleteSelectedActivity}
+              currentlyEditing={selectedActivity}
+              onActivityClick={toggleSelectedActivity}
+              onDeleteClick={deleteSelectedActivity}
+              onEditClick={editSelectedActivity}
+              onNewClick={createNewActivity}
+              onDeselect={() => setSelectedActivity(null)}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
-            <ActivitySettings today={getDefaultDay()} currentlyEditing={editingActivity}/>
+            <ActivitySettings
+              getDay={getActivityDay}
+              checkConflicts={checkConflicts}
+              onConfirmClick={updateActivities}
+              onDiscardClick={goBack}
+              currentlyEditing={selectedActivity}
+            />
         </SmallContainer>
       </BigContainer>
       <Gsap ref={loadingRef}>

@@ -8,6 +8,10 @@ export const Box = styled.div`
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    @media(max-height: 740px){
+        width: 27px;
+        height: 27px;
+    }
 `;
 
 export const Icon = styled.div`

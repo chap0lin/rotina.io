@@ -7,4 +7,5 @@ export { default as Wave } from "./Wave";
 export { default as Popup } from "./Popup";
 export { default as Loading } from "./Loading";
 export { default as ActivityCard } from "./ActivityCard";
+export { default as CustomCircleIcon } from "./CustomCircleIcon";
 

@@ -12,7 +12,7 @@ interface props {
 }
 
 export default function DayViewer({day, isToday, activities, selectedActivity, onActivitySelect}: props){
-    const { innerHeight } = useGlobalContext();
+    const { innerHeight, language } = useGlobalContext();
 
     return (
         <OuterSpacer>
@@ -23,7 +23,7 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                     </Title>
                     {isToday && 
                         <Badge>
-                            hoje
+                            {language === "pt-br"? "HOJE" : "TODAY"}
                         </Badge>
                     }
                 </TitleContainer>

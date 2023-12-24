@@ -7,11 +7,11 @@ export const IconContainer = styled.div`
   bottom: 15px;
   width: 72px;
   height: 72px;
-  padding: 17px;
+  padding: 20px;
   border-radius: 40px;
   background: ${colors.black};
   @media (max-height: 750px) {
-    padding: 15px;
+    padding: 17px;
     width: 60px;
     height: 60px;
   }

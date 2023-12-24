@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
-import { Plus } from "react-feather";
+import { Calendar } from "react-feather";
 import { colors } from "src/colors";
 import { IconContainer } from "./RoundButton.style";
 import { reactToClick, spawn, vanish } from "src/functions/animation";
@@ -25,8 +25,8 @@ export default function RoundButton({ show, onClick }: props) {
 
   return (
     <IconContainer ref={iconRef} onClick={onButtonClick}>
-      <Plus
-        strokeWidth={2}
+      <Calendar
+        strokeWidth={1}
         color={colors.white}
         width={"100%"}
         height={"100%"}

@@ -16,7 +16,10 @@ export const Background = styled(FlexColumn)`
 export const Edit = styled(FlexColumn)`
     width: 100%;
     flex: 1;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
+    @media (max-height: 750px) {
+      margin-bottom: 30px;
+    }
 `;
 
 export const Hint = styled.p`
@@ -26,7 +29,7 @@ export const Hint = styled.p`
     color: ${colors.black};
     @media(max-height: 750px){
         font-size: 19px;
-        margin-top: 0;
+        margin: 0;
     }
 `;
 
@@ -44,6 +47,9 @@ export const Inputs = styled(FlexColumn)`
     width: 100%;
     flex-shrink: 0;
     gap: 15px;
+    @media(max-height: 750px){
+        gap: 5px;
+    }
 `;
 
 export const Input = styled.input`
@@ -56,6 +62,10 @@ export const Input = styled.input`
     width: 100%;
     max-width: 300px;
     height: 40px;
+    @media (max-height: 750px) {
+      font-size: 16px;
+      max-width: 260px;
+    }
 `;
 
 export const HourInputs = styled.div`
@@ -70,9 +80,16 @@ export const HourInputs = styled.div`
     }
 `;
 
+export const HourInput = styled(Input)`
+    text-align: center;
+`;
+
 export const HourInputText = styled.p`
     color: ${colors.black};
     font-size: 18px;
+    @media (max-height: 750px) {
+      font-size: 16px;
+    }
 `;
 
 export const Weekdays = styled.select`
@@ -85,6 +102,12 @@ export const Weekdays = styled.select`
     width: 100%;
     max-width: 300px;
     height: 40px;
+    @media (max-height: 750px) {
+      font-size: 16px;
+      max-width: 260px;
+    }
 `;
 
-export const DayOption = styled.option``;
+export const DayOption = styled.option`
+    cursor: pointer;
+`;

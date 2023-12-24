@@ -44,16 +44,28 @@ export const Title = styled.p`
 `;
 
 export const Badge = styled.p`
-    padding: 5px;
-    min-width: 60px;
+    background: linear-gradient(110deg, ${colors.blue} 8%, ${colors.lightBlue} 18%, ${colors.blue} 33%);
+    background-size: 300% 100%;
+    padding: 5px 12px;
     border-radius: 20px 20px 5px 20px;
+    font-size: 15px;
+    font-weight: bold;
     color: ${colors.white};
-    background: ${colors.acqua};
     position: absolute;
     right: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: 7s shine linear infinite;
+    @keyframes shine {
+      to {
+        background-position-x: -300%;
+      }
+    }
+    @media(max-height: 740px){
+        font-size: 12px;
+        padding: 3px 10px;
+    }
 `;
 
 export const Activities = styled.div`
