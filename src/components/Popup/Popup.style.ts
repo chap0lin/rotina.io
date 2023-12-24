@@ -8,7 +8,7 @@ const Container = styled.div`
   justify-content: center;
   overflow: hidden;
   position: fixed;
-  z-index: 5;
+  z-index: 100;
   @media screen and (min-width: 500px) {
     scale: 0;
     width: 412px;

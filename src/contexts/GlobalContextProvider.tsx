@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import gsap from "gsap";
-import { languageOption, userType } from "../types";
+import { languageOption, popupType, userType } from "../types";
 import { colors } from "src/colors";
 import { Popup } from "src/components";
 
@@ -18,7 +18,8 @@ interface GlobalContextValue {
   language: languageOption;
   setUser: React.Dispatch<React.SetStateAction<userType>>;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
-  showPopup: (message: string, timeout?: number) => void;
+  showPopup: (message: string | JSX.Element, type?: popupType, timeout?: number) => void;
+  hidePopup: () => void;
 }
 
 interface GlobalProviderProps {
@@ -34,6 +35,7 @@ const initialValues: GlobalContextValue = {
   setUser: () => null,
   setLanguage: () => null,
   showPopup: () => null,
+  hidePopup: () => null,
 };
 
 const GlobalContext = createContext<GlobalContextValue>(initialValues);
@@ -57,8 +59,9 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   );
   const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [user, setUser] = useState<userType>(() => null);
+  const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
+  const [popupType, setPopupType] = useState<popupType>(() => "info");
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
-  const [popupText, setPopupText] = useState<string>(() => "");
 
   const handleResize = () => {
     setInnerHeight(window.innerHeight);
@@ -68,13 +71,25 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
-  const showPopup = (message: string, timeout?: number) => {
-    setPopupText(message);
-    setPopupVisibility(true);
-    setTimeout(() => {
+  const showPopup = (message: string | JSX.Element, type?: popupType, timeout?: number) => {
+    if(popupVisibility){
       setPopupVisibility(false);
-    }, timeout ?? 4000);
+      setTimeout(() => {
+        showPopup(message, type, timeout);
+      }, 200);
+      return;
+    }
+    setPopupText(message);
+    setPopupType(type?? "warning-failure");
+    setPopupVisibility(true);
+    timeout && setTimeout(() => {
+      setPopupVisibility(false);
+    }, timeout);
   };
+
+  const hidePopup = () => {
+    setPopupVisibility(false);
+  }
 
   useEffect(() => {
     gsap.config({ nullTargetWarn: false });
@@ -102,6 +117,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setUser,
     setLanguage,
     showPopup,
+    hidePopup,
   };
 
   return (
@@ -110,12 +126,10 @@ export default function GlobalProvider(props: GlobalProviderProps) {
       <Popup
         description={popupText}
         show={popupVisibility}
-        type="warning"
-        warningType="failure"
+        type={popupType}
         exitIconColor={colors.black}
         descriptionColor={colors.black}
         backgroundColor={colors.white}
-        border={`2px solid ${colors.red}`}
       />
     </GlobalContext.Provider>
   );

@@ -24,6 +24,8 @@ export type activityType = {
   color: string;
 };
 
+export type popupType = "info" | "warning" | "warning-success" | "warning-alert" | "warning-failure" | "cookies";
+
 export type dayType = {
   day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
   activities: activityType[];

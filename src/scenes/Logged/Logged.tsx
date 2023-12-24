@@ -28,6 +28,7 @@ export default function Logged() {
   const navigate = useNavigate();
   const { language, user, innerWidth, showPopup } = useGlobalContext();
   const [ hour ] = useTime();
+  const [blur, setBlur] = useState<boolean>(() => false);
   const [screen, setScreen] = useState<screens>(() => "dashboard");
   const [dayIndex, setDayIndex] = useState<number>(0);
   const [todoList, setTodoList] = useState<string[]>([]);
@@ -134,7 +135,7 @@ export default function Logged() {
   const getDataFromServerReply = (reply: serverReplyType) => {
     const stringifiedData = reply.split("==");
     if (!stringifiedData || stringifiedData.length < 4) {
-      showPopup(loggedTexts.errorFetchingData);
+      showPopup(loggedTexts.errorFetchingData, "warning-failure", 4000);
       return;
     }
     setWeekActivities(JSON.parse(stringifiedData.at(1)));
@@ -148,7 +149,7 @@ export default function Logged() {
       case "ERROR":
       case "ERROR_MISSING_CREDENTIALS":
       case "ERROR_NO_REGISTERED_USER":
-        showPopup(loggedTexts.somethingWentWrong);
+        showPopup(loggedTexts.somethingWentWrong, "warning-failure", 4000);
         break;
       default:
         if (reply.includes("SUCCESS_DATA")) {
@@ -220,8 +221,9 @@ export default function Logged() {
       <Header
         logo
         user
+        blurry={blur}
         show={receivedFirstContent}
-        arrow={screen !== "activities" ? null : goBack}
+        arrow={screen === "dashboard" ? null : goBack}
       />
       <BigContainer>
         <SmallContainer ref={dashboardRef}>
@@ -253,6 +255,8 @@ export default function Logged() {
               onConfirmClick={updateActivities}
               onDiscardClick={goBack}
               currentlyEditing={selectedActivity}
+              onPopupShow={() => setBlur(true)}
+              onPopupHide={() => setBlur(false)}
             />
         </SmallContainer>
       </BigContainer>

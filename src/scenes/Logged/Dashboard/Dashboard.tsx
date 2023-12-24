@@ -100,7 +100,7 @@ export default function Dashboard({todayIndex, show, weekActivities, todoList, s
           <HappeningNow
             show={show}
             happeningNow={happeningNow}
-            onNotesClick={() => showPopup("//TODO")}
+            onNotesClick={() => showPopup("//TODO", "warning-failure", 4000)}
           />
         </Section>
         <Section ref={laterSectionRef}>

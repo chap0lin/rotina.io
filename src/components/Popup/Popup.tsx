@@ -13,10 +13,10 @@ import {
   TopContainer,
   WarningDescription,
 } from "./Popup.style";
+import { popupType } from "src/types";
 
 interface PopupProps {
-  type: "info" | "warning" | "cookies";
-  warningType?: "success" | "alert" | "failure";
+  type: popupType;
   height?: number;
   title?: string;
   description: JSX.Element | string;
@@ -33,7 +33,6 @@ interface PopupProps {
 
 export default function Popup({
   type,
-  warningType,
   height,
   title,
   description,
@@ -81,14 +80,14 @@ export default function Popup({
 
   const releasePopup = () => {
     let ref = infoRef;
-    if (type === "warning") ref = warningRef;
+    if (type.includes("warning")) ref = warningRef;
     if (type === "cookies") ref = cookieRef;
     gsap.to(ref.current, releaseProps);
   };
 
   const hidePopup = () => {
     let ref = infoRef;
-    if (type === "warning") ref = warningRef;
+    if (type.includes("warning")) ref = warningRef;
     if (type === "cookies") ref = cookieRef;
     gsap.to(ref.current, hideProps);
   };
@@ -101,17 +100,24 @@ export default function Popup({
     }
   }, [show]);
 
-  const popupStyle = {
-    height: height ? `${height}px` : "auto",
-    backgroundColor: backgroundColor ? backgroundColor : colors.white,
-    border: border ? border : "none",
-    paddingTop: exit || title ? "20px" : 0,
-    opacity: 0.95,
-  };
+  const getBorder = () => {
+    switch(type) {
+      case "cookies":
+      case "info":
+      case "warning":
+        return `2px solid ${colors.darkWhite}`;
+      case "warning-alert":
+        return `2px solid ${colors.yellow}`;
+      case "warning-failure":
+        return `2px solid ${colors.red}`;
+      case "warning-success":
+        return `2px solid ${colors.lime}`;
+    }
+  }
 
   const getIcon = () => {
-    switch (warningType) {
-      case "success":
+    switch (type) {
+      case "warning-success":
         return (
           <CheckCircle
             color={iconColor ?? colors.lime}
@@ -120,16 +126,16 @@ export default function Popup({
             style={{ flexShrink: 0 }}
           />
         );
-      case "alert":
+      case "warning-alert":
         return (
           <AlertTriangle
-            color={iconColor ?? colors.gold}
+            color={iconColor ?? colors.yellow}
             width={30}
             height={30}
             style={{ flexShrink: 0 }}
           />
         );
-      case "failure":
+      case "warning-failure":
         return (
           <XCircle
             color={iconColor ?? colors.red}
@@ -141,6 +147,14 @@ export default function Popup({
       default:
         return null;
     }
+  };
+
+  const popupStyle = {
+    height: height ?? "auto",
+    backgroundColor: backgroundColor ?? colors.white,
+    border: border ?? getBorder(),
+    paddingTop: (exit || title) ? "20px" : 0,
+    opacity: 0.95,
   };
 
   switch (type) {
@@ -160,6 +174,9 @@ export default function Popup({
         </BottomContainer>
       );
     case "warning":
+    case "warning-alert":
+    case "warning-failure":
+    case "warning-success":
       return (
         <BottomContainer ref={warningRef}>
           <PopupContainer style={popupStyle}>
@@ -173,7 +190,6 @@ export default function Popup({
       );
     default:
       const Container = comesFromTop ? TopContainer : BottomContainer;
-
       return (
         <Container ref={infoRef}>
           <PopupContainer style={popupStyle}>

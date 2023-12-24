@@ -4,10 +4,9 @@ import { ArrowLeft, Globe, User } from "react-feather";
 import {
   LanguageSelector,
   UserSelector,
-  Blur,
   BlurFix,
 } from "./components/index";
-import { Logo } from "components/index";
+import { Logo, Blur } from "src/components";
 import { colors } from "src/colors";
 import { languageOption } from "src/types";
 import { fade, fadeIn, fadeOut, move } from "src/functions/animation";
@@ -21,13 +20,14 @@ import {
 
 interface props {
   show?: boolean;
-  arrow?: () => void;
   logo?: boolean;
   user?: boolean;
   lang?: boolean;
+  blurry?: boolean;
+  arrow?: () => void;
 }
 
-export default function Header({ show, logo, user, lang, arrow }: props) {
+export default function Header({ show, logo, user, lang, blurry, arrow }: props) {
   const { innerHeight, setLanguage, showPopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
     () => false
@@ -59,7 +59,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
 
   const handleUserSelection = (option: string) => {
     setShowUserMenu((prev) => !prev);
-    showPopup(`//TODO - ${option}`);
+    showPopup(`//TODO - ${option}`, "warning-alert", 4000);
   };
 
   const handleUserIconClick = () => {
@@ -107,7 +107,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
 
   return (
     <>
-      <Blur show={isAnyMenuShowing} onClick={clear} />
+      <Blur show={blurry || isAnyMenuShowing} onClick={clear} />
       <Container ref={containerRef}>
         <LeftSide ref={leftSideRef}>
           <Gsap ref={arrowRef}>
@@ -120,7 +120,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
                 onClick={handleArrowIconClick}
               />
             </Clickable>
-            <BlurFix show={isAnyMenuShowing} onClick={clear} />
+            <BlurFix show={blurry || isAnyMenuShowing} onClick={clear} />
           </Gsap>
           <Gsap ref={logoRef}>
             <Clickable>
@@ -129,7 +129,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
                 fontSize={innerHeight > 750 ? 25 : 24}
               />
             </Clickable>
-            <BlurFix show={isAnyMenuShowing} onClick={clear} />
+            <BlurFix show={blurry || isAnyMenuShowing} onClick={clear} />
           </Gsap>
         </LeftSide>
         <RightSide ref={rightSideRef}>
@@ -143,7 +143,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
                 onClick={handleUserIconClick}
               />
             </Clickable>
-            <BlurFix show={isAnyMenuShowing && !showUserMenu} onClick={clear} />
+            <BlurFix show={blurry || (isAnyMenuShowing && !showUserMenu)} onClick={clear} />
             <UserSelector show={showUserMenu} onClick={handleUserSelection} />
           </Gsap>
           <Gsap ref={globeRef}>
@@ -157,7 +157,7 @@ export default function Header({ show, logo, user, lang, arrow }: props) {
               />
             </Clickable>
             <BlurFix
-              show={isAnyMenuShowing && !showLanguagesMenu}
+              show={blurry || (isAnyMenuShowing && !showLanguagesMenu)}
               onClick={clear}
             />
             <LanguageSelector

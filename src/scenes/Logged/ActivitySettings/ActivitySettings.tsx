@@ -7,6 +7,7 @@ import { texts } from "./ActivitySettings.lang";
 import Preview from "./components/Preview";
 import ColorOption from "./components/ColorOption";
 import { Background, ColorPalette, DayOption, Edit, Hint, HourInput, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
+import PopupContent from "./components/PopupContent";
 
 interface props {
     currentlyEditing: activityType | null;
@@ -14,6 +15,8 @@ interface props {
     checkConflicts: (day: number, activity: activityType) => activityType;
     onConfirmClick: (day: number, activity: activityType) => void;
     onDiscardClick: () => void;
+    onPopupShow: () => void;
+    onPopupHide: () => void;
 }
 
 const colorsAvailable = [
@@ -34,8 +37,8 @@ type endType = {endsAt: timeType};
 type colorType = {color: string};
 type propertyType = whatType | whereType | whoType | startType | endType | colorType;
 
-export default function ActivitySettings({currentlyEditing, getDay, checkConflicts, onConfirmClick, onDiscardClick}: props){
-    const { language } = useGlobalContext();
+export default function ActivitySettings({currentlyEditing, getDay, checkConflicts, onConfirmClick, onDiscardClick, onPopupShow, onPopupHide}: props){
+    const { language, showPopup, hidePopup } = useGlobalContext();
     const [selectedDay, setSelectedDay] = useState<number>(() => 0);
     const [timeCheckMessage, setTimeCheckMessage] = useState<string | null>(() => null);
     const [newActivity, setNewActivity] = useState<activityType>(() => ({...currentlyEditing}));
@@ -61,15 +64,45 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
     }
 
     const confirmUpdateOrCreate = () => {
-        onConfirmClick(selectedDay, newActivity);
+        showPopup(
+            <PopupContent
+                type={"confirm"}
+                dayIndex={selectedDay}
+                activity={newActivity}
+                onYes={() => {
+                    onConfirmClick(selectedDay, newActivity);
+                    hidePopup();
+                    onPopupHide();
+                }}
+                onNo={() => {
+                    hidePopup();
+                    onPopupHide();
+                }}
+            />, "warning");
+        onPopupShow();
+    }
+
+    const confirmDiscardChanges = () => {
+        // onDiscardClick();
+        showPopup(
+            <PopupContent
+                type={"discard"}
+                onYes={() => {
+                    onDiscardClick();
+                    hidePopup();
+                    onPopupHide();
+                }}
+                onNo={() => {
+                    hidePopup();
+                    onPopupHide();
+                }}
+            />, "warning-alert");
+        onPopupShow();
+
     }
 
     const updateActivity = (property: propertyType) => {
         setNewActivity((prev) => ({...prev, ...property}));
-    }
-
-    const discardChanges = () => {
-        onDiscardClick();
     }
 
     useEffect(() => {
@@ -181,7 +214,7 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
                 errorMsg={timeCheckMessage}
                 activity={newActivity}
                 onConfirm={confirmUpdateOrCreate}
-                onDiscard={discardChanges}
+                onDiscard={confirmDiscardChanges}
             />
         </Background>
     )

@@ -165,19 +165,19 @@ export default function Login() {
         setScreen("sent-recovery-email");
         break;
       case "ERROR_AUTHENTICATION":
-        showPopup(loginTexts.noAccount);
+        showPopup(loginTexts.noAccount, "warning-failure", 4000);
         break;
       case "ERROR_NO_REGISTERED_USER":
-        showPopup(loginTexts.emailNotRegistered);
+        showPopup(loginTexts.emailNotRegistered, "warning-failure", 4000);
         break;
       case "ERROR_EMAIL_ALREADY_TAKEN":
-        showPopup(loginTexts.emailAlreadyExists);
+        showPopup(loginTexts.emailAlreadyExists, "warning-failure", 4000);
         break;
       case "ERROR_USERNAME_ALREADY_TAKEN":
-        showPopup(loginTexts.nameAlreadyExists);
+        showPopup(loginTexts.nameAlreadyExists, "warning-failure", 4000);
         break;
       default:
-        showPopup(loginTexts.somethingWentWrong);
+        showPopup(loginTexts.somethingWentWrong, "warning-failure", 4000);
         break;
     }
   };
