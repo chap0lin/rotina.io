@@ -46,7 +46,7 @@ export const WhatAndWho = styled.div`
   flex-direction: column;
   gap: 5px;
   @media (max-height: 750px) {
-    gap: 2px;
+    gap: 0;
   }
 `;
 
@@ -54,7 +54,7 @@ export const What = styled(Text)`
   font-size: 18px;
   font-weight: 500;
   @media (max-height: 750px) {
-    font-size: 16px;
+    font-size: 15px;
   }
 `;
 
@@ -62,7 +62,7 @@ export const Who = styled(Text)`
   font-size: 16px;
   font-weight: 400;
   @media (max-height: 750px) {
-    font-size: 15px;
+    font-size: 14px;
   }
 `;
 
@@ -82,7 +82,7 @@ export const When = styled(Text)`
   font-size: 16px;
   font-weight: 600;
   @media (max-height: 750px) {
-    font-size: 15px;
+    font-size: 13px;
   }
 `;
 
@@ -92,6 +92,6 @@ export const Where = styled(Text)`
   font-weight: 400;
   width: 50%;
   @media (max-height: 750px) {
-    font-size: 15px;
+    font-size: 13px;
   }
 `;

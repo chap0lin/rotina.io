@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { move, resize, spawn, vanish } from "src/functions/animation";
-import { activityType, dayType } from "src/types";
+import { activityType } from "src/types";
 import { texts } from "./Dashboard.lang";
 import { useTime } from "src/hooks/time";
 import { isAfter, isBefore } from "src/functions/time";

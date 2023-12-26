@@ -1,10 +1,9 @@
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { move } from "src/functions/animation";
 import { texts } from "./PoupupContent.lang";
-import { colors } from "src/colors";
 import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
-import { ActivityPreview, Ball, Buttons, Container, FocusDiv, NoButton, Slot, Text, Title, YesButton } from "./PoupContent.style";
-import { move } from "src/functions/animation";
+import { ActivityPreview, Ball, Buttons, CardPreview, Container, FocusDiv, NoButton, Slot, Text, Title, YesButton } from "./PoupContent.style";
 import { useEffect, useRef, useState } from "react";
 
 interface props {
@@ -26,6 +25,10 @@ export default function PopupContent({type, dayIndex, activity, onYes, onNo}: pr
         move(slotRef.current, {x: (focus? 0 : -25)}, 0.5);
     }, [focus]);
 
+    useEffect(() => {
+        setFocus(true);
+    }, [activity]);
+
     if(type === "discard") return (
         <Container>
             <Title>
@@ -35,7 +38,7 @@ export default function PopupContent({type, dayIndex, activity, onYes, onNo}: pr
                 {popupTexts.confirmDiscard}
             </Text>
             <Buttons>
-                <YesButton onClick={onYes} style={{border: `1px solid ${colors.yellow}`}}>
+                <YesButton onClick={onYes}>
                     {popupTexts.yesDiscard}
                 </YesButton>
                 <NoButton onClick={onNo}>
@@ -64,6 +67,9 @@ export default function PopupContent({type, dayIndex, activity, onYes, onNo}: pr
                     <Slot onClick={() => setFocus(prev => !prev)}>
                         <Ball ref={slotRef}/>
                     </Slot>
+                    <Text>
+                        {popupTexts.focus}
+                    </Text>
                 </FocusDiv>
             </ActivityPreview>
             <Buttons style={{justifyContent: "center", gap: "0"}}>

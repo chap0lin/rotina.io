@@ -1,9 +1,11 @@
-import { ActivityCard, CustomCircleIcon } from "src/components";
-import { activityType } from "src/types";
+import { useRef } from "react";
 import { colors } from "src/colors";
+import { activityType } from "src/types";
 import { Check, XCircle } from "react-feather";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { ActivityCard, CustomCircleIcon } from "src/components";
 import { Buttons, Container, Gsap, Invalid, Title, UpperBar } from "./Preview.style";
+import { reactToClick } from "src/functions/animation";
 
 interface props {
     title: string;
@@ -17,6 +19,9 @@ export default function Preview({title, errorMsg, activity, onConfirm, onDiscard
     const { innerHeight } = useGlobalContext();
     const buttonSize = (innerHeight > 740)? 40 : 35;
 
+    const yesRef = useRef(null);
+    const noRef = useRef(null);
+
     const isDisabled = () => {
         if(errorMsg
           || !activity
@@ -28,11 +33,11 @@ export default function Preview({title, errorMsg, activity, onConfirm, onDiscard
     }
 
     const onConfirmClick = () => {
-        !isDisabled() && onConfirm();
+        !isDisabled() && reactToClick(yesRef.current, onConfirm, 0.5);
     }
 
     const onDiscardClick = () => {
-        onDiscard();
+        reactToClick(noRef.current, onDiscard, 0.5);
     }
 
     return (
@@ -42,7 +47,7 @@ export default function Preview({title, errorMsg, activity, onConfirm, onDiscard
                     {title}
                 </Title>
                 <Buttons>
-                    <Gsap style={{opacity: (isDisabled()? 0.4 : 1)}} onClick={onConfirmClick}>
+                    <Gsap ref={yesRef} style={{opacity: (isDisabled()? 0.4 : 1)}} onClick={onConfirmClick}>
                         <CustomCircleIcon
                             innerIcon={Check}
                             width={buttonSize}
@@ -51,7 +56,7 @@ export default function Preview({title, errorMsg, activity, onConfirm, onDiscard
                             strokeWidth={1}
                         />
                     </Gsap>
-                    <Gsap onClick={onDiscardClick}>
+                    <Gsap ref={noRef} onClick={onDiscardClick}>
                         <XCircle
                             width={buttonSize}
                             height={buttonSize}

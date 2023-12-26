@@ -14,11 +14,15 @@ export const OuterSpacer = styled(Full)`
 `;
 
 export const Container = styled(Full)`
+    position: relative;
     flex-shrink: 0;
     border-radius: 20px;
     border: 1px solid ${colors.black};
     overflow: hidden;
     max-width: calc(100% - 80px);
+    @media(max-height: 740px){
+        border-radius: 10px;
+    }
 `;
 
 export const TitleContainer = styled.div`
@@ -46,13 +50,13 @@ export const Title = styled.p`
 export const Badge = styled.p`
     background: linear-gradient(110deg, ${colors.blue} 8%, ${colors.lightBlue} 18%, ${colors.blue} 33%);
     background-size: 300% 100%;
-    padding: 5px 12px;
-    border-radius: 20px 20px 5px 20px;
+    padding: 3px 10px;
+    border-radius: 5px 0 0 5px;
     font-size: 15px;
     font-weight: bold;
     color: ${colors.white};
     position: absolute;
-    right: 10px;
+    right: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,7 +68,7 @@ export const Badge = styled.p`
     }
     @media(max-height: 740px){
         font-size: 12px;
-        padding: 3px 10px;
+        padding: 0 10px;
     }
 `;
 
@@ -81,12 +85,28 @@ export const Activities = styled.div`
     }
 `;
 
+export const ActivitySymbol = styled.div`
+    position: absolute;
+    top: 80px;
+    left: 4px;
+    width: 10px;
+    height: 15px;
+    border-radius: 3px;
+    transition: background 0.25s;
+    @media(max-height: 740px){
+        top: 65px;
+    }
+`;
+
 export const ActivityContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
     padding-top: 20px;
     scroll-snap-align: start;
+    @media(max-height: 740px){
+        padding-top: 12px;
+    }
 `;
 
 export const InnerSpacer = styled(Full)`

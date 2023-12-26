@@ -105,9 +105,9 @@ export default function Popup({
       case "cookies":
       case "info":
       case "warning":
-        return `2px solid ${colors.darkWhite}`;
+        return `2px solid ${colors.white}`;
       case "warning-alert":
-        return `2px solid ${colors.yellow}`;
+        return `2px solid ${colors.white}`;
       case "warning-failure":
         return `2px solid ${colors.red}`;
       case "warning-success":

@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
 import { Background, Header, Loading } from "src/components";
 import { areActivitiesEqual } from "src/functions";
+import { isAfter, isBefore } from "src/functions/time";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useNavigate } from "react-router-dom";
 import { activityType } from "src/types";
 import { emptyWeek } from "src/constants";
@@ -12,8 +14,6 @@ import { api } from "src/services/api";
 import Dashboard from "./Dashboard";
 import Activities from "./Activities";
 import ActivitySettings from "./ActivitySettings";
-import { BigContainer, Gsap, SmallContainer } from "./Logged.style";
-import { isAfter, isBefore } from "src/functions/time";
 
 type serverReplyType =
   | "SUCCESS"
@@ -24,6 +24,11 @@ type serverReplyType =
 
 type screens = "dashboard" | "activities" | "activity-settings" ;
 
+export type activitySelectionType = {
+  activity: activityType;
+  day: number;
+}
+
 export default function Logged() {
   const navigate = useNavigate();
   const { language, user, innerWidth, showPopup } = useGlobalContext();
@@ -32,28 +37,17 @@ export default function Logged() {
   const [screen, setScreen] = useState<screens>(() => "dashboard");
   const [dayIndex, setDayIndex] = useState<number>(0);
   const [todoList, setTodoList] = useState<string[]>([]);
+  const [selected, setSelected] = useState<activitySelectionType | null>(() => ({activity: null, day: 0}));
   const [shoppingList, setShoppingList] = useState<string[]>(() => []);
   const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => emptyWeek);
-  const [selectedActivity, setSelectedActivity] = useState<activityType | null>(() => null);
   const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
-  const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(
-    () => false
-  );
+  const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
   const loadingRef = useRef(null);
   const dashboardRef = useRef(null);
   const activitiesRef = useRef(null);
   const newActivityRef = useRef(null);
   const loggedTexts = texts.get(language);
-
-  const getActivityDay = (targetActivity: activityType) => {
-    for(let i = 0; i < 7; i++){
-      if(weekActivities[i].find(activity => (
-        areActivitiesEqual(activity, targetActivity))
-      )) return i;
-    }
-    return -1;
-  }
 
   const goBack = () => {
     setScreen(prev => {
@@ -65,53 +59,61 @@ export default function Logged() {
     });
   }
 
-  const toggleSelectedActivity = (activity: activityType) => {
-    setSelectedActivity((prev) => {
-      return areActivitiesEqual(activity, prev)? null : activity
-    });
-  }
-
-  const updateActivities = (day: number, newOrEditedActivity: activityType) => {
-    if(!areActivitiesEqual(selectedActivity, newOrEditedActivity) || (day !== getActivityDay(selectedActivity))){
-      selectedActivity && deleteSelectedActivity();
-      weekActivities[day].push(newOrEditedActivity);
-      weekActivities[day].sort((a, b) => (isBefore(a.startsAt,b.startsAt)? -1 : 1));
-      setSelectedActivity(null); 
-    }
-    goBack();
-  }
-
-  const deleteSelectedActivity = () => {
-    //TODO create a confirmation popup
-    const weekIndex = getActivityDay(selectedActivity);
-    const weekdayIndex = weekActivities[weekIndex].findIndex(act => areActivitiesEqual(act, selectedActivity));
-    if(weekIndex > -1){
-      const newWeek = [...weekActivities];
-      newWeek[weekIndex].splice(weekdayIndex, 1);
-      setWeekActivities(newWeek);
-      setSelectedActivity(null);
-      //TODO send updated selection to server
-      return;
-    }
-  }
-
   const checkConflicts = (day: number, candidate: activityType): activityType => {
     const existing = weekActivities[day].find(activity => (
       isBefore(candidate.startsAt, activity.endsAt) &&
       isAfter(candidate.endsAt, activity.startsAt)
     ));
 
-    if(!existing || areActivitiesEqual(existing, selectedActivity)) return null;
+    if(!existing || areActivitiesEqual(existing, selected.activity)) return null;
     return existing;
   }
 
-  const editSelectedActivity = () => {
-    selectedActivity && setScreen("activity-settings");
+  const toggleSelected = (day: number, activ: activityType) => {
+    setSelected((prev) => {
+      const activity = areActivitiesEqual(activ, prev.activity)? null : activ;
+      return {day, activity}
+    });
+  }
+  
+  const editSelected = () => {
+    selected.activity && setScreen("activity-settings");
   }
 
-  const createNewActivity = () => {
-    setSelectedActivity(null);
+  const createNewActivity = (day: number) => {
+    setSelected({day, activity: null});
     setScreen("activity-settings");
+  }
+
+  const updateActivities = (day: number, newOrEditedActivity: activityType) => {
+    if(!areActivitiesEqual(selected.activity, newOrEditedActivity) || (day !== selected.day)){
+      selected.activity && deleteSelected();
+      const newWeek = [...weekActivities];
+      newWeek[day].push(newOrEditedActivity);
+      newWeek[day].sort((a, b) => (isBefore(a.startsAt,b.startsAt)? -1 : 1));
+      setWeekActivities(newWeek);
+      setSelected((prev) => ({...prev, activity: null})); 
+    }
+    goBack();
+  }
+
+  const deleteSelected = () => {
+    //TODO create a confirmation popup
+    const weekIndex = selected.day;
+    const weekdayIndex = weekActivities[weekIndex].findIndex(act => areActivitiesEqual(act, selected.activity));
+    if(weekIndex > -1){
+      const newWeek = [...weekActivities];
+      newWeek[weekIndex].splice(weekdayIndex, 1);
+      setWeekActivities(newWeek);
+      setSelected((prev) => ({...prev, activity: null}));
+      //TODO send updated selection to server
+      return;
+    }
+  }
+
+  const discardChanges = () => {
+    setSelected((prev) => ({...prev, activity: null}));
+    goBack();
   }
 
 
@@ -177,11 +179,9 @@ export default function Logged() {
     setDayIndex((date.getDay() + 6) % 7);       //here, 0 equals monday and 6 equals sunday. Fuck the system
   }, [hour]);
 
-
   useEffect(() => {
-    console.log("selected activity day is " + getActivityDay(selectedActivity));
-  }, [selectedActivity]);
-
+    console.log(selected);
+  }, [selected]);
 
   useLayoutEffect(() => {
     spawnAndMove(dashboardRef.current, {x: 0});
@@ -221,6 +221,7 @@ export default function Logged() {
       <Header
         logo
         user
+        lang
         blurry={blur}
         show={receivedFirstContent}
         arrow={screen === "dashboard" ? null : goBack}
@@ -240,21 +241,19 @@ export default function Logged() {
             <Activities
               todayIndex={dayIndex}
               weekActivities={weekActivities}
-              currentlyEditing={selectedActivity}
-              onActivityClick={toggleSelectedActivity}
-              onDeleteClick={deleteSelectedActivity}
-              onEditClick={editSelectedActivity}
+              currentlyEditing={selected.activity}
+              onActivityClick={toggleSelected}
+              onDeleteClick={deleteSelected}
+              onEditClick={editSelected}
               onNewClick={createNewActivity}
-              onDeselect={() => setSelectedActivity(null)}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
             <ActivitySettings
-              getDay={getActivityDay}
+              currentlyEditing={selected}
+              onDiscardClick={discardChanges}
               checkConflicts={checkConflicts}
               onConfirmClick={updateActivities}
-              onDiscardClick={goBack}
-              currentlyEditing={selectedActivity}
               onPopupShow={() => setBlur(true)}
               onPopupHide={() => setBlur(false)}
             />

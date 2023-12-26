@@ -41,11 +41,22 @@ export const Text = styled.p`
 `;
 
 export const ActivityPreview = styled(FlexColumn)`
-    width: 100%;
+    width: 320px;
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    gap: 20px;
+    gap: 15px;
+    @media(max-height: 740px){
+        width: 290px;
+        gap: 15px;
+    }
+`;
+
+export const CardPreview = styled.div`
+    width: 330px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 export const FocusDiv = styled.div`

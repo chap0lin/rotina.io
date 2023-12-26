@@ -14,6 +14,7 @@ export const colors = {
   black: "#080708",
   clickBlue: "#005f91",
   lightBlue: "#57C5FF",
+  lightGrey: "#ABABAB",
   darkRed: "#800E13",
   darkGreen: "#2B6827",
   darkAcqua: "#007d7d",

@@ -1,23 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { stringifyTime, parseTime, isEqual, isAfter } from "src/functions/time";
 import { activityType, timeType } from "src/types";
+import { activitySelectionType } from "../Logged";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { colors } from "src/colors";
 import { texts } from "./ActivitySettings.lang";
 import Preview from "./components/Preview";
 import ColorOption from "./components/ColorOption";
-import { Background, ColorPalette, DayOption, Edit, Hint, HourInput, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
 import PopupContent from "./components/PopupContent";
-
-interface props {
-    currentlyEditing: activityType | null;
-    getDay: (activity: activityType) => number;
-    checkConflicts: (day: number, activity: activityType) => activityType;
-    onConfirmClick: (day: number, activity: activityType) => void;
-    onDiscardClick: () => void;
-    onPopupShow: () => void;
-    onPopupHide: () => void;
-}
+import { Background, ColorPalette, DayOption, Edit, Hint, HourInput, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
+import { areActivitiesEqual } from "src/functions";
 
 const colorsAvailable = [
     colors.darkRed,
@@ -37,12 +29,23 @@ type endType = {endsAt: timeType};
 type colorType = {color: string};
 type propertyType = whatType | whereType | whoType | startType | endType | colorType;
 
-export default function ActivitySettings({currentlyEditing, getDay, checkConflicts, onConfirmClick, onDiscardClick, onPopupShow, onPopupHide}: props){
+interface props {
+    currentlyEditing: activitySelectionType | null;
+    checkConflicts: (day: number, activity: activityType) => activityType;
+    onConfirmClick: (day: number, activity: activityType) => void;
+    onDiscardClick: () => void;
+    onPopupShow: () => void;
+    onPopupHide: () => void;
+}
+
+
+export default function ActivitySettings({currentlyEditing, checkConflicts, onConfirmClick, onDiscardClick, onPopupShow, onPopupHide}: props){
     const { language, showPopup, hidePopup } = useGlobalContext();
-    const [selectedDay, setSelectedDay] = useState<number>(() => 0);
-    const [timeCheckMessage, setTimeCheckMessage] = useState<string | null>(() => null);
-    const [newActivity, setNewActivity] = useState<activityType>(() => ({...currentlyEditing}));
     const detailsTexts = texts.get(language); 
+    const [selectedDay, setSelectedDay] = useState<number>(() => 0);
+    const [newActivity, setNewActivity] = useState<activityType | null>(() => detailsTexts.exampleActivity);
+    const [timeCheckMessage, setTimeCheckMessage] = useState<string | null>(() => null);
+    
 
     const whatRef = useRef(null);
     const whoRef = useRef(null);
@@ -51,16 +54,17 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
     const startRef = useRef(null);
     const endRef = useRef(null);
 
-    const resetAll = () => {
+    const resetAll = (specificDayToReset?: number) => {
         whatRef.current.value = "";
         whoRef.current.value = "";
         whereRef.current.value = "";
-        whenRef.current.value = 0;
         startRef.current.value = "12:00";
         endRef.current.value = "14:00";
-        
-        setNewActivity({...detailsTexts.exampleActivity});
-        setSelectedDay(whenRef.current.value);
+        whenRef.current.value = specificDayToReset?? 0;
+    }
+
+    const updateActivity = (property: propertyType) => {
+        setNewActivity((prev) => ({...prev, ...property}));
     }
 
     const confirmUpdateOrCreate = () => {
@@ -71,6 +75,7 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
                 activity={newActivity}
                 onYes={() => {
                     onConfirmClick(selectedDay, newActivity);
+                    resetAll();
                     hidePopup();
                     onPopupHide();
                 }}
@@ -83,12 +88,20 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
     }
 
     const confirmDiscardChanges = () => {
-        // onDiscardClick();
+        if(
+            areActivitiesEqual(currentlyEditing.activity, newActivity) &&
+            currentlyEditing.day === selectedDay
+        ){
+            onDiscardClick();
+            resetAll(); 
+            return;
+        }
         showPopup(
             <PopupContent
                 type={"discard"}
                 onYes={() => {
                     onDiscardClick();
+                    resetAll();
                     hidePopup();
                     onPopupHide();
                 }}
@@ -98,11 +111,6 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
                 }}
             />, "warning-alert");
         onPopupShow();
-
-    }
-
-    const updateActivity = (property: propertyType) => {
-        setNewActivity((prev) => ({...prev, ...property}));
     }
 
     useEffect(() => {
@@ -125,21 +133,23 @@ export default function ActivitySettings({currentlyEditing, getDay, checkConflic
     
 
     useEffect(() => {
-        if(currentlyEditing){
+        if(currentlyEditing.activity){
             const curr = {...currentlyEditing};
-            whatRef.current.value = curr.what;
-            whereRef.current.value = curr.where;
-            whoRef.current.value = curr.who;
-            whenRef.current.value = getDay(currentlyEditing);
-            startRef.current.value = stringifyTime(curr.startsAt);
-            endRef.current.value = stringifyTime(curr.endsAt);
-
-            setNewActivity(curr);
-            setSelectedDay(whenRef.current.value);
+            whatRef.current.value = curr.activity.what;
+            whereRef.current.value = curr.activity.where;
+            whoRef.current.value = curr.activity.who;
+            whenRef.current.value = curr.day;
+            startRef.current.value = stringifyTime(curr.activity.startsAt);
+            endRef.current.value = stringifyTime(curr.activity.endsAt);
+            setNewActivity(currentlyEditing.activity);
+            setSelectedDay(currentlyEditing.day);
         } else {
-            resetAll();
+            resetAll(currentlyEditing.day);
+            setSelectedDay(currentlyEditing.day);
+            setNewActivity({...detailsTexts.exampleActivity});
         }
     }, [currentlyEditing, language]);
+
 
     return (
         <Background>
