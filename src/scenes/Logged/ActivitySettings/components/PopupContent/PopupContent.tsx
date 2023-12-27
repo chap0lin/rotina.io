@@ -54,8 +54,8 @@ export default function PopupContent({type, dayIndex, activity, onYes, onNo}: pr
                 {popupTexts.allGood}            
             </Title>
             <Text>
-                {popupTexts.happeningAt}{popupTexts.weekdays[dayIndex]}
-                <br/>
+                {popupTexts.happeningAt}
+                {popupTexts.weekdays[dayIndex]}
                 {popupTexts.confirmConfim}
             </Text>
             <ActivityPreview>

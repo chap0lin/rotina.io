@@ -112,3 +112,8 @@ export const ActivityContainer = styled.div`
 export const InnerSpacer = styled(Full)`
     flex-shrink: 0;
 `;
+
+export const NothingHere = styled.p`
+    font-size: 16px;
+    color: ${colors.black};
+`;

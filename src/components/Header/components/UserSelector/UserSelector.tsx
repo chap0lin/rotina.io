@@ -16,15 +16,15 @@ export default function UserSelector({ show, onClick }: props) {
   const userTexts = texts.get(language);
   const navigate = useNavigate();
 
-  const options: selectionType[] = [
-    {
-      icon: <Coffee color={colors.darkWhite} width={15} height={15} />,
-      text: userTexts.myData,
-    },
-    {
-      icon: <Sliders color={colors.darkWhite} width={15} height={15} />,
-      text: userTexts.settings,
-    },
+  const options: selectionType[] = [    //TODO include the functionality for these icons
+    // {   
+    //   icon: <Coffee color={colors.darkWhite} width={15} height={15} />,
+    //   text: userTexts.myData,
+    // },
+    // {
+    //   icon: <Sliders color={colors.darkWhite} width={15} height={15} />,
+    //   text: userTexts.settings,
+    // },
     {
       icon: <Power color={colors.pink} width={15} height={15} />,
       text: userTexts.logoff,

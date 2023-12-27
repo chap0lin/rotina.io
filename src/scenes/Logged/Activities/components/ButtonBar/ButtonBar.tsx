@@ -78,7 +78,7 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                     />
                 </AddIcon>
             </AddButton>
-            <Gsap ref={acceptRef} onClick={() => activitySelected && onAcceptClick()}>
+            <Gsap ref={acceptRef} onClick={() => activitySelected && reactToClick(acceptRef.current, onAcceptClick, 0.5)}>
                 <CustomCircleIcon
                     innerIcon={Check}
                     width={iconSize}
@@ -87,7 +87,7 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                     color={colors.green}
                 />
             </Gsap>
-            <Gsap ref={editRef} onClick={() => activitySelected && onEditClick()}>
+            <Gsap ref={editRef} onClick={() => activitySelected && reactToClick(editRef.current, onEditClick, 0.5)}>
                 <CustomCircleIcon
                     innerIcon={Edit2}
                     width={iconSize}
@@ -97,7 +97,7 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                     color={colors.black}
                 />
             </Gsap>
-            <Gsap ref={deleteRef} onClick={() => activitySelected && onDeleteClick()}>
+            <Gsap ref={deleteRef} onClick={() => activitySelected && reactToClick(deleteRef.current, onDeleteClick, 0.5)}>
                 <XCircle
                     width={iconSize}
                     height={iconSize}

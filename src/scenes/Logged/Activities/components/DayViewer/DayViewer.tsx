@@ -2,7 +2,8 @@ import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
 import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { Activities, ActivityContainer, ActivitySymbol, Badge, Container, InnerSpacer, OuterSpacer, Title, TitleContainer } from "./DayViewer.style";
+import { Activities, ActivityContainer, ActivitySymbol, Badge, Container, InnerSpacer, NothingHere, OuterSpacer, Title, TitleContainer } from "./DayViewer.style";
+import { texts } from "./DayViewer.lang";
 interface props {
     day: string,
     isToday: boolean,
@@ -13,6 +14,8 @@ interface props {
 
 export default function DayViewer({day, isToday, activities, selectedActivity, onActivitySelect}: props){
     const { innerHeight, language } = useGlobalContext();
+    const dayTexts = texts.get(language);
+    const hasActivities = (activities.length > 0);
 
     return (
         <OuterSpacer>
@@ -28,27 +31,29 @@ export default function DayViewer({day, isToday, activities, selectedActivity, o
                     }
                 </TitleContainer>
                 <Activities style={{height: (innerHeight > 750)? 450 : 300}}> 
-                    {activities.map((activity, index) => {
-                        const isHightlighted = areActivitiesEqual(activity, selectedActivity);
-                        return (
-                            <>
-                                <ActivitySymbol 
-                                    key={index}
-                                    style={{
-                                        background: isHightlighted? activity.color : 'none',
-                                        border: `1px solid ${activity.color}`,
-                                        transform: `translateY(${index * 17}px)`
-                                    }}
-                                />
-                                <ActivityContainer key={100*(index) + 1} onClick={() => onActivitySelect(activity)}>
-                                    <ActivityCard
-                                        {...activity}
-                                        highlighted={areActivitiesEqual(activity, selectedActivity)}
-                                    />
-                                </ActivityContainer>
-                            </>
-                        )}
-                    )}
+                    {!hasActivities && 
+                        <NothingHere>
+                            {dayTexts.allQuiethere}
+                        </NothingHere>
+                    }
+                    {hasActivities && activities.map((activity, index) => (
+                        <ActivitySymbol 
+                            key={index}
+                            style={{
+                                background: areActivitiesEqual(activity, selectedActivity)? activity.color : 'none',
+                                border: `1px solid ${activity.color}`,
+                                transform: `translateY(${index * 17}px)`
+                            }}
+                        />
+                    ))}
+                    {hasActivities && activities.map((activity, index) => (
+                        <ActivityContainer key={100*(index) + 1} onClick={() => onActivitySelect(activity)}>
+                            <ActivityCard
+                                {...activity}
+                                highlighted={areActivitiesEqual(activity, selectedActivity)}
+                            />
+                        </ActivityContainer>
+                    ))}
                     <InnerSpacer style={{height: (innerHeight > 750)? 320 : 280}}/>
                 </Activities>
             </Container>

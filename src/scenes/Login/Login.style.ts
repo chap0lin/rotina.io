@@ -47,6 +47,13 @@ export const HintGsap = styled(Gsap)`
 
 export const HintText = styled(DiscreteText)`
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   width: 100vw;
   max-width: 305px;
   text-align: center;
@@ -60,6 +67,13 @@ export const Bold = styled.span`
   color: ${colors.black};
   font-weight: bold;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 `;
 
 export const LogoDiv = styled.div``;

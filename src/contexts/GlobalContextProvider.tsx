@@ -65,6 +65,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
   const handleResize = () => {
     setInnerHeight(window.innerHeight);
+    setInnerWidth(window.innerWidth);
   };
 
   const handleKey = (e: KeyboardEvent) => {

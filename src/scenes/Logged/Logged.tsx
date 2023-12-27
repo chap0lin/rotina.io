@@ -97,8 +97,7 @@ export default function Logged() {
     goBack();
   }
 
-  const deleteSelected = () => {
-    //TODO create a confirmation popup
+  const deleteSelected = (notify?: boolean) => {
     const weekIndex = selected.day;
     const weekdayIndex = weekActivities[weekIndex].findIndex(act => areActivitiesEqual(act, selected.activity));
     if(weekIndex > -1){
@@ -107,7 +106,7 @@ export default function Logged() {
       setWeekActivities(newWeek);
       setSelected((prev) => ({...prev, activity: null}));
       //TODO send updated selection to server
-      return;
+      notify && showPopup(loggedTexts.activityDeleted, "warning-success", 4000);
     }
   }
 
@@ -243,9 +242,11 @@ export default function Logged() {
               weekActivities={weekActivities}
               currentlyEditing={selected.activity}
               onActivityClick={toggleSelected}
-              onDeleteClick={deleteSelected}
+              onDeleteClick={() => deleteSelected(true)}
               onEditClick={editSelected}
               onNewClick={createNewActivity}
+              onPopupShow={() => setBlur(true)}
+              onPopupHide={() => setBlur(false)}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
