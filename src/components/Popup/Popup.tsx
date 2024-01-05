@@ -65,46 +65,24 @@ export default function Popup({
       };
 
   const hideProps = comesFromTop
-    ? {
-        scale: 0,
-        top: -280,
-        duration: 0.6,
-        ease: "power2",
-      }
-    : {
-        scale: 0,
-        bottom: -280,
-        duration: 0.6,
-        ease: "power2",
-      };
-
-  const releasePopup = () => {
-    let ref = infoRef;
-    if (type.includes("warning")) ref = warningRef;
-    if (type === "cookies") ref = cookieRef;
-    gsap.to(ref.current, releaseProps);
-  };
-
-  const hidePopup = () => {
-    let ref = infoRef;
-    if (type.includes("warning")) ref = warningRef;
-    if (type === "cookies") ref = cookieRef;
-    gsap.to(ref.current, hideProps);
-  };
-
-  useEffect(() => {
-    if (show === true) {
-      releasePopup();
-    } else {
-      hidePopup();
+  ? {
+      scale: 0,
+      top: -280,
+      duration: 0.6,
+      ease: "power2",
     }
-  }, [show]);
+  : {
+      scale: 0,
+      bottom: -280,
+      duration: 0.6,
+      ease: "power2",
+  };
 
   const getBorder = () => {
     switch(type) {
       case "cookies":
       case "info":
-      case "warning":
+      case "prompt":
         return `2px solid ${colors.white}`;
       case "warning-alert":
         return `2px solid ${colors.white}`;
@@ -154,8 +132,29 @@ export default function Popup({
     backgroundColor: backgroundColor ?? colors.white,
     border: border ?? getBorder(),
     paddingTop: (exit || title) ? "20px" : 0,
-    opacity: 0.95,
   };
+
+  const getPopupType = () => {
+    let ref = infoRef;
+    switch(type){
+      case(null):
+      break;
+      case ("prompt"):
+        ref = warningRef;
+      break;
+      case("cookies"):
+        ref = cookieRef;
+      break;
+      default:
+        type.includes("warning") && (ref = warningRef);
+    }
+    return ref;
+  }
+
+  useEffect(() => {
+    const ref = getPopupType();
+    gsap.to(ref.current, show? releaseProps : hideProps);
+  }, [show]);
 
   switch (type) {
     case "cookies":
@@ -173,7 +172,7 @@ export default function Popup({
           </PopupContainer>
         </BottomContainer>
       );
-    case "warning":
+    case "prompt":
     case "warning-alert":
     case "warning-failure":
     case "warning-success":

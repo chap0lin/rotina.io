@@ -3,8 +3,10 @@ import { move } from "src/functions/animation";
 import { texts } from "./PoupupContent.lang";
 import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
-import { ActivityPreview, Ball, Buttons, CardPreview, Container, FocusDiv, NoButton, Slot, Text, Title, YesButton } from "./PoupContent.style";
+import { ActivityPreview, Ball, Buttons, Container, FocusDiv, NoButton, OffCircle, Slot, Text, Title, TitleContainer, YesButton } from "./PoupContent.style";
 import { useEffect, useRef, useState } from "react";
+import { AlertTriangle } from "react-feather";
+import { colors } from "src/colors";
 
 interface props {
     type: "confirm" | "discard";
@@ -31,10 +33,24 @@ export default function PopupContent({type, dayIndex, activity, onYes, onNo}: pr
 
     if(type === "discard") return (
         <Container>
-            <Title>
-                {popupTexts.woah}            
-            </Title>
-            <Text>
+            <TitleContainer>
+                <Title>
+                    {popupTexts.woah}            
+                </Title>
+                <AlertTriangle
+                    width={30}
+                    height={30}
+                    strokeWidth={1.5}
+                    style={{
+                        position: "absolute",
+                        right: 13,
+                        top: 13,
+                        zIndex: 100,
+                    }}
+                />
+                <OffCircle/>
+            </TitleContainer>
+            <Text style={{maxWidth: "80%"}}>
                 {popupTexts.confirmDiscard}
             </Text>
             <Buttons>

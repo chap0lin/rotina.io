@@ -197,14 +197,14 @@ export const reactToClick = (
     .to(what, {
       rotate: -90,
       ease: "back",
-      duration: duration ? duration / 2 : 0.5,
+      duration: duration ? duration / 4 : 0.25,
       delay: delay ?? 0,
     })
     .call(onClick)
     .to(what, {
       rotate: 0,
       ease: "back",
-      duration: duration ? duration / 2 : 0.5,
+      duration: duration ? 3 * duration / 4 : 0.75,
     });
     
 };

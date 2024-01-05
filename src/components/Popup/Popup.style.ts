@@ -32,7 +32,7 @@ export const PopupContainer = styled.div`
   width: 360px;
   border-radius: 15px;
   background: ${colors.white};
-  opacity: 0.95;
+  opacity: 0.97;
   @media (max-height: 750px) {
     padding: 15px 15px 0 15px;
     width: 330px;

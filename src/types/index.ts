@@ -22,9 +22,10 @@ export type activityType = {
   startsAt: timeType;
   endsAt: timeType;
   color: string;
+  notes: string[];
 };
 
-export type popupType = "info" | "warning" | "warning-success" | "warning-alert" | "warning-failure" | "cookies";
+export type popupType = "info" | "prompt" | "warning-success" | "warning-alert" | "warning-failure" | "cookies";
 
 export type dayType = {
   day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";

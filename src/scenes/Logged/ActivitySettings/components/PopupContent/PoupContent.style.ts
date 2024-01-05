@@ -20,6 +20,28 @@ const Button = styled.div`
 
 export const Container = styled(FlexColumn)`
     gap: 5px;
+    overflow: hidden;
+    border-radius: 0 20px;
+`;
+
+export const TitleContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+`;
+
+export const OffCircle = styled.div`
+    position: absolute;
+    background: ${colors.yellow};
+    right: -35px;
+    top: -35px;
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    transform: rotate(45deg);
+    z-index: 0;
 `;
 
 export const Title = styled.p`

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { stringifyTime, parseTime, isEqual, isAfter } from "src/functions/time";
 import { activityType, timeType } from "src/types";
 import { activitySelectionType } from "../Logged";
+import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { colors } from "src/colors";
 import { texts } from "./ActivitySettings.lang";
@@ -9,7 +10,6 @@ import Preview from "./components/Preview";
 import ColorOption from "./components/ColorOption";
 import PopupContent from "./components/PopupContent";
 import { Background, ColorPalette, DayOption, Edit, Hint, HourInput, HourInputText, HourInputs, Input, Inputs, Weekdays } from "./ActivitySettings.style";
-import { areActivitiesEqual } from "src/functions";
 
 const colorsAvailable = [
     colors.darkRed,
@@ -32,14 +32,12 @@ type propertyType = whatType | whereType | whoType | startType | endType | color
 interface props {
     currentlyEditing: activitySelectionType | null;
     checkConflicts: (day: number, activity: activityType) => activityType;
-    onConfirmClick: (day: number, activity: activityType) => void;
+    onConfirmClick: (day: number, activity: activityType, goBack?: boolean) => void;
     onDiscardClick: () => void;
-    onPopupShow: () => void;
-    onPopupHide: () => void;
 }
 
 
-export default function ActivitySettings({currentlyEditing, checkConflicts, onConfirmClick, onDiscardClick, onPopupShow, onPopupHide}: props){
+export default function ActivitySettings({currentlyEditing, checkConflicts, onConfirmClick, onDiscardClick}: props){
     const { language, showPopup, hidePopup } = useGlobalContext();
     const detailsTexts = texts.get(language); 
     const [selectedDay, setSelectedDay] = useState<number>(() => 0);
@@ -74,17 +72,15 @@ export default function ActivitySettings({currentlyEditing, checkConflicts, onCo
                 dayIndex={selectedDay}
                 activity={newActivity}
                 onYes={() => {
-                    onConfirmClick(selectedDay, newActivity);
+                    onConfirmClick(selectedDay, newActivity, true);
                     resetAll();
                     hidePopup();
-                    onPopupHide();
                 }}
                 onNo={() => {
                     hidePopup();
-                    onPopupHide();
                 }}
-            />, "warning");
-        onPopupShow();
+            />,
+        {type: "prompt"});
     }
 
     const confirmDiscardChanges = () => {
@@ -103,14 +99,11 @@ export default function ActivitySettings({currentlyEditing, checkConflicts, onCo
                     onDiscardClick();
                     resetAll();
                     hidePopup();
-                    onPopupHide();
                 }}
                 onNo={() => {
                     hidePopup();
-                    onPopupHide();
                 }}
-            />, "warning-alert");
-        onPopupShow();
+        />, {type: "prompt"});
     }
 
     useEffect(() => {

@@ -23,17 +23,18 @@ interface props {
   logo?: boolean;
   user?: boolean;
   lang?: boolean;
-  blurry?: boolean;
   arrow?: () => void;
+  onBlurClear?: () => void; 
 }
 
-export default function Header({ show, logo, user, lang, blurry, arrow }: props) {
-  const { innerHeight, setLanguage, showPopup } = useGlobalContext();
+export default function Header({ show, logo, user, lang, arrow, onBlurClear }: props) {
+  const { innerHeight, popupType, setLanguage, showPopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
     () => false
   );
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
   const isAnyMenuShowing = showLanguagesMenu || showUserMenu;
+  const blurry = (popupType === "prompt");
 
   const containerRef = useRef(null);
   const logoRef = useRef(null);
@@ -50,6 +51,7 @@ export default function Header({ show, logo, user, lang, blurry, arrow }: props)
   const clear = () => {
     setShowLanguagesMenu(false);
     setShowUserMenu(false);
+    onBlurClear && onBlurClear();
   };
 
   const handleLanguageSelection = (newLang: languageOption) => {
@@ -59,7 +61,7 @@ export default function Header({ show, logo, user, lang, blurry, arrow }: props)
 
   const handleUserSelection = (option: string) => {
     setShowUserMenu((prev) => !prev);
-    showPopup(`//TODO - ${option}`, "warning-alert", 4000);
+    showPopup(`//TODO - ${option}`, {type: "warning-alert", timeout: 4000});
   };
 
   const handleUserIconClick = () => {

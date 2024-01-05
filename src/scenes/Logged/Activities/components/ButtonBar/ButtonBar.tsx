@@ -1,23 +1,23 @@
 import { useEffect, useRef } from "react";
+import { fadeIn, fadeOut, move, reactToClick, resize } from "src/functions/animation";
+import { Settings, Edit, Plus, XCircle } from "react-feather";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { colors } from "src/colors";
 import { texts } from "./ButtonBar.lang";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { Check, Edit2, Plus, XCircle } from "react-feather";
-import { fadeIn, fadeOut, move, reactToClick, resize } from "src/functions/animation";
 import CustomCircleIcon from "../../../../../components/CustomCircleIcon";
 import { AddButton, AddIcon, AddText, ButtonsContainer, Gsap } from "./ButtonBar.style";
 
 interface props {
     activitySelected: boolean;
     onAddClick: () => void;
-    onAcceptClick: () => void;
+    onNotesClick: () => void;
     onEditClick: () => void;
     onDeleteClick: () => void;
 }
 
 const ANIMATION_DELAY = 1;
 
-export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, onEditClick, onDeleteClick}: props){
+export default function ButtonBar({activitySelected, onAddClick, onNotesClick, onEditClick, onDeleteClick}: props){
     const { language, innerHeight } = useGlobalContext();
     const iconSize = (innerHeight > 750) ? 50 : 43;
     const iconSpacing = (innerHeight > 750)? 70 : 60;
@@ -58,14 +58,14 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                 acceptRef.current,
                 deleteRef.current,
             ], 0.5);
-            move(deleteRef.current, {x: iconSpacing}, ANIMATION_DELAY);
-            move(editRef.current, {x: 2 * iconSpacing}, ANIMATION_DELAY); 
+            move(deleteRef.current, {x: 2 * iconSpacing}, ANIMATION_DELAY);
+            move(acceptRef.current, {x: iconSpacing}, ANIMATION_DELAY); 
         }
     }, [activitySelected]);
 
     return (
         <ButtonsContainer>
-            <AddButton ref={addRef} onClick={() => reactToClick(addIconRef.current, onAddClick, 0.5)}>
+            <AddButton ref={addRef} onClick={() => reactToClick(addIconRef.current, onAddClick)}>
                 <AddText>
                     {barTexts.new}
                 </AddText>
@@ -78,30 +78,30 @@ export default function ButtonBar({activitySelected, onAddClick, onAcceptClick, 
                     />
                 </AddIcon>
             </AddButton>
-            <Gsap ref={acceptRef} onClick={() => activitySelected && reactToClick(acceptRef.current, onAcceptClick, 0.5)}>
+            <Gsap ref={acceptRef} onClick={() => activitySelected && reactToClick(acceptRef.current, onNotesClick)}>
                 <CustomCircleIcon
-                    innerIcon={Check}
+                    innerIcon={Edit}
                     width={iconSize}
                     height={iconSize}
-                    strokeWidth={0.8}
-                    color={colors.green}
+                    strokeWidth={0.6}
+                    color={colors.black}
                 />
             </Gsap>
-            <Gsap ref={editRef} onClick={() => activitySelected && reactToClick(editRef.current, onEditClick, 0.5)}>
+            <Gsap ref={editRef} onClick={() => activitySelected && reactToClick(editRef.current, onEditClick)}>
                 <CustomCircleIcon
-                    innerIcon={Edit2}
+                    innerIcon={Settings}
                     width={iconSize}
                     height={iconSize}
-                    strokeWidth={0.8}
+                    strokeWidth={0.6}
                     sizeRatio={0.45}
                     color={colors.black}
                 />
             </Gsap>
-            <Gsap ref={deleteRef} onClick={() => activitySelected && reactToClick(deleteRef.current, onDeleteClick, 0.5)}>
+            <Gsap ref={deleteRef} onClick={() => activitySelected && reactToClick(deleteRef.current, onDeleteClick)}>
                 <XCircle
                     width={iconSize}
                     height={iconSize}
-                    strokeWidth={0.8}
+                    strokeWidth={0.6}
                     color={colors.red}
                 />
             </Gsap>

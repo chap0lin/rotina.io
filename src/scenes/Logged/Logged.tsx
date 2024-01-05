@@ -29,11 +29,16 @@ export type activitySelectionType = {
   day: number;
 }
 
+const selectionIsValid = (selection: activitySelectionType) => {
+  if(!selection || !selection.activity || (typeof selection.day !== "number")) return false;
+  if(selection.day < 0) return false;
+  return true;
+}
+
 export default function Logged() {
   const navigate = useNavigate();
   const { language, user, innerWidth, showPopup } = useGlobalContext();
   const [ hour ] = useTime();
-  const [blur, setBlur] = useState<boolean>(() => false);
   const [screen, setScreen] = useState<screens>(() => "dashboard");
   const [dayIndex, setDayIndex] = useState<number>(0);
   const [todoList, setTodoList] = useState<string[]>([]);
@@ -85,29 +90,40 @@ export default function Logged() {
     setScreen("activity-settings");
   }
 
-  const updateActivities = (day: number, newOrEditedActivity: activityType) => {
-    if(!areActivitiesEqual(selected.activity, newOrEditedActivity) || (day !== selected.day)){
-      selected.activity && deleteSelected();
-      const newWeek = [...weekActivities];
-      newWeek[day].push(newOrEditedActivity);
-      newWeek[day].sort((a, b) => (isBefore(a.startsAt,b.startsAt)? -1 : 1));
-      setWeekActivities(newWeek);
-      setSelected((prev) => ({...prev, activity: null})); 
-    }
-    goBack();
+  const addActivity = (selection: activitySelectionType) => {
+    if(!selectionIsValid(selection)) return;
+    const newWeek = [...weekActivities];
+    newWeek[selection.day].push(selection.activity);
+    newWeek[selection.day].sort((a, b) => (isBefore(a.startsAt,b.startsAt)? -1 : 1));
+    setWeekActivities(newWeek);
   }
 
-  const deleteSelected = (notify?: boolean) => {
-    const weekIndex = selected.day;
-    const weekdayIndex = weekActivities[weekIndex].findIndex(act => areActivitiesEqual(act, selected.activity));
-    if(weekIndex > -1){
-      const newWeek = [...weekActivities];
-      newWeek[weekIndex].splice(weekdayIndex, 1);
-      setWeekActivities(newWeek);
-      setSelected((prev) => ({...prev, activity: null}));
-      //TODO send updated selection to server
-      notify && showPopup(loggedTexts.activityDeleted, "warning-success", 4000);
-    }
+  const deleteActivity = (selection: activitySelectionType) => {
+    if(!selectionIsValid(selection)) return;
+    const index = weekActivities[selection.day].findIndex(
+      act => areActivitiesEqual(act, selection.activity)
+    );
+    const newWeek = [...weekActivities];
+    newWeek[selection.day].splice(index, 1);
+    setWeekActivities(newWeek);
+    setSelected((prev) => ({...prev, activity: null}));
+  }
+
+  const updateActivities = (day: number, activity: activityType, shouldGoBack?: boolean) => {
+    if(areActivitiesEqual(selected.activity, activity) && (selected.day == day)) return;
+    deleteActivity(selected);
+    addActivity({activity, day});
+    setSelected((prev) => ({...prev, activity: null}));
+    shouldGoBack && goBack();
+  }
+
+  const deleteSelected = (notify?: boolean) => {    //TODO send updated selection to server
+    deleteActivity(selected);
+    notify && showPopup(
+      loggedTexts.activityDeleted, {
+      type: "warning-success",
+      timeout: 4000
+    });
   }
 
   const discardChanges = () => {
@@ -115,6 +131,17 @@ export default function Logged() {
     goBack();
   }
 
+  const updateNotes = (updatedActivity: activityType) => {
+    updateActivities(selected.day, updatedActivity);
+  } 
+
+  const selectAndUpdateNotes = (activity: activityType, notes: string[], day: number) => {
+    const oldOne = activity;
+    const newOne = {...activity, notes};
+    deleteActivity({activity: oldOne, day});
+    addActivity({activity: newOne, day});
+  }
+  
 
   //COMUNICAÇÃO COM SERVIDOR/////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -136,7 +163,10 @@ export default function Logged() {
   const getDataFromServerReply = (reply: serverReplyType) => {
     const stringifiedData = reply.split("==");
     if (!stringifiedData || stringifiedData.length < 4) {
-      showPopup(loggedTexts.errorFetchingData, "warning-failure", 4000);
+      showPopup(
+        loggedTexts.errorFetchingData, {
+        type: "warning-failure", timeout: 4000
+      });
       return;
     }
     setWeekActivities(JSON.parse(stringifiedData.at(1)));
@@ -150,7 +180,10 @@ export default function Logged() {
       case "ERROR":
       case "ERROR_MISSING_CREDENTIALS":
       case "ERROR_NO_REGISTERED_USER":
-        showPopup(loggedTexts.somethingWentWrong, "warning-failure", 4000);
+        showPopup(
+          loggedTexts.somethingWentWrong,
+          {type: "warning-failure", timeout: 4000
+        });
         break;
       default:
         if (reply.includes("SUCCESS_DATA")) {
@@ -177,10 +210,6 @@ export default function Logged() {
     const date = new Date();
     setDayIndex((date.getDay() + 6) % 7);       //here, 0 equals monday and 6 equals sunday. Fuck the system
   }, [hour]);
-
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
 
   useLayoutEffect(() => {
     spawnAndMove(dashboardRef.current, {x: 0});
@@ -221,7 +250,6 @@ export default function Logged() {
         logo
         user
         lang
-        blurry={blur}
         show={receivedFirstContent}
         arrow={screen === "dashboard" ? null : goBack}
       />
@@ -231,9 +259,8 @@ export default function Logged() {
                 todayIndex={dayIndex}
                 show={receivedFirstContent}
                 weekActivities={weekActivities}
-                shoppingList={shoppingList}
-                todoList={todoList}
                 onCalendarClick={() => setScreen("activities")}
+                onNotesUpdate={selectAndUpdateNotes}
             />
         </SmallContainer>
         <SmallContainer ref={activitiesRef}>
@@ -245,8 +272,7 @@ export default function Logged() {
               onDeleteClick={() => deleteSelected(true)}
               onEditClick={editSelected}
               onNewClick={createNewActivity}
-              onPopupShow={() => setBlur(true)}
-              onPopupHide={() => setBlur(false)}
+              onNotesUpdate={updateNotes}
             />
         </SmallContainer>
         <SmallContainer ref={newActivityRef}>
@@ -255,8 +281,6 @@ export default function Logged() {
               onDiscardClick={discardChanges}
               checkConflicts={checkConflicts}
               onConfirmClick={updateActivities}
-              onPopupShow={() => setBlur(true)}
-              onPopupHide={() => setBlur(false)}
             />
         </SmallContainer>
       </BigContainer>

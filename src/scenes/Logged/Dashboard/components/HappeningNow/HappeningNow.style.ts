@@ -48,3 +48,5 @@ export const ButtonText = styled.p`
     font-size: 16px;
   }
 `;
+
+export const Icon = styled.div``;

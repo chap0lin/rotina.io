@@ -24,6 +24,7 @@ export const areActivitiesEqual = (act1: activityType, act2: activityType): bool
       act1.startsAt.hour === act2.startsAt.hour &&
       act1.startsAt.minute === act2.startsAt.minute &&
       act1.endsAt.hour === act2.endsAt.hour && 
-      act1.endsAt.minute === act2.endsAt.minute
+      act1.endsAt.minute === act2.endsAt.minute &&
+      act1.notes === act2.notes
   );
 }

@@ -6,6 +6,7 @@ import ButtonBar from "./components/ButtonBar/ButtonBar";
 import DayViewer from "./components/DayViewer";
 import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
 import PopupContent from "./components/PopupContent";
+import { Notes } from "src/components";
 
 interface props {
     todayIndex: number;
@@ -15,11 +16,10 @@ interface props {
     onNewClick: (day: number) => void;
     onDeleteClick: () => void;
     onEditClick: () => void;
-    onPopupShow: () => void;
-    onPopupHide: () => void;
+    onNotesUpdate: (activity: activityType) => void;
 }
 
-export default function Activities({todayIndex, weekActivities, currentlyEditing, onPopupHide, onPopupShow, onActivityClick, onDeleteClick, onEditClick, onNewClick}: props){
+export default function Activities({todayIndex, weekActivities, currentlyEditing, onActivityClick, onDeleteClick, onEditClick, onNewClick, onNotesUpdate}: props){
     const { language, innerWidth, showPopup, hidePopup } = useGlobalContext();
     const activitiesTexts = texts.get(language);
     const selectedScroll = useRef<number>(0);
@@ -45,15 +45,25 @@ export default function Activities({todayIndex, weekActivities, currentlyEditing
                 activity={currentlyEditing}
                 onYes={() => {
                     hidePopup();
-                    onPopupHide();
                     setTimeout(onDeleteClick, 200);
                 }}
                 onNo={() => {
                     hidePopup();
-                    onPopupHide();
                 }}
-            />, "warning");
-        onPopupShow();
+            />
+        , {type: "prompt"});
+    }
+
+    const showNotes = () => {
+        showPopup(
+            <Notes
+                activity={currentlyEditing}
+                onNotesUpdate={(notes) => {
+                    onNotesUpdate({...currentlyEditing, notes});
+                    hidePopup();
+                }}
+            />
+        , {type: "prompt"});
     }
 
     return (
@@ -78,7 +88,7 @@ export default function Activities({todayIndex, weekActivities, currentlyEditing
             <ButtonBarContainer>
                 <ButtonBar 
                     activitySelected={!!currentlyEditing}
-                    onAcceptClick={() => onActivitySelect(null)}  
+                    onNotesClick={showNotes}  
                     onAddClick={() => onNewClick(selectedDayRef.current)}
                     onDeleteClick={confirmDelete}
                     onEditClick={onEditClick}

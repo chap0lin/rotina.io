@@ -90,7 +90,7 @@ export const ActivitySymbol = styled.div`
     top: 80px;
     left: 4px;
     width: 10px;
-    height: 15px;
+    height: 10px;
     border-radius: 3px;
     transition: background 0.25s;
     @media(max-height: 740px){

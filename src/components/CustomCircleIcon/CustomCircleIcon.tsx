@@ -8,6 +8,7 @@ interface props {
     strokeWidth: number,
     color: string,
     sizeRatio?: number,
+
 }
 
 const DEFAULT_SIZE_RATIO = 0.5;
@@ -32,7 +33,7 @@ export default function CustomCircleIcon({innerIcon, width, height, strokeWidth,
     const InnerIcon = innerIcon;
 
     return (
-        <Stack style={{...iconProps}}>
+        <Stack style={{...iconProps, borderRadius: "100%"}}>
             <Item style={{...iconProps}}>
                 <Circle {...iconProps}/>
             </Item>

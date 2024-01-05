@@ -16,28 +16,28 @@ import {
   Section,
   SectionTitle,
 } from "./Dashboard.style";
+import { Notes } from "src/components";
 
 interface props {
   todayIndex: number;
   show: boolean;
   weekActivities: activityType[][],
-  todoList: string[],
-  shoppingList: string[],
   onCalendarClick: () => void,
+  onNotesUpdate: (activity: activityType, notes: string[], day: number) => void,
 }
 
-export default function Dashboard({todayIndex, show, weekActivities, todoList, shoppingList, onCalendarClick} : props) {
-  const { language, innerHeight, showPopup } = useGlobalContext();
+export default function Dashboard({todayIndex, show, weekActivities, onCalendarClick, onNotesUpdate} : props) {
+  const { language, innerHeight, showPopup, hidePopup } = useGlobalContext();
   const [hour, minute] = useTime();
-  const [happeningNow, setHappeningNow] = useState<activityType | undefined>();
-  const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>();
+  const [happeningNow, setHappeningNow] = useState<activityType | undefined>(() => null);
+  const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>(() => null);
+  const [takingNotes, setTakingNotes] = useState<activityType>(() => null);
 
   const nowTitleRef = useRef(null);
   const laterTitleRef = useRef(null);
   const mainContentRef = useRef(null);
   const laterSectionRef = useRef(null);
   const loggedTexts = texts.get(language);
-
 
   useEffect(() => {
     const activityList = weekActivities? weekActivities[todayIndex] : [];
@@ -60,12 +60,28 @@ export default function Dashboard({todayIndex, show, weekActivities, todoList, s
     );
   }, [weekActivities, hour, minute]);
 
+
+  useEffect(() => {
+    takingNotes && showPopup(
+      <Notes
+        activity={takingNotes}
+        onNotesUpdate={(notes) => {
+          onNotesUpdate(takingNotes, notes, todayIndex);
+          hidePopup();
+          setTakingNotes(null);
+        }}
+      />
+  , {type: "prompt"});
+  }, [takingNotes]);
+
+
   useEffect(() => {
     const dy = innerHeight > 750 ? -50 : -30;
     const newHeight = (innerHeight > 750 ? 250 : 200) - dy;
     move(laterSectionRef.current, { y: happeningNow ? 0 : dy }, 1);
     resize(laterSectionRef.current, { height: newHeight }, 1);
   }, [happeningNow, innerHeight]);
+
 
   useLayoutEffect(() => {
     if (!show) {
@@ -77,10 +93,12 @@ export default function Dashboard({todayIndex, show, weekActivities, todoList, s
     }
   }, [show]);
 
+
   useLayoutEffect(() => {
     move(nowTitleRef.current, { x: -400 });
     move(laterTitleRef.current, { x: -400 });
   }, []);
+
 
   return (
     <Background>
@@ -100,7 +118,7 @@ export default function Dashboard({todayIndex, show, weekActivities, todoList, s
           <HappeningNow
             show={show}
             happeningNow={happeningNow}
-            onNotesClick={() => showPopup("//TODO", "warning-failure", 4000)}
+            onNotesClick={() => setTakingNotes(happeningNow)}
           />
         </Section>
         <Section ref={laterSectionRef}>

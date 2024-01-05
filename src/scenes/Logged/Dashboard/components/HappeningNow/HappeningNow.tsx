@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { move, fade } from "src/functions/animation";
+import { move, fade, reactToClick } from "src/functions/animation";
 import { ActivityCard, Button } from "src/components";
 import { activityType } from "src/types";
 import { texts } from "./HappeningNow.lang";
@@ -12,6 +12,7 @@ import {
   Section,
   GsapActivity,
   GsapHappening,
+  Icon,
 } from "./HappeningNow.style";
 
 interface props {
@@ -33,6 +34,7 @@ export default function HappeningNow({
   const nothingRef = useRef(null);
   const happeningRef = useRef(null);
   const buttonRef = useRef(null);
+  const iconRef = useRef(null);
 
   useLayoutEffect(() => {
     move(buttonRef.current, { y: 0 });
@@ -62,17 +64,25 @@ export default function HappeningNow({
           </GsapHappening>
           <Gsap ref={buttonRef}>
             <Button
-              onClick={onNotesClick}
+              onClick={() => reactToClick(iconRef.current, onNotesClick)}
               width={"85%"}
               height={buttonHeight}
               borderRadius={15}>
               <ButtonText>{happeningTexts.notes}</ButtonText>
-              <Edit
-                width={buttonHeight / 2}
-                height={buttonHeight / 2}
-                color={colors.white}
-                strokeWidth={1.2}
-              />
+              <Icon
+                ref={iconRef}
+                style={{
+                  width: buttonHeight / 2,
+                  height: buttonHeight / 2,
+                }}
+              >
+                <Edit
+                  width={"100%"}
+                  height={"100%"}
+                  color={colors.white}
+                  strokeWidth={1}
+                />
+              </Icon>
             </Button>
           </Gsap>
         </GsapActivity>

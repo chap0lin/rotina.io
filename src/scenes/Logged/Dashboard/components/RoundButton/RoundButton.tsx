@@ -12,7 +12,7 @@ export default function RoundButton({ show, onClick }: props) {
   const iconRef = useRef(null);
 
   const onButtonClick = () => {
-    reactToClick(iconRef.current, onClick, 0.5);
+    reactToClick(iconRef.current, onClick);
   };
 
   useLayoutEffect(() => {

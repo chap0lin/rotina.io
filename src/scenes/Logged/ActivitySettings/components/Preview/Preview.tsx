@@ -33,11 +33,11 @@ export default function Preview({title, errorMsg, activity, onConfirm, onDiscard
     }
 
     const onConfirmClick = () => {
-        !isDisabled() && reactToClick(yesRef.current, onConfirm, 0.5);
+        !isDisabled() && reactToClick(yesRef.current, onConfirm);
     }
 
     const onDiscardClick = () => {
-        reactToClick(noRef.current, onDiscard, 0.5);
+        reactToClick(noRef.current, onDiscard);
     }
 
     return (

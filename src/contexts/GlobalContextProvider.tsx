@@ -4,26 +4,33 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
 } from "react";
 import gsap from "gsap";
 import { languageOption, popupType, userType } from "../types";
 import { colors } from "src/colors";
 import { Popup } from "src/components";
 
+interface popupPropsType {
+  type?: popupType,
+  timeout?: number,
+  height?: number,
+}
+
+interface GlobalProviderProps {
+  children: ReactNode;
+}
 interface GlobalContextValue {
   keyPressed: string;
   innerHeight: number;
   innerWidth: number;
   user: userType | null;
   language: languageOption;
+  popupType: string | null;
   setUser: React.Dispatch<React.SetStateAction<userType>>;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
-  showPopup: (message: string | JSX.Element, type?: popupType, timeout?: number) => void;
+  showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
   hidePopup: () => void;
-}
-
-interface GlobalProviderProps {
-  children: ReactNode;
 }
 
 const initialValues: GlobalContextValue = {
@@ -32,6 +39,7 @@ const initialValues: GlobalContextValue = {
   innerWidth: 1366,
   user: null,
   language: "pt-br",
+  popupType: null,
   setUser: () => null,
   setLanguage: () => null,
   showPopup: () => null,
@@ -57,11 +65,13 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [innerHeight, setInnerHeight] = useState<number>(
     () => window.innerHeight
   );
-  const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [user, setUser] = useState<userType>(() => null);
+  const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
-  const [popupType, setPopupType] = useState<popupType>(() => "info");
-  const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
+  const [popupType, setPopupType] = useState<popupType>(() => null);
+  const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false); 
+
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const handleResize = () => {
     setInnerHeight(window.innerHeight);
@@ -72,24 +82,23 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
-  const showPopup = (message: string | JSX.Element, type?: popupType, timeout?: number) => {
-    if(popupVisibility){
-      setPopupVisibility(false);
-      setTimeout(() => {
-        showPopup(message, type, timeout);
-      }, 200);
-      return;
-    }
+
+  const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {
+    if(timeoutRef.current) clearTimeout(timeoutRef.current);
+    const type = props? props.type : null;
+    const timeout = props? props.timeout : null; 
     setPopupText(message);
     setPopupType(type?? "warning-failure");
     setPopupVisibility(true);
-    timeout && setTimeout(() => {
+    if(!timeout) return null;
+    timeoutRef.current = setTimeout(() => {
       setPopupVisibility(false);
     }, timeout);
   };
 
   const hidePopup = () => {
     setPopupVisibility(false);
+    setPopupType(null);
   }
 
   useEffect(() => {
@@ -115,6 +124,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     innerHeight,
     user,
     language,
+    popupType,
     setUser,
     setLanguage,
     showPopup,
