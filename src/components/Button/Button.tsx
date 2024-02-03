@@ -38,7 +38,7 @@ export default function Button({
     height: height ?? "50px",
     color: color ?? colors.white,
     backgroundColor: background ?? colors.black,
-    border: border?? "none",
+    border: border ?? "none",
     borderRadius: borderRadius ?? "20px",
     padding: padding ?? "10px 20px",
   };

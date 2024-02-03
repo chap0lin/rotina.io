@@ -14,6 +14,9 @@ export const Section = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
+  @media (max-height: 750px) {
+    gap: 12px;
+  }
 `;
 
 export const EmptyFooter = styled.div`

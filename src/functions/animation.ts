@@ -50,7 +50,7 @@ export const spawn = (
   gsap
     .timeline()
     .to(what, {
-      display: display ?? "inline",
+      display: display ?? "flex",
       duration: 0,
     })
     .to(what, {
@@ -83,16 +83,20 @@ export const spawnAndMove = (
   gsap
     .timeline()
     .to(what, {
-      display: display ?? "inline",
+      display: display ?? "unset",
       opacity: 0,
       duration: 0,
     })
     .to(what, {
       ...where,
-      opacity: 1,
       ease: "back",
       duration: duration ?? 0,
     });
+  gsap.to(what, {
+    opacity: 1,
+    duration: duration ? 1.25 * duration : 0,
+    ease: "back",
+  });
 };
 
 export const moveAndVanish = (
@@ -100,11 +104,15 @@ export const moveAndVanish = (
   where: coordinateType,
   duration?: number
 ) => {
+  gsap.to(what, {
+    opacity: 0,
+    duration: duration ? 1.5 * duration : 0,
+    ease: "back",
+  });
   gsap
     .timeline()
     .to(what, {
       ...where,
-      opacity: 0,
       ease: "back",
       duration: duration ?? 0,
     })
@@ -123,7 +131,7 @@ export const spawnAndScale = (
   gsap
     .timeline()
     .to(what, {
-      display: display ?? "inline",
+      display: display ?? "flex",
       opacity: 1,
       scale: 0,
       duration: 0,
@@ -190,23 +198,23 @@ export const reactToClick = (
   what: gsap.TweenTarget,
   onClick: () => void,
   duration?: number,
-  delay?: number
+  side?: "left" | "right"
 ) => {
+  const angle = side && side === "left" ? 90 : -90;
+
   gsap
     .timeline()
     .to(what, {
-      rotate: -90,
+      rotate: angle,
       ease: "back",
       duration: duration ? duration / 4 : 0.25,
-      delay: delay ?? 0,
     })
     .call(onClick)
     .to(what, {
       rotate: 0,
       ease: "back",
-      duration: duration ? 3 * duration / 4 : 0.75,
+      duration: duration ? (3 * duration) / 4 : 0.75,
     });
-    
 };
 
 export const rotate = (
@@ -221,4 +229,4 @@ export const rotate = (
     duration: duration ?? 0,
     delay: delay ?? 0,
   });
-}
+};

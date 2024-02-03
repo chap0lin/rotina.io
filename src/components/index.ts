@@ -10,4 +10,3 @@ export { default as Loading } from "./Loading";
 export { default as ActivityCard } from "./ActivityCard";
 export { default as CustomCircleIcon } from "./CustomCircleIcon";
 export { default as Notes } from "./Notes";
-

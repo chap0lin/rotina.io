@@ -25,12 +25,13 @@ export default function HappeningLater({ show, happeningLater }: props) {
   }, [show]);
 
   return (
-    <Section style={{ height: innerHeight / 3 }} ref={sectionRef}>
-      {happeningLater && happeningLater.map((act, index) => (
-        <Snap key={index}>
-          <ActivityCard {...act} />
-        </Snap>
-      ))}
+    <Section ref={sectionRef}>
+      {happeningLater &&
+        happeningLater.map((act, index) => (
+          <Snap key={index}>
+            <ActivityCard {...act} />
+          </Snap>
+        ))}
       <Snap>
         <ActivityCard
           highlighted={false}

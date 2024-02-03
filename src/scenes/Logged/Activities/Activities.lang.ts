@@ -8,15 +8,7 @@ type textTypes = {
 const texts = new Map<languageOption, textTypes>();
 
 texts.set("pt-br", {
-  days: [
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-    "Domingo",
-  ],
+  days: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"],
   manageActivities: "Gerenciar atividades",
 });
 

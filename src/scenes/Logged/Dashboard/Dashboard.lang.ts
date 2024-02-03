@@ -6,6 +6,8 @@ type textTypes = {
   placeholders: string[];
   happeningNow: string;
   whatsNext: string;
+  week: string;
+  lists: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
@@ -32,6 +34,8 @@ texts.set("pt-br", {
   ],
   happeningNow: "Rolando agora",
   whatsNext: "A seguir",
+  week: "semana",
+  lists: "listas",
 });
 
 texts.set("en-us", {
@@ -56,6 +60,8 @@ texts.set("en-us", {
   ],
   happeningNow: "Happening now",
   whatsNext: "What's next",
+  week: "week",
+  lists: "lists",
 });
 
 export { texts };

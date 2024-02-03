@@ -1,17 +1,20 @@
 import { languageOption } from "src/types";
 
 type textTypes = {
-  allQuiethere: string;
+  week: string;
+  lists: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
 
 texts.set("pt-br", {
-  allQuiethere: "Tudo quieto por aqui.",
+  week: "semana",
+  lists: "listas",
 });
 
 texts.set("en-us", {
-  allQuiethere: "All quiet here.",
+  week: "week",
+  lists: "lists",
 });
 
 export { texts };

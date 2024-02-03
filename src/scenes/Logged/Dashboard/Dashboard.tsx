@@ -5,7 +5,8 @@ import { activityType } from "src/types";
 import { texts } from "./Dashboard.lang";
 import { useTime } from "src/hooks/time";
 import { isAfter, isBefore } from "src/functions/time";
-import { HappeningNow, HappeningLater, RoundButton } from "./components/index";
+import { HappeningNow, HappeningLater, MenuButtons } from "./components/index";
+import { Notes } from "src/components";
 import {
   Background,
   BigBold,
@@ -15,32 +16,44 @@ import {
   TopTexts,
   Section,
   SectionTitle,
+  BottomContainer,
 } from "./Dashboard.style";
-import { Notes } from "src/components";
 
 interface props {
   todayIndex: number;
   show: boolean;
-  weekActivities: activityType[][],
-  onCalendarClick: () => void,
-  onNotesUpdate: (activity: activityType, notes: string[], day: number) => void,
+  weekActivities: activityType[][];
+  onCalendarClick: () => void;
+  onNotesUpdate: (activity: activityType, notes: string[], day: number) => void;
 }
 
-export default function Dashboard({todayIndex, show, weekActivities, onCalendarClick, onNotesUpdate} : props) {
+export default function Dashboard({
+  todayIndex,
+  show,
+  weekActivities,
+  onCalendarClick,
+  onNotesUpdate,
+}: props) {
   const { language, innerHeight, showPopup, hidePopup } = useGlobalContext();
   const [hour, minute] = useTime();
-  const [happeningNow, setHappeningNow] = useState<activityType | undefined>(() => null);
-  const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>(() => null);
+  const [happeningNow, setHappeningNow] = useState<activityType | undefined>(
+    () => null
+  );
+  const [happeningLater, setHappeningLater] = useState<
+    activityType[] | undefined
+  >(() => null);
   const [takingNotes, setTakingNotes] = useState<activityType>(() => null);
 
   const nowTitleRef = useRef(null);
   const laterTitleRef = useRef(null);
   const mainContentRef = useRef(null);
+  const menuButtonsRef = useRef(null);
+  const nowSectionRef = useRef(null);
   const laterSectionRef = useRef(null);
   const loggedTexts = texts.get(language);
 
   useEffect(() => {
-    const activityList = weekActivities? weekActivities[todayIndex] : [];
+    const activityList = weekActivities ? weekActivities[todayIndex] : [];
     setHappeningNow(
       activityList
         .filter((act) => {
@@ -52,53 +65,59 @@ export default function Dashboard({todayIndex, show, weekActivities, onCalendarC
         .at(0)
     );
     setHappeningLater(
-      activityList.filter((act) =>
-        isAfter(act.startsAt, { hour, minute }, true)
-      ).sort((a, b) => (
-        (a.startsAt.hour*60 + a.startsAt.minute) - (b.startsAt.hour*60 + a.startsAt.minute)
-      ))
+      activityList
+        .filter((act) => isAfter(act.startsAt, { hour, minute }, true))
+        .sort(
+          (a, b) =>
+            a.startsAt.hour * 60 +
+            a.startsAt.minute -
+            (b.startsAt.hour * 60 + a.startsAt.minute)
+        )
     );
   }, [weekActivities, hour, minute]);
 
-
   useEffect(() => {
-    takingNotes && showPopup(
-      <Notes
-        activity={takingNotes}
-        onNotesUpdate={(notes) => {
-          onNotesUpdate(takingNotes, notes, todayIndex);
-          hidePopup();
-          setTakingNotes(null);
-        }}
-      />
-  , {type: "prompt"});
+    takingNotes &&
+      showPopup(
+        <Notes
+          activity={takingNotes}
+          onNotesUpdate={(notes) => {
+            onNotesUpdate(takingNotes, notes, todayIndex);
+            hidePopup();
+            setTakingNotes(null);
+          }}
+        />,
+        { type: "prompt" }
+      );
   }, [takingNotes]);
 
-
   useEffect(() => {
-    const dy = innerHeight > 750 ? -50 : -30;
-    const newHeight = (innerHeight > 750 ? 250 : 200) - dy;
-    move(laterSectionRef.current, { y: happeningNow ? 0 : dy }, 1);
-    resize(laterSectionRef.current, { height: newHeight }, 1);
-  }, [happeningNow, innerHeight]);
+    const notesButtonHeight = innerHeight > 750 ? 20 : 21;
+    const dy = happeningNow ? notesButtonHeight : 0;
+    const nowHeight = (innerHeight > 750 ? 240 : 175) + dy;
+    const laterHeight = (innerHeight > 750 ? 300 : 190) - dy;
 
+    move(laterSectionRef.current, { y: dy }, 1);
+    resize(nowSectionRef.current, { height: nowHeight }, 1);
+    resize(laterSectionRef.current, { height: laterHeight }, 1);
+  }, [happeningNow, innerHeight]);
 
   useLayoutEffect(() => {
     if (!show) {
       vanish([mainContentRef.current]);
+      move(menuButtonsRef.current, { y: 200 }, 0);
     } else {
       spawn(mainContentRef.current, 1, 0.15);
       move(nowTitleRef.current, { x: 0 }, 1, 0.15);
       move(laterTitleRef.current, { x: 0 }, 1, 0.7);
+      move(menuButtonsRef.current, { y: 0 }, 1, 1.5);
     }
   }, [show]);
-
 
   useLayoutEffect(() => {
     move(nowTitleRef.current, { x: -400 });
     move(laterTitleRef.current, { x: -400 });
   }, []);
-
 
   return (
     <Background>
@@ -111,7 +130,7 @@ export default function Dashboard({todayIndex, show, weekActivities, onCalendarC
           </BigTitle>
           <SubTitle>{loggedTexts.placeholders[todayIndex]}</SubTitle>
         </TopTexts>
-        <Section style={{ height: innerHeight / 3 }}>
+        <Section ref={nowSectionRef}>
           <SectionTitle ref={nowTitleRef}>
             {loggedTexts.happeningNow}
           </SectionTitle>
@@ -125,16 +144,16 @@ export default function Dashboard({todayIndex, show, weekActivities, onCalendarC
           <SectionTitle ref={laterTitleRef}>
             {loggedTexts.whatsNext}
           </SectionTitle>
-          <HappeningLater
-            show={show}
-            happeningLater={happeningLater}
-          />
+          <HappeningLater show={show} happeningLater={happeningLater} />
         </Section>
       </MainContent>
-      <RoundButton
-        show={show}
-        onClick={onCalendarClick}
-      />
+      <BottomContainer ref={menuButtonsRef}>
+        <MenuButtons
+          show={show}
+          onListsClick={() => null}
+          onWeekClick={onCalendarClick}
+        />
+      </BottomContainer>
     </Background>
   );
 }

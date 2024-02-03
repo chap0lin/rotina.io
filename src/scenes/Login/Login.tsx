@@ -165,19 +165,34 @@ export default function Login() {
         setScreen("sent-recovery-email");
         break;
       case "ERROR_AUTHENTICATION":
-        showPopup(loginTexts.noAccount, {type: "warning-failure", timeout: 4000});
+        showPopup(loginTexts.noAccount, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
         break;
       case "ERROR_NO_REGISTERED_USER":
-        showPopup(loginTexts.emailNotRegistered, {type: "warning-failure", timeout: 4000});
+        showPopup(loginTexts.emailNotRegistered, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
         break;
       case "ERROR_EMAIL_ALREADY_TAKEN":
-        showPopup(loginTexts.emailAlreadyExists, {type: "warning-failure", timeout: 4000});
+        showPopup(loginTexts.emailAlreadyExists, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
         break;
       case "ERROR_USERNAME_ALREADY_TAKEN":
-        showPopup(loginTexts.nameAlreadyExists, {type: "warning-failure", timeout: 4000});
+        showPopup(loginTexts.nameAlreadyExists, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
         break;
       default:
-        showPopup(loginTexts.somethingWentWrong, {type: "warning-failure", timeout: 4000});
+        showPopup(loginTexts.somethingWentWrong, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
         break;
     }
   };
@@ -243,7 +258,8 @@ export default function Login() {
         move([logoRef.current], { y: 0 }, 1);
         move([hintRef.current], { y: 220 }, 1);
         move([buttonRef.current], { y: 300 }, 1);
-        moveAndVanish([emailRef.current, repPassRef.current], { y: 90 }, 1);
+        moveAndVanish([emailRef.current], { y: 90 }, 1);
+        moveAndVanish([repPassRef.current], { y: 150 }, 1);
         spawn([signUpRef.current], 1);
         break;
       case "sign-up":
@@ -262,8 +278,9 @@ export default function Login() {
         setHintText(lang.enterEmail);
         setButtonText(lang.buttonSend);
         spawn([emailRef.current], 1);
-        vanish([nameRef.current], 1);
+        vanish([nameRef.current], 0.3);
         moveAndVanish([passRef.current], { y: 90 }, 1);
+        moveAndVanish([repPassRef.current], { y: 90 }, 1);
         move([hintRef.current], { y: 160 }, 1);
         move([buttonRef.current], { y: 240 }, 1);
         vanish([signUpRef.current], 1);

@@ -8,13 +8,13 @@ type textTypes = {
 const texts = new Map<languageOption, textTypes>();
 
 texts.set("pt-br", {
-    yes: "confirmar",
-    nope: "descartar",
+  yes: "confirmar",
+  nope: "descartar",
 });
 
 texts.set("en-us", {
-    yes: "",
-    nope: "discard",
+  yes: "",
+  nope: "discard",
 });
 
 export { texts };

@@ -39,32 +39,33 @@ export default function Credential({
 
   const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value.replace(/[<>]/g, "");
-    if(!allowSpace) {input = input.trim()};
+    if (!allowSpace) {
+      input = input.trim();
+    }
 
-    e.target.value =
-      input.length <= limit ? input : input.substring(0, limit);
+    e.target.value = input.length <= limit ? input : input.substring(0, limit);
     onChange(input.trim());
     setHasInput(input.length > 0);
   };
 
   useEffect(() => {
-    safe && !hasInput && (setHide(true));
+    safe && !hasInput && setHide(true);
   }, [hasInput]);
-  
+
   useEffect(() => {
     value && (inputRef.current.value = value);
   }, [value]);
 
   return (
-    <Container style={{
+    <Container
+      style={{
         zIndex: zIndex ?? 10,
-        border: underlined? 'none' : `1px solid ${colors.grey}`,
-      }}
-    >
+        border: underlined ? "none" : `1px solid ${colors.grey}`,
+      }}>
       {title && <Title>{title}:</Title>}
       <Input
-        style={underlined? {borderBottom: `1px solid ${colors.grey}`} : {}}
-        placeholder={placeholder?? ""}
+        style={underlined ? { borderBottom: `1px solid ${colors.grey}` } : {}}
+        placeholder={placeholder ?? ""}
         type={hide ? "password" : "text"}
         onChange={updateInput}
         disabled={disabled}

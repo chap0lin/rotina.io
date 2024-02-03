@@ -11,6 +11,7 @@ const rotate = keyframes`
 `;
 
 export const Container = styled.button`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;

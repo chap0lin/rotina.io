@@ -45,7 +45,7 @@ export const MainContent = styled(FlexColumn)`
 export const TopTexts = styled(FlexColumn)`
   height: 120px;
   @media (max-height: 750px) {
-    height: 110px;
+    height: 100px;
   }
 `;
 
@@ -80,11 +80,8 @@ export const BigBold = styled(Bold)`
 export const Section = styled(FlexColumn)`
   flex-shrink: 0;
   width: 100%;
-  flex: 1;
   gap: 20px;
-  height: 250px;
   @media (max-height: 750px) {
-    height: 200px;
     gap: 12px;
   }
 `;
@@ -95,5 +92,18 @@ export const SectionTitle = styled(Text)`
   font-weight: 600;
   @media (max-height: 750px) {
     font-size: 18px;
+  }
+`;
+
+export const BottomContainer = styled.div`
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-height: 750px) {
+    bottom: 5px;
   }
 `;

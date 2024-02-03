@@ -1,11 +1,7 @@
 import { useRef, useState, useLayoutEffect } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import {
-  LanguageSelector,
-  UserSelector,
-  BlurFix,
-} from "./components/index";
+import { LanguageSelector, UserSelector, BlurFix } from "./components/index";
 import { Logo, Blur } from "src/components";
 import { colors } from "src/colors";
 import { languageOption } from "src/types";
@@ -24,17 +20,24 @@ interface props {
   user?: boolean;
   lang?: boolean;
   arrow?: () => void;
-  onBlurClear?: () => void; 
+  onBlurClear?: () => void;
 }
 
-export default function Header({ show, logo, user, lang, arrow, onBlurClear }: props) {
+export default function Header({
+  show,
+  logo,
+  user,
+  lang,
+  arrow,
+  onBlurClear,
+}: props) {
   const { innerHeight, popupType, setLanguage, showPopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
     () => false
   );
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
   const isAnyMenuShowing = showLanguagesMenu || showUserMenu;
-  const blurry = (popupType === "prompt");
+  const blurry = popupType === "prompt";
 
   const containerRef = useRef(null);
   const logoRef = useRef(null);
@@ -61,7 +64,7 @@ export default function Header({ show, logo, user, lang, arrow, onBlurClear }: p
 
   const handleUserSelection = (option: string) => {
     setShowUserMenu((prev) => !prev);
-    showPopup(`//TODO - ${option}`, {type: "warning-alert", timeout: 4000});
+    showPopup(`//TODO - ${option}`, { type: "warning-alert", timeout: 4000 });
   };
 
   const handleUserIconClick = () => {
@@ -145,7 +148,10 @@ export default function Header({ show, logo, user, lang, arrow, onBlurClear }: p
                 onClick={handleUserIconClick}
               />
             </Clickable>
-            <BlurFix show={blurry || (isAnyMenuShowing && !showUserMenu)} onClick={clear} />
+            <BlurFix
+              show={blurry || (isAnyMenuShowing && !showUserMenu)}
+              onClick={clear}
+            />
             <UserSelector show={showUserMenu} onClick={handleUserSelection} />
           </Gsap>
           <Gsap ref={globeRef}>

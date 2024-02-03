@@ -16,8 +16,9 @@ export default function UserSelector({ show, onClick }: props) {
   const userTexts = texts.get(language);
   const navigate = useNavigate();
 
-  const options: selectionType[] = [    //TODO include the functionality for these icons
-    // {   
+  const options: selectionType[] = [
+    //TODO include the functionality for these icons
+    // {
     //   icon: <Coffee color={colors.darkWhite} width={15} height={15} />,
     //   text: userTexts.myData,
     // },

@@ -12,9 +12,9 @@ import { colors } from "src/colors";
 import { Popup } from "src/components";
 
 interface popupPropsType {
-  type?: popupType,
-  timeout?: number,
-  height?: number,
+  type?: popupType;
+  timeout?: number;
+  height?: number;
 }
 
 interface GlobalProviderProps {
@@ -59,9 +59,7 @@ export function useGlobalContext() {
 
 export default function GlobalProvider(props: GlobalProviderProps) {
   const [language, setLanguage] = useState<languageOption>(() => "pt-br");
-  const [innerWidth, setInnerWidth] = useState<number>(
-    () => window.innerWidth
-  );
+  const [innerWidth, setInnerWidth] = useState<number>(() => window.innerWidth);
   const [innerHeight, setInnerHeight] = useState<number>(
     () => window.innerHeight
   );
@@ -69,7 +67,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
   const [popupType, setPopupType] = useState<popupType>(() => null);
-  const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false); 
+  const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -82,15 +80,14 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
-
   const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {
-    if(timeoutRef.current) clearTimeout(timeoutRef.current);
-    const type = props? props.type : null;
-    const timeout = props? props.timeout : null; 
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const type = props ? props.type : null;
+    const timeout = props ? props.timeout : null;
     setPopupText(message);
-    setPopupType(type?? "warning-failure");
+    setPopupType(type ?? "warning-failure");
     setPopupVisibility(true);
-    if(!timeout) return null;
+    if (!timeout) return null;
     timeoutRef.current = setTimeout(() => {
       setPopupVisibility(false);
     }, timeout);
@@ -99,7 +96,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const hidePopup = () => {
     setPopupVisibility(false);
     setPopupType(null);
-  }
+  };
 
   useEffect(() => {
     gsap.config({ nullTargetWarn: false });

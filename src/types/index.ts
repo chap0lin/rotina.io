@@ -25,12 +25,25 @@ export type activityType = {
   notes: string[];
 };
 
-export type popupType = "info" | "prompt" | "warning-success" | "warning-alert" | "warning-failure" | "cookies";
+export type popupType =
+  | "info"
+  | "prompt"
+  | "warning-success"
+  | "warning-alert"
+  | "warning-failure"
+  | "cookies";
 
 export type dayType = {
-  day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+  day:
+    | "monday"
+    | "tuesday"
+    | "wednesday"
+    | "thursday"
+    | "friday"
+    | "saturday"
+    | "sunday";
   activities: activityType[];
-}
+};
 
 export type coordinateType = {
   x?: number;

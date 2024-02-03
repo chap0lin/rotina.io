@@ -65,21 +65,21 @@ export default function Popup({
       };
 
   const hideProps = comesFromTop
-  ? {
-      scale: 0,
-      top: -280,
-      duration: 0.6,
-      ease: "power2",
-    }
-  : {
-      scale: 0,
-      bottom: -280,
-      duration: 0.6,
-      ease: "power2",
-  };
+    ? {
+        scale: 0,
+        top: -280,
+        duration: 0.6,
+        ease: "power2",
+      }
+    : {
+        scale: 0,
+        bottom: -280,
+        duration: 0.6,
+        ease: "power2",
+      };
 
   const getBorder = () => {
-    switch(type) {
+    switch (type) {
       case "cookies":
       case "info":
       case "prompt":
@@ -91,7 +91,7 @@ export default function Popup({
       case "warning-success":
         return `2px solid ${colors.lime}`;
     }
-  }
+  };
 
   const getIcon = () => {
     switch (type) {
@@ -131,29 +131,29 @@ export default function Popup({
     height: height ?? "auto",
     backgroundColor: backgroundColor ?? colors.white,
     border: border ?? getBorder(),
-    paddingTop: (exit || title) ? "20px" : 0,
+    paddingTop: exit || title ? "20px" : 0,
   };
 
   const getPopupType = () => {
     let ref = infoRef;
-    switch(type){
-      case(null):
-      break;
-      case ("prompt"):
+    switch (type) {
+      case null:
+        break;
+      case "prompt":
         ref = warningRef;
-      break;
-      case("cookies"):
+        break;
+      case "cookies":
         ref = cookieRef;
-      break;
+        break;
       default:
         type.includes("warning") && (ref = warningRef);
     }
     return ref;
-  }
+  };
 
   useEffect(() => {
     const ref = getPopupType();
-    gsap.to(ref.current, show? releaseProps : hideProps);
+    gsap.to(ref.current, show ? releaseProps : hideProps);
   }, [show]);
 
   switch (type) {
