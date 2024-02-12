@@ -21,7 +21,7 @@ interface props {
   endsAt?: timeType;
   color?: string;
   highlighted?: boolean;
-  placeholder?: string | string[];
+  placeholder?: string[] | JSX.Element;
   noSnap?: boolean;
 }
 
@@ -44,21 +44,18 @@ export default function ActivityCard({
   };
 
   const PlaceholderContent = () => {
-    if (typeof placeholder === "string")
-      return (
-        <Placeholder style={cardStyle}>
-          <PlaceText style={{ color: cardStyle.color }}>
-            {placeholder}
-          </PlaceText>
-        </Placeholder>
-      );
-    return (
+    if(Array.isArray(placeholder)) return (
       <Placeholder style={cardStyle}>
         {placeholder.map((text, index) => (
           <PlaceText key={index} style={{ color: cardStyle.color }}>
             {text}
           </PlaceText>
         ))}
+      </Placeholder>
+    );
+    return (
+      <Placeholder style={cardStyle}>
+        {placeholder}
       </Placeholder>
     );
   };

@@ -24,10 +24,10 @@ interface GlobalContextValue {
   keyPressed: string;
   innerHeight: number;
   innerWidth: number;
-  user: userType | null;
+  user: userType["auth"] | null;
   language: languageOption;
   popupType: string | null;
-  setUser: React.Dispatch<React.SetStateAction<userType>>;
+  setUser: React.Dispatch<React.SetStateAction<userType["auth"]>>;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
   showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
   hidePopup: () => void;
@@ -63,7 +63,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [innerHeight, setInnerHeight] = useState<number>(
     () => window.innerHeight
   );
-  const [user, setUser] = useState<userType>(() => null);
+  const [user, setUser] = useState<userType["auth"]>(() => null);
   const [keyPressed, setKeyPressed] = useState<string>(() => "");
   const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
   const [popupType, setPopupType] = useState<popupType>(() => null);

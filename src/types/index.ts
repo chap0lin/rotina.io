@@ -5,11 +5,6 @@ export type selectionType = {
   text: string | languageOption;
 };
 
-export type userType = {
-  name: string;
-  password: string;
-};
-
 export type timeType = {
   hour: number;
   minute: number;
@@ -45,6 +40,11 @@ export type dayType = {
   activities: activityType[];
 };
 
+export type activitySelectionType = {
+  activity: activityType;
+  day: number;
+};
+
 export type coordinateType = {
   x?: number;
   y?: number;
@@ -53,4 +53,23 @@ export type coordinateType = {
 export type sizeType = {
   width?: number;
   height?: number;
+};
+
+export type itemType = {
+  content: string;
+  marked: boolean;
+};
+
+export type userType = {
+  auth: {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+  },
+  app: {
+    weekActivities: activityType[][];
+    todoList: itemType[];
+    shoppingList: itemType[];
+  } 
 };

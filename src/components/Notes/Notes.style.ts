@@ -8,15 +8,25 @@ const FlexColumn = styled.div`
 `;
 
 export const Icon = styled.div`
-  width: 27px;
-  height: 27px;
-  padding: 2px;
-  background: ${colors.black};
-  border-radius: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  border: 1.8px solid ${colors.black};
+  border-radius: 20px;
+  cursor: pointer;
+  @media(max-height: 750px){
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+  }
 `;
 
 export const NoteSpace = styled(FlexColumn)`
+  padding: 20px;
   gap: 10px;
+  @media(max-height: 750px){
+    padding: 15px;
+  }
 `;
 
 export const NoteHeader = styled(FlexColumn)`

@@ -83,7 +83,7 @@ export const spawnAndMove = (
   gsap
     .timeline()
     .to(what, {
-      display: display ?? "unset",
+      display: display ?? "flex",
       opacity: 0,
       duration: 0,
     })

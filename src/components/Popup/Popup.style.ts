@@ -28,13 +28,24 @@ export const BottomContainer = styled(Container)`
 export const PopupContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px 20px 0 20px;
   width: 360px;
   border-radius: 15px;
   background: ${colors.white};
   opacity: 0.97;
   @media (max-height: 750px) {
-    padding: 15px 15px 0 15px;
+    width: 330px;
+  }
+`;
+
+export const WarningContainer = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  border-radius: 15px;
+  background: ${colors.white};
+  opacity: 0.97;
+  @media (max-height: 750px) {
     width: 330px;
   }
 `;
@@ -65,7 +76,6 @@ export const Description = styled.div`
   color: ${colors.black};
   font-size: 17px;
   overflow-y: scroll;
-  margin: 20px 0;
   ::-webkit-scrollbar {
     display: none;
   }

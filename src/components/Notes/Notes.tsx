@@ -79,8 +79,8 @@ export default function Notes({ activity, onNotesUpdate }: props) {
             <Check
               width={"100%"}
               height={"100%"}
-              color={colors.white}
-              strokeWidth={1.2}
+              color={colors.black}
+              strokeWidth={2}
               style={{
                 flexShrink: 0,
                 marginRight: 5,

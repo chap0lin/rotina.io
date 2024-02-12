@@ -11,6 +11,7 @@ import {
   PopupContainer,
   Title,
   TopContainer,
+  WarningContainer,
   WarningDescription,
 } from "./Popup.style";
 import { popupType } from "src/types";
@@ -83,7 +84,7 @@ export default function Popup({
       case "cookies":
       case "info":
       case "prompt":
-        return `2px solid ${colors.white}`;
+        return `none`;
       case "warning-alert":
         return `2px solid ${colors.white}`;
       case "warning-failure":
@@ -131,7 +132,6 @@ export default function Popup({
     height: height ?? "auto",
     backgroundColor: backgroundColor ?? colors.white,
     border: border ?? getBorder(),
-    paddingTop: exit || title ? "20px" : 0,
   };
 
   const getPopupType = () => {
@@ -172,18 +172,28 @@ export default function Popup({
           </PopupContainer>
         </BottomContainer>
       );
-    case "prompt":
     case "warning-alert":
     case "warning-failure":
     case "warning-success":
       return (
         <BottomContainer ref={warningRef}>
-          <PopupContainer style={popupStyle}>
+          <WarningContainer style={popupStyle}>
             <WarningDescription
               style={descriptionColor ? { color: descriptionColor } : {}}>
               {description}
               {getIcon()}
             </WarningDescription>
+          </WarningContainer>
+        </BottomContainer>
+      );
+    case "prompt":
+      return (
+        <BottomContainer ref={warningRef}>
+          <PopupContainer style={popupStyle}>
+            <Description
+              style={descriptionColor ? { color: descriptionColor } : {}}>
+              {description}
+            </Description>
           </PopupContainer>
         </BottomContainer>
       );
@@ -196,12 +206,6 @@ export default function Popup({
               <Title style={titleColor ? { color: titleColor } : {}}>
                 {title}
               </Title>
-              <X
-                color={exitIconColor ?? colors.black}
-                width="24px"
-                strokeWidth="5px"
-                onClick={exit}
-              />
             </Header>
             <Description
               style={descriptionColor ? { color: descriptionColor } : {}}>

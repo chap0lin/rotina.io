@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isEmailValid, isPasswordValid } from "src/functions";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { colors } from "src/colors";
+import { texts } from "./Login.lang";
+import { api } from "src/services/api";
+import { Background, Header, Credential, Button, Logo } from "components/index";
 import {
   move,
   moveAndVanish,
@@ -8,11 +13,6 @@ import {
   spawnAndMove,
   vanish,
 } from "src/functions/animation";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { colors } from "src/colors";
-import { texts } from "./Login.lang";
-import { api } from "src/services/api";
-import { Background, Header, Credential, Button, Logo } from "components/index";
 import {
   TopContent,
   Credentials,
@@ -27,13 +27,16 @@ import {
 } from "./Login.style";
 
 const MIN_PASSWORD_SIZE = 8;
+
 type screenType =
   | "sign-in"
   | "sign-up"
   | "forgot-password"
   | "sent-sign-up-email"
-  | "sent-recovery-email";
-type serverReplyType =
+  | "sent-recovery-email"
+;
+
+  type serverReplyType =
   | "SUCCESS"
   | "SUCCESS_LOGGED_IN"
   | "SUCCESS_ACTIVATING_USER"
@@ -44,7 +47,8 @@ type serverReplyType =
   | "ERROR_NO_REGISTERED_USER"
   | "ERROR_EMAIL"
   | "ERROR_AUTHENTICATION"
-  | "ERROR_MISSING_CREDENTIALS";
+  | "ERROR_MISSING_CREDENTIALS"
+;
 
 export default function Login() {
   const navigate = useNavigate();
@@ -95,6 +99,8 @@ export default function Login() {
 
   const login = () => {
     setUser({
+      id: "",
+      email: "",
       name: username.current,
       password: password.current,
     });

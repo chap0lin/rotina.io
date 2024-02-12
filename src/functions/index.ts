@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 
-import { activityType, dayType } from "src/types";
+import { activitySelectionType, activityType } from "src/types";
 
 export const isEmailValid = (email: string) => {
   const regex = /\S+@\S+\.\S+/;
@@ -14,20 +14,26 @@ export const isPasswordValid = (password: string, minSize?: number) => {
 };
 
 export const areActivitiesEqual = (
-  act1: activityType,
-  act2: activityType
+  activity1: activityType,
+  activity2: activityType
 ): boolean => {
-  if (act1 === act2) return true;
-  if (!act1 || !act2) return false;
+  if (activity1 === activity2) return true;
+  if (!activity1 || !activity2) return false;
   return (
-    act1.what === act2.what &&
-    act1.where === act2.where &&
-    act1.who === act2.who &&
-    act1.color === act2.color &&
-    act1.startsAt.hour === act2.startsAt.hour &&
-    act1.startsAt.minute === act2.startsAt.minute &&
-    act1.endsAt.hour === act2.endsAt.hour &&
-    act1.endsAt.minute === act2.endsAt.minute &&
-    act1.notes === act2.notes
+    activity1.what === activity2.what &&
+    activity1.where === activity2.where &&
+    activity1.who === activity2.who &&
+    activity1.color === activity2.color &&
+    activity1.startsAt.hour === activity2.startsAt.hour &&
+    activity1.startsAt.minute === activity2.startsAt.minute &&
+    activity1.endsAt.hour === activity2.endsAt.hour &&
+    activity1.endsAt.minute === activity2.endsAt.minute &&
+    activity1.notes === activity2.notes
   );
+};
+
+export const isSelectionValid = (selection: activitySelectionType) => {
+  if (!selection || !selection.activity || typeof selection.day !== "number") return false;
+  if (selection.day < 0) return false;
+  return true;
 };
