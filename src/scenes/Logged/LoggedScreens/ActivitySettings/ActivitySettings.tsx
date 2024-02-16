@@ -40,7 +40,7 @@ type propertyType =
 const colorsAvailable = [
   colors.darkRed,
   colors.red,
-  colors.yellow,
+  colors.gold,
   colors.green,
   colors.blue,
   colors.purple,
@@ -102,7 +102,10 @@ export default function ActivitySettings({}: props) {
 
   const updateOrCreateActivity = () => {
     if(selected.activity){
-      updateActivity({activity: newActivity, day: selectedDay});
+      updateActivity({
+        activity: newActivity,
+        day: selectedDay
+      }, true);
       resetSelectedActivity();
       showPopup(detailsTexts.activityUpdated, {
         type: "warning-success",
@@ -113,7 +116,7 @@ export default function ActivitySettings({}: props) {
     addActivity({
       activity: newActivity,
       day: selectedDay,
-    });
+    }, true);
     showPopup(detailsTexts.activityCreated, {
       type: "warning-success",
       timeout: 4000

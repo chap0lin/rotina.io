@@ -88,7 +88,7 @@ export default function Login() {
     api
       .get(link, { params })
       .then((resp) => {
-        handleServerReply(resp.data.msg);
+        handleServerReply(resp.data.status);
         setWaitingForServer(false);
       })
       .catch(() => {

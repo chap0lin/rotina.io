@@ -2,7 +2,7 @@ import { languageOption } from "src/types";
 
 type textTypes = {
   days: string[];
-  manageActivities: string;
+  yourRoutine: string;
   activityDeleted: string;
 };
 
@@ -18,7 +18,7 @@ texts.set("pt-br", {
     "Sábado",
     "Domingo"
   ],
-  manageActivities: "Gerenciar atividades",
+  yourRoutine: "Sua rotina",
   activityDeleted: "Atividade apagada.",
 });
 
@@ -32,7 +32,7 @@ texts.set("en-us", {
     "Saturday",
     "Sunday",
   ],
-  manageActivities: "Manage activities",
+  yourRoutine: "Your routine",
   activityDeleted: "Ativity deleted.",
 });
 

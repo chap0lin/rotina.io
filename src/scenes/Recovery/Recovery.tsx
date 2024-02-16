@@ -79,7 +79,7 @@ export default function Recovery() {
     api
       .get(link, { params })
       .then((resp) => {
-        handleServerReply(resp.data.msg);
+        handleServerReply(resp.data.status);
       })
       .catch(() => {
         catchCall && catchCall();

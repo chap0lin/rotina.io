@@ -1,49 +1,49 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { activitySelectionType, activityType, itemType } from "src/types";
+import { activitySelectionType, activityType, dataType, itemType, loggedScreens } from "src/types";
 import { areActivitiesEqual, isSelectionValid } from "src/functions";
 import { emptyWeek } from "src/constants";
 import { isBefore } from "src/functions/time";
 import { useTime } from "src/hooks/time";
-
-type screens = "dashboard" | "lists" | "activities" | "activity-settings";
 
 interface LoggedProviderProps {
     children: ReactNode;
 }
 
 interface LoggedContextValue {
-    screen: screens,
+    updateServer: dataType,
+    screen: loggedScreens,
     today: number,
     shoppingList: itemType[],
     todoList: itemType[],
     weekActivities: activityType[][],
     selected: activitySelectionType | null,
-    setShoppingList: React.Dispatch<React.SetStateAction<itemType[]>>,
-    setTodoList: React.Dispatch<React.SetStateAction<itemType[]>>,
-    setWeekActivities: React.Dispatch<React.SetStateAction<activityType[][]>>,
+    setUpdateServer: React.Dispatch<React.SetStateAction<dataType>>,
+    updateWeek: (newWeek: activityType[][]) => void,
     setSelected: React.Dispatch<React.SetStateAction<activitySelectionType>>,
-    addActivity: (whichOne: activitySelectionType) => void;
-    updateActivity: (whichOne: activitySelectionType) => void;
-    deleteActivity: (whichOne: activitySelectionType) => void;
+    addActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
+    updateActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
+    deleteActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
+    updateList: (whichOne: "shopping" | "todo", updatedList: itemType[], updateServer?: boolean) => void,
     resetSelectedActivity: (toSomeSpecificDay?: number) => void,
-    goTo: (newScreen: screens) => void,
+    goTo: (newScreen: loggedScreens) => void,
     goBack: (shouldReset?: boolean) => void,
 }
 
 const initialValues: LoggedContextValue = {
+    updateServer: null,
     screen: "dashboard",
     today: 0,
     shoppingList: [],
     todoList: [],
     weekActivities: emptyWeek,
     selected: { activity: null, day: 0 },
-    setShoppingList: () => null,
-    setTodoList: () => null,
-    setWeekActivities: () => null,
+    setUpdateServer: () => null,
+    updateWeek: () => null,
     setSelected: () => null,
     addActivity: () => null,
     updateActivity: () => null,
     deleteActivity: () => null,
+    updateList: () => null,
     resetSelectedActivity: () => null,
     goTo: () => null,
     goBack: () => null,
@@ -59,17 +59,18 @@ export function useLoggedContext() {
 
 
 export default function LoggedProvider(props: LoggedProviderProps) {
-    const [hour] = useTime();
-    const [screen, setScreen] = useState<screens>(() => initialValues.screen);
+    const {hour} = useTime();
+    const [screen, setScreen] = useState<loggedScreens>(() => initialValues.screen);
     const [today, setToday] = useState<number>(() => initialValues.today);
     const [shoppingList, setShoppingList] = useState<itemType[]>(() => initialValues.shoppingList);
     const [todoList, setTodoList] = useState<itemType[]>(() => initialValues.todoList);
     const [selected, setSelected] = useState<activitySelectionType | null>(() => initialValues.selected);
     const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => initialValues.weekActivities);
+    const [updateServer, setUpdateServer] = useState<dataType>(() => initialValues.updateServer);
     
-    const screenHistory = useRef<screens[]>([]);
+    const screenHistory = useRef<loggedScreens[]>([]);
 
-    const addActivity = (selection: activitySelectionType) => {
+    const addActivity = (selection: activitySelectionType, updateServer?: boolean) => {
         if (!isSelectionValid(selection)) return;
         const newWeek = [...weekActivities];
         newWeek[selection.day].push(selection.activity);
@@ -77,10 +78,11 @@ export default function LoggedProvider(props: LoggedProviderProps) {
             isBefore(a.startsAt, b.startsAt) ? -1 : 1
         );
         setWeekActivities(newWeek);
-    };
+        updateServer && setUpdateServer("week");
+    }
 
 
-    const deleteActivity = (selection: activitySelectionType) => {
+    const deleteActivity = (selection: activitySelectionType, updateServer?: boolean) => {
         if (!isSelectionValid(selection)) return;
         const index = weekActivities[selection.day].findIndex((act) =>
           areActivitiesEqual(act, selection.activity)
@@ -88,17 +90,29 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         const newWeek = [...weekActivities];
         newWeek[selection.day].splice(index, 1);
         setWeekActivities(newWeek);
-    };
+        updateServer && setUpdateServer("week");
+    }
 
 
-    const updateActivity = (updated: activitySelectionType) => {
+    const updateActivity = (updated: activitySelectionType, updateServer?: boolean) => {
         const { activity, day } = updated;
         if (areActivitiesEqual(selected.activity, activity) && selected.day == day) return; 
         deleteActivity(selected);
-        addActivity({ activity, day });
+        addActivity({ activity, day }, updateServer);
         setSelected({ activity, day });
-    };
-    
+    }
+
+
+    const updateWeek = (newWeek: activityType[][]) => {
+        setWeekActivities(newWeek);
+    }
+
+
+    const updateList = (whichOne: dataType, updatedList: itemType[], updateServer?: boolean) => {
+        const setList = (whichOne === "shopping")? setShoppingList : setTodoList;
+        setList(updatedList);
+        updateServer && setUpdateServer(whichOne);
+    }
 
     const resetSelectedActivity = (toSomeSpecificDay?: number) => {
         setSelected({
@@ -118,7 +132,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }
 
 
-    const goTo = (newScreen: screens) => {
+    const goTo = (newScreen: loggedScreens) => {
         setScreen((prev) => {
             if(screenHistory.current.at(-1) !== prev){
                 screenHistory.current.push(prev);
@@ -136,19 +150,20 @@ export default function LoggedProvider(props: LoggedProviderProps) {
 
     const { children } = props;
     const value: LoggedContextValue = {
+        updateServer,
         screen,
         today,
         shoppingList,
         todoList,
         weekActivities,
         selected,
-        setShoppingList,
-        setTodoList,
-        setWeekActivities,
-        setSelected,
-        addActivity,
+        setUpdateServer,
+        updateList,
+        updateWeek,
         updateActivity,
+        addActivity,
         deleteActivity,
+        setSelected,
         resetSelectedActivity,
         goTo,
         goBack,

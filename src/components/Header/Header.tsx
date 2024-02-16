@@ -20,7 +20,6 @@ interface props {
   user?: boolean;
   lang?: boolean;
   arrow?: () => void;
-  onBlurClear?: () => void;
 }
 
 export default function Header({
@@ -29,9 +28,8 @@ export default function Header({
   user,
   lang,
   arrow,
-  onBlurClear,
 }: props) {
-  const { innerHeight, popupType, setLanguage, showPopup } = useGlobalContext();
+  const { innerHeight, popupType, setLanguage, showPopup, hidePopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
     () => false
   );
@@ -54,7 +52,7 @@ export default function Header({
   const clear = () => {
     setShowLanguagesMenu(false);
     setShowUserMenu(false);
-    onBlurClear && onBlurClear();
+    hidePopup();
   };
 
   const handleLanguageSelection = (newLang: languageOption) => {

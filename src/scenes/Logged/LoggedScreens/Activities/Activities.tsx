@@ -48,7 +48,7 @@ export default function Activities({}: props) {
         onYes={() => {
           hidePopup();
           setTimeout(() => {
-            deleteActivity(selected);
+            deleteActivity(selected, true);
             resetSelectedActivity();
             showPopup(
               activitiesTexts.activityDeleted, {
@@ -74,7 +74,7 @@ export default function Activities({}: props) {
           updateActivity({
             activity: {...selected.activity, notes},
             day: selected.day,
-          });
+          }, true);
           hidePopup();
         }}
       />,
@@ -85,7 +85,7 @@ export default function Activities({}: props) {
 
   return (
     <Background>
-      <Hint>{activitiesTexts.manageActivities}</Hint>
+      <Hint>{activitiesTexts.yourRoutine}</Hint>
       <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
         <CarouselEdge />
         {weekActivities.map((dayActivities, index) => (

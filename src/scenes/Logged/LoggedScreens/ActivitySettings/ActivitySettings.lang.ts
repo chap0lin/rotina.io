@@ -64,8 +64,8 @@ texts.set("pt-br", {
 texts.set("en-us", {
   newActivity: "New routine activity",
   editActivity: "Edit activity",
-  what: "What's the name?",
-  who: "With who?",
+  what: "What's the activity name?",
+  who: "With whom?",
   where: "Where?",
   when: "When?",
   start: "Start",

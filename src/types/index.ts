@@ -40,6 +40,9 @@ export type dayType = {
   activities: activityType[];
 };
 
+export type dataType = "week" | "todo" | "shopping";
+export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
+
 export type activitySelectionType = {
   activity: activityType;
   day: number;

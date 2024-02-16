@@ -4,6 +4,7 @@ import { Background, Header, Loading } from "src/components";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useNavigate } from "react-router-dom";
+import { dataType } from "src/types";
 import { texts } from "./LoggedScreens.lang";
 import { api } from "src/services/api";
 import Dashboard from "./Dashboard";
@@ -11,22 +12,22 @@ import Activities from "./Activities";
 import Lists from "./Lists";
 import ActivitySettings from "./ActivitySettings";
 import { BigContainer, Gsap, SmallContainer } from "./LoggedScreens.style";
+import { useTime } from "src/hooks/time";
 
-type serverReplyType =
-  | "SUCCESS"
-  | "SUCCESS_DATA"
-  | "ERROR"
-  | "ERROR_NO_REGISTERED_USER"
-  | "ERROR_MISSING_CREDENTIALS"
-;
+type serverReplyType = {
+    status: "SUCCESS" | "SUCCESS_DATA" | "SUCCESS_UPDATE" | "ERROR" | "ERROR_NO_REGISTERED_USER" | "ERROR_MISSING_CREDENTIALS" | "ERROR_INVALID_DATA",
+    data: dataType;
+    content: string;
+};
 
 export default function LoggedScreens(){
     const navigate = useNavigate();
+    const { minute } = useTime();
     const { language, user, innerWidth, showPopup } = useGlobalContext();
-    const {screen, weekActivities, todoList, shoppingList, goBack, setWeekActivities, setTodoList, setShoppingList } = useLoggedContext();
+    const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
 
     const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
-    const [receivedUserData, setReceivedUserData] = useState<boolean>(() => false);
+    const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
     const loadingRef = useRef(null);
     const dashboardRef = useRef(null);
@@ -37,12 +38,47 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
+    const parseServerReply = (reply: serverReplyType) => {
+        if(reply.status === "SUCCESS_UPDATE"){
+            return console.log("Data updated successfuly on server side.");
+        }
+        switch(reply.data){
+            case "week": updateWeek(JSON.parse(reply.content)); break;
+            case "todo": updateList("todo", JSON.parse(reply.content)); break;
+            case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
+            default:
+                console.log("error parsing data. received:", reply);
+                return showPopup(loggedTexts.errorFetchingData, {
+                type: "warning-failure",
+                timeout: 4000,
+            });
+        }
+        setTimeout(() => setReceivedFirstContent(true), 2000);
+    };
+
+
+    const handleServerReply = (reply: serverReplyType) => {
+        switch (reply.status) {
+        case "ERROR":
+        case "ERROR_INVALID_DATA":
+        case "ERROR_MISSING_CREDENTIALS":
+        case "ERROR_NO_REGISTERED_USER":
+            showPopup(loggedTexts.somethingWentWrong, {
+                type: "warning-failure",
+                timeout: 4000,
+            }); break;
+        default:
+            parseServerReply(reply);
+        }
+    };
+
+
     const getRequest = (link: string, params: any, catchCall?: () => void) => {
         setWaitingForServer(true);
         api
         .get(link, { params })
         .then((resp) => {
-            handleServerReply(resp.data.msg);
+            handleServerReply(resp.data);
             setWaitingForServer(false);
         })
         .catch(() => {
@@ -51,45 +87,34 @@ export default function LoggedScreens(){
         });
     };
 
-    const getDataFromServerReply = (reply: serverReplyType) => {
-        const stringifiedData = reply.split("==");
-        if (!stringifiedData || stringifiedData.length < 4) {
-            return showPopup(loggedTexts.errorFetchingData, {
-                type: "warning-failure",
-                timeout: 4000,
-            });
-        }
-        setWeekActivities(JSON.parse(stringifiedData.at(1)));
-        setTodoList(JSON.parse(stringifiedData.at(2)));
-        setShoppingList(JSON.parse(stringifiedData.at(3)));
-        setTimeout(() => setReceivedUserData(true), 2000);
-    };
-
-    const handleServerReply = (reply: serverReplyType) => {
-        switch (reply) {
-        case "ERROR":
-        case "ERROR_MISSING_CREDENTIALS":
-        case "ERROR_NO_REGISTERED_USER":
-            showPopup(loggedTexts.somethingWentWrong, {
-                type: "warning-failure",
-                timeout: 4000,
-            }); break;
-        default:
-            if (reply.includes("SUCCESS_DATA")) {
-                getDataFromServerReply(reply);
-            } break;
-        }
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
-        if (!user) {
-        navigate("/login");
-        } else {
-        getRequest("/get-user-data", { ...user });
-        }
+        if (!user) navigate("/login");
     }, []);
+
+
+    useEffect(() => {
+        const { name, password } = user;
+        if(updateServer){
+            let jsonContent = [];
+            switch(updateServer){
+                case "week": jsonContent = [...weekActivities]; break;
+                case "todo": jsonContent = [...todoList]; break;
+                case "shopping": jsonContent = [...shoppingList]; break; 
+            }
+            const data = updateServer;
+            const content = JSON.stringify(jsonContent);
+            getRequest("/update-data", {data, content, name, password});
+            setUpdateServer(null);
+        } else if(!selected.activity) {
+            getRequest("/get-data", {data: "week", name, password});
+            getRequest("/get-data", {data: "shopping", name, password});
+            getRequest("/get-data", {data: "todo", name, password});
+        }
+    }, [updateServer, selected, user, minute]);
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     useLayoutEffect(() => {
@@ -100,12 +125,12 @@ export default function LoggedScreens(){
 
 
     useLayoutEffect(() => {
-        if (!receivedUserData) {
+        if (!receivedFirstContent) {
             spawn(loadingRef.current, 1);
         } else {
             vanish(loadingRef.current, 1);
         }
-    }, [receivedUserData]);
+    }, [receivedFirstContent]);
 
 
     useLayoutEffect(() => {
@@ -149,12 +174,12 @@ export default function LoggedScreens(){
     return (
         <Background>
             <Header 
-                logo user lang show={receivedUserData} 
-                arrow={(screen === "lists" || screen ===  "activities") ? goBack : null}
+                logo user lang show={receivedFirstContent} 
+                arrow={(screen !== "dashboard") ? goBack : null}
             />
             <BigContainer>
                 <SmallContainer ref={dashboardRef}>
-                    <Dashboard show={receivedUserData}/>
+                    <Dashboard show={receivedFirstContent}/>
                 </SmallContainer>
                 <SmallContainer ref={listsRef}>
                     <Lists />

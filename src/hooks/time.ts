@@ -18,7 +18,7 @@ const useTime = () => {
     };
   }, []);
 
-  return [hour, minute];
+  return {hour, minute};
 };
 
 export { useTime };

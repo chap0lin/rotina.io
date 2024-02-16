@@ -17,7 +17,7 @@ interface props {
 export default function Dashboard({ show }: props) {
   const { language, innerHeight, showPopup, hidePopup } = useGlobalContext();
   const { today, weekActivities, addActivity, deleteActivity, goTo } = useLoggedContext();
-  const [hour, minute] = useTime();
+  const { hour, minute } = useTime();
   const [happeningNow, setHappeningNow] = useState<activityType | undefined>(() => null);
   const [happeningLater, setHappeningLater] = useState<activityType[] | undefined>(() => null);
   const [takingNotes, setTakingNotes] = useState<activityType>(() => null);
@@ -34,8 +34,8 @@ export default function Dashboard({ show }: props) {
   const updateNotes = (activity: activityType, notes: string[]) => {
     const oldOne = activity;
     const newOne = { ...activity, notes };
-    deleteActivity({ activity: oldOne, day: today });
-    addActivity({ activity: newOne, day: today });
+    deleteActivity({ activity: oldOne, day: today });       // brute force update instead of using updateActivity() because the dashboard can't select an activity
+    addActivity({ activity: newOne, day: today }, true);
   };
 
   useEffect(() => {

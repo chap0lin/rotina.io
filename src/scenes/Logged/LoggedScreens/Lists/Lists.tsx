@@ -16,7 +16,7 @@ interface props {}
 
 export default function Lists({}: props){
     const { keyPressed, language, innerWidth, innerHeight } = useGlobalContext();
-    const {todoList, shoppingList, setTodoList, setShoppingList} = useLoggedContext();
+    const {todoList, shoppingList, updateList} = useLoggedContext();
     const listsTexts = texts.get(language);
 
     const [toggled, setToggled] = useState<boolean>(() => false);
@@ -32,30 +32,22 @@ export default function Lists({}: props){
     const addItem = () => {
         const content = inputRef.current.value.trim();
         if (content.length === 0) return;
-        const setList = (toggled)? setTodoList: setShoppingList;
-        setList((previous) => [{content, marked: false}, ...previous]);
+        const newItem = {content, marked: false};
+        const updated = (toggled)? [newItem, ...todoList]: [newItem, ...shoppingList];
+        updateList((toggled)? "todo" : "shopping", updated, true);
         inputRef.current.value = "";
     };
 
     const removeItem = (i: number) => {
-        const setList = (toggled)? setTodoList: setShoppingList;
-        setList((previous) => {
-            const updated = [...previous];
-            updated.splice(i, 1);
-            return updated;
-        });
+        const updated = (toggled)? [...todoList]: [...shoppingList];
+        updated.splice(i, 1);
+        updateList((toggled)? "todo" : "shopping", updated, true);
     };
 
     const toggleMark = (i: number) => {
-        const setList = (toggled)? setTodoList: setShoppingList;
-        setList((previous) => {
-            const updated = [...previous];
-            updated[i] = {
-                ...updated[i],
-                marked: !updated[i].marked 
-            };
-            return updated;
-        });
+        const updated = (toggled)? [...todoList]: [...shoppingList];
+        updated[i] = {...updated[i], marked: !updated[i].marked };
+        updateList((toggled)? "todo" : "shopping", updated, true);    
     }
 
     const toggleJulius = () => {
