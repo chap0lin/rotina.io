@@ -39,6 +39,7 @@ export default function LoggedScreens(){
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
     const parseServerReply = (reply: serverReplyType) => {
+        if(reply.content.includes("ERROR"))
         if(reply.status === "SUCCESS_UPDATE"){
             return console.log("Data updated successfuly on server side.");
         }
@@ -73,10 +74,10 @@ export default function LoggedScreens(){
     };
 
 
-    const getRequest = (link: string, params: any, catchCall?: () => void) => {
+    const postRequest = (link: string, params: any, catchCall?: () => void) => {
         setWaitingForServer(true);
         api
-        .get(link, { params })
+        .post(link, { ...params })
         .then((resp) => {
             handleServerReply(resp.data);
             setWaitingForServer(false);
@@ -94,7 +95,16 @@ export default function LoggedScreens(){
 
 
     useEffect(() => {
-        const { name, password } = user;
+        if(!selected.activity) {
+            const { name, password } = user;
+            postRequest("/get-data", {data: "week", name, password});
+            postRequest("/get-data", {data: "shopping", name, password});
+            postRequest("/get-data", {data: "todo", name, password});
+        }
+    }, [minute, user]);
+
+
+    useEffect(() => {
         if(updateServer){
             let jsonContent = [];
             switch(updateServer){
@@ -102,16 +112,13 @@ export default function LoggedScreens(){
                 case "todo": jsonContent = [...todoList]; break;
                 case "shopping": jsonContent = [...shoppingList]; break; 
             }
+            const { name, password } = user;
             const data = updateServer;
             const content = JSON.stringify(jsonContent);
-            getRequest("/update-data", {data, content, name, password});
+            postRequest("/update-data", {data, content, name, password});
             setUpdateServer(null);
-        } else if(!selected.activity) {
-            getRequest("/get-data", {data: "week", name, password});
-            getRequest("/get-data", {data: "shopping", name, password});
-            getRequest("/get-data", {data: "todo", name, password});
         }
-    }, [updateServer, selected, user, minute]);
+    }, [updateServer, user]);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

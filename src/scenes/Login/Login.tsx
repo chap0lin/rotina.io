@@ -83,10 +83,10 @@ export default function Login() {
   const signUpRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const getRequest = (link: string, params: any, catchCall?: () => void) => {
+  const postRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
     api
-      .get(link, { params })
+      .post(link, { ...params })
       .then((resp) => {
         handleServerReply(resp.data.status);
         setWaitingForServer(false);
@@ -206,13 +206,13 @@ export default function Login() {
   const onButtonClick = () => {
     switch (screen) {
       case "sign-in":
-        getRequest("/login", {
+        postRequest("/login", {
           name: username.current,
           password: password.current,
         });
         break;
       case "sign-up":
-        getRequest("/activate", {
+        postRequest("/activate", {
           name: username.current,
           password: password.current,
           email: email.current,
@@ -220,7 +220,7 @@ export default function Login() {
         });
         break;
       case "forgot-password":
-        getRequest("/recovery", {
+        postRequest("/recovery", {
           email: email.current,
           lang: language,
         });

@@ -41,7 +41,7 @@ export default function Activate() {
   const handleServerReply = (reply: serverReply) => {
     switch (reply) {
       case "SUCCESS_VALID_PURPOSE":
-        getRequest("/finish-signup", { id: id });
+        postRequest("/finish-signup", { id: id });
         break;
       case "ERROR_INVALID_PURPOSE":
       case "ERROR_DUPLICATE_USER":
@@ -59,10 +59,10 @@ export default function Activate() {
     }
   };
 
-  const getRequest = (link: string, params: any, catchCall?: () => void) => {
+  const postRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
     api
-      .get(link, { params })
+      .post(link, { ...params })
       .then((resp) => {
         handleServerReply(resp.data.status);
       })
@@ -87,7 +87,7 @@ export default function Activate() {
     if (!id || id === "") {
       navigate("/");
     } else {
-      getRequest("/validate", { id: id, purpose: "activate" });
+      postRequest("/validate", { id: id, purpose: "activate" });
     }
   }, []);
 

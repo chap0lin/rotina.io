@@ -74,10 +74,10 @@ export default function Recovery() {
     setHasValidated(true);
   };
 
-  const getRequest = (link: string, params: any, catchCall?: () => void) => {
+  const postRequest = (link: string, params: any, catchCall?: () => void) => {
     setWaitingForServer(true);
     api
-      .get(link, { params })
+      .post(link, { ...params })
       .then((resp) => {
         handleServerReply(resp.data.status);
       })
@@ -128,7 +128,7 @@ export default function Recovery() {
   const onButtonClick = () => {
     switch (screen) {
       case "input":
-        getRequest("/change-password", {
+       postRequest("/change-password", {
           id: id,
           password: password.current,
         });
@@ -150,7 +150,7 @@ export default function Recovery() {
     setLanguage(lang === "en-us" ? lang : "pt-br");
     if (id && id.length) {
       oldPassword.current = id.split("*").at(0);
-      getRequest(
+     postRequest(
         "/validate",
         {
           id: id,
