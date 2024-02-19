@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { Background, Header, Loading } from "src/components";
+import { serverReplyType, tokenType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
-import { serverReplyType } from "src/types";
+import { jwtAccessKey } from "src/constants";
 import { postRequest } from "src/functions/connection";
 import { useNavigate } from "react-router-dom";
 import { useTime } from "src/hooks/time";
@@ -17,7 +18,7 @@ import { getFromStorage, saveOnStorage } from "src/functions/storage";
 
 export default function LoggedScreens(){
     const navigate = useNavigate();
-    const { minute } = useTime();
+    const { minute, seconds } = useTime();
     const { language, user, innerWidth, showPopup, setUser } = useGlobalContext();
     const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
@@ -31,13 +32,13 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    const validateToken = (tokenType: "access" | "refresh", updateUser?: boolean) => {
-        const token = getFromStorage(`jwt-${tokenType}`);
+    const validateToken = (type: tokenType, updateUser?: boolean) => {
+        const token = getFromStorage(`jwt-${type}`);
         if(updateUser) setUser({token});
-        request("/token", {}, token, tokenType);
+        request("/token", {}, token, type);
     }
 
-    const request = (link: string, requestParams: any, alternativeToken?: string, alternativeTokenType?: "access" | "refresh") => {
+    const request = (link: string, requestParams: any, alternativeToken?: string, alternativeTokenType?: tokenType) => {
         if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
         const token = alternativeToken?? user.token;
         const params = {
@@ -49,14 +50,13 @@ export default function LoggedScreens(){
 
 
     const onSuccess = (reply: serverReplyType) => {
-        if(reply.content && reply.content.includes("ERROR")) return;
         if(!reply.status) return;
         switch(reply.status){
             case "SUCCESS_ACCESS_TOKEN":
                 return;
             case "SUCCESS_REFRESH_TOKEN":
                 if(!reply.content) return onError({status: "ERROR"});
-                saveOnStorage("jwt-access", reply.content);
+                saveOnStorage(jwtAccessKey, reply.content);
                 setUser({token: reply.content});
                 return console.log("new access token is", reply.content);
             default:
@@ -98,8 +98,8 @@ export default function LoggedScreens(){
     };
 
     useEffect(() => {
-        validateToken("access", true);
-    }, []);
+        (!user || !user.token) && validateToken("access", true);
+    }, [seconds]);                                                          //this gives you the seconds number but actually updates at a rate defined by the "timeUpdatePeriod" constant
 
     useEffect(() => {
         if(!selected.activity) {

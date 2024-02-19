@@ -49,6 +49,7 @@ export type statusType =
   | "SUCCESS_UPDATE" 
   | "SUCCESS_ACCESS_TOKEN"
   | "SUCCESS_REFRESH_TOKEN"
+  | "SUCCESS_LOGGED_OUT"
   | "ERROR" 
   | "ERROR_AUTHENTICATION"
   | "ERROR_EMAIL_ALREADY_TAKEN"
@@ -61,6 +62,7 @@ export type statusType =
   | "ERROR_INVALID_REFRESH_TOKEN"
 ;
 
+export type tokenType = "access" | "refresh"; 
 export type dataType = "week" | "todo" | "shopping";
 export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-sign-up-email" | "sent-recovery-email";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
@@ -103,3 +105,8 @@ export type userType = {
     shoppingList: itemType[];
   } 
 };
+
+export type timeCheckType = {
+  cause: string;
+  message: string;
+}

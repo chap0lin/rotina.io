@@ -10,8 +10,11 @@ type textTypes = {
   who: string;
   start: string;
   to: string;
+  to2: string;
   end: string;
   preview: string;
+  conflictCause: string;
+  errorCause: string;
   timesAreEqual: string;
   timesConflict: string;
   timesAreInverted: string;
@@ -33,10 +36,13 @@ texts.set("pt-br", {
   where: "Onde?",
   start: "Início",
   to: "até",
+  to2: "às",
   end: "Fim",
   preview: "Pré-visualizar",
-  timesAreInverted: "Algo de errado não está certo.",
-  timesConflict: "Conflito com outra atividade, que ocorre no intervalo ",
+  conflictCause: "conflito",
+  errorCause: "erro",
+  timesAreInverted: "Os horários estão invertidos.",
+  timesConflict: "Outra atividade ocorre de ",
   timesAreEqual: "Os horários não podem ser iguais.",
   exampleActivity: {
     what: "Levar a vó ao Jiu-Jitsu",
@@ -70,10 +76,13 @@ texts.set("en-us", {
   when: "When?",
   start: "Start",
   to: "to",
+  to2: "-",
   end: "End",
   preview: "Preview",
-  timesAreInverted: "These times are incompatible.",
-  timesConflict: "Conflict with another activity that happens at ",
+  conflictCause: "Conflict",
+  errorCause: "Error",
+  timesAreInverted: "The times are inverted.",
+  timesConflict: "Another activity happens from ",
   timesAreEqual: "Times cannot be equal.",
   exampleActivity: {
     what: "Take Granny to Jiu-Jitsu",

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { stringifyTime, parseTime, isEqual, isAfter, isBefore } from "src/functions/time";
-import { activityType, timeType } from "src/types";
+import { activityType, timeCheckType, timeType } from "src/types";
 import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
@@ -63,7 +63,7 @@ export default function ActivitySettings({}: props) {
 
   const [selectedDay, setSelectedDay] = useState<number>(() => selected.day);
   const [newActivity, setNewActivity] = useState<activityType | null>(() => detailsTexts.exampleActivity);
-  const [timeCheckMessage, setTimeCheckMessage] = useState<string | null>(() => null);
+  const [timeCheckMessage, setTimeCheckMessage] = useState<timeCheckType>(() => null);
 
   const whatRef = useRef(null);
   const whoRef = useRef(null);
@@ -178,15 +178,26 @@ export default function ActivitySettings({}: props) {
     newActivity.endsAt &&
     setTimeCheckMessage(() => {
       if (isEqual(newActivity.startsAt, newActivity.endsAt))
-        return detailsTexts.timesAreEqual;
+        return {
+          cause: detailsTexts.errorCause,
+          message: detailsTexts.timesAreEqual
+        };
       if (isAfter(newActivity.startsAt, newActivity.endsAt))
-        return detailsTexts.timesAreInverted;
+        return {
+          cause: detailsTexts.errorCause,
+          message: detailsTexts.timesAreInverted 
+        };
       const conflict = hasConflict();
-      if (conflict) return (`
-        ${detailsTexts.timesConflict}
-        ${stringifyTime(conflict.startsAt)}
-        - ${stringifyTime(conflict.endsAt)}.
-      `);
+      if (conflict) return {
+          cause: detailsTexts.conflictCause,
+          message: (
+            detailsTexts.timesConflict +
+            stringifyTime(conflict.startsAt) + " " +
+            detailsTexts.to + " " +
+            stringifyTime(conflict.endsAt) +
+            "."
+          )
+        };
       return null;
     });
   }, [newActivity, selectedDay, language]);
@@ -277,7 +288,7 @@ export default function ActivitySettings({}: props) {
       </Edit>
       <Preview
         title={detailsTexts.preview}
-        errorMsg={timeCheckMessage}
+        error={timeCheckMessage}
         activity={newActivity}
         onConfirm={confirmUpdateOrCreate}
         onDiscard={confirmDiscardChanges}

@@ -61,8 +61,8 @@ export default function Header({
   };
 
   const handleUserSelection = (option: string) => {
+    if(option === "language") setShowLanguagesMenu(true);
     setShowUserMenu((prev) => !prev);
-    showPopup(`//TODO - ${option}`, { type: "warning-alert", timeout: 4000 });
   };
 
   const handleUserIconClick = () => {

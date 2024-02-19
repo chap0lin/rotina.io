@@ -1,14 +1,16 @@
 import { useRef } from "react";
 import { colors } from "src/colors";
-import { activityType } from "src/types";
-import { Check, X, XCircle } from "react-feather";
+import { activityType, timeCheckType } from "src/types";
+import { Check, X } from "react-feather";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ActivityCard, CustomCircleIcon } from "src/components";
 import {
   Buttons,
   Container,
   Gsap,
-  Invalid,
+  InvalidCause,
+  InvalidText,
+  InvalidWarning,
   Title,
   UpperBar,
 } from "./Preview.style";
@@ -16,15 +18,15 @@ import { reactToClick } from "src/functions/animation";
 
 interface props {
   title: string;
-  errorMsg: string | null;
-  activity: activityType;
+  error?: timeCheckType;
+  activity?: activityType;
   onConfirm: () => void;
   onDiscard: () => void;
 }
 
 export default function Preview({
   title,
-  errorMsg,
+  error,
   activity,
   onConfirm,
   onDiscard,
@@ -37,7 +39,7 @@ export default function Preview({
 
   const isDisabled = () => {
     if (
-      errorMsg ||
+      error ||
       !activity ||
       !activity.what ||
       !activity.where ||
@@ -84,7 +86,16 @@ export default function Preview({
         </Buttons>
       </UpperBar>
       <ActivityCard highlighted {...activity} />
-      <Invalid>{errorMsg}</Invalid>
+      {error && 
+        <InvalidWarning>
+          <InvalidCause>
+            {error.cause}
+          </InvalidCause>
+          <InvalidText>
+            {error.message}
+          </InvalidText>
+        </InvalidWarning>
+      }
     </Container>
   );
 }

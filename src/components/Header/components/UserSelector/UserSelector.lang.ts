@@ -1,23 +1,26 @@
 import { languageOption } from "src/types";
 
 type textTypes = {
-  myData: string;
-  settings: string;
-  logoff: string;
+  myLists: string;
+  myWeek: string;
+  activity: string;
+  logout: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
 
 texts.set("pt-br", {
-  myData: "Meus dados",
-  settings: "Ajustes",
-  logoff: "Sair",
+  myLists: "Listas",
+  myWeek: "Semana",
+  activity: "Atividade",
+  logout: "Sair",
 });
 
 texts.set("en-us", {
-  myData: "My data",
-  settings: "Settings",
-  logoff: "Logoff",
+  myLists: "Lists",
+  myWeek: "Week",
+  activity: "Activity",
+  logout: "Logout",
 });
 
 export { texts };

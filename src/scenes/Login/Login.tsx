@@ -2,8 +2,9 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { isEmailValid, isPasswordValid } from "src/functions";
-import { loginScreens, serverReplyType } from "src/types";
-import { saveOnStorage } from "src/functions/storage";
+import { loginScreens, serverReplyType, tokenType } from "src/types";
+import { jwtAccessKey, jwtRefreshKey } from "src/constants";
+import { getFromStorage, saveOnStorage } from "src/functions/storage";
 import { postRequest } from "src/functions/connection";
 import { colors } from "src/colors";
 import { texts } from "./Login.lang";
@@ -38,7 +39,7 @@ const MIN_PASSWORD_SIZE = 8;
 
 export default function Login() {
   const navigate = useNavigate();
-  const { language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
+  const { user, language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
   const loginTexts = texts.get(language);
   const [screen, setScreen] = useState<loginScreens>(() => "sign-in");
   const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
@@ -62,8 +63,8 @@ export default function Login() {
   const buttonRef = useRef(null);
 
   const login = (accessToken: string, refreshToken: string) => {
-    saveOnStorage("jwt-access", accessToken);
-    saveOnStorage("jwt-refresh", refreshToken);
+    saveOnStorage(jwtAccessKey, accessToken);
+    saveOnStorage(jwtRefreshKey, refreshToken);
     setUser({token: accessToken});
     navigate("/logged");
   };
@@ -134,12 +135,23 @@ export default function Login() {
       case "SUCCESS_RECOVERING_USER":
         setScreen("sent-recovery-email");
         break;
+      case "SUCCESS_ACCESS_TOKEN":
+        navigate("/logged");
+        break;
+      case "SUCCESS_REFRESH_TOKEN":
+        if(!reply.content) return onError({status: "ERROR"});
+        saveOnStorage(jwtAccessKey, reply.content);
+        setUser({token: reply.content});
+        return console.log("new access token is", reply.content);
     }
   };
 
   const onError = (reply: serverReplyType) => {
     console.log(reply);
     switch(reply.status){
+      case "ERROR_INVALID_ACCESS_TOKEN":
+        validateToken("refresh");
+        break;
       case "ERROR_AUTHENTICATION":
         showPopup(loginTexts.noAccount, {
           type: "warning-failure",
@@ -163,19 +175,21 @@ export default function Login() {
           type: "warning-failure",
           timeout: 4000,
         });
-        break;
-      default:
-        showPopup(loginTexts.somethingWentWrong, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
-        break;
+      break;
     }
   }
 
   const request = (link: string, params: any) => {
     postRequest({link, params, onSuccess, onError, setWaitingResponse});
   };
+
+  const validateToken = (type: tokenType) => {
+    const token = getFromStorage(`jwt-${type}`);
+    if(!token) return;
+    const link = "/token";
+    const params = {tokenType: type};
+    postRequest({link, params, token, onSuccess, onError});
+  }
 
   const onButtonClick = () => {
     switch (screen) {
@@ -208,6 +222,9 @@ export default function Login() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  useEffect(() => {
+    validateToken("access");
+  }, []);
 
   useEffect(() => {
     if (keyPressed === "Enter" && checkAllInputs()) {

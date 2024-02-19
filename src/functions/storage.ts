@@ -18,3 +18,13 @@ export const getFromStorage = (key: string) => {
         return null;
     }
 }
+
+export const removeFromStorage = (key: string) => {
+    try {
+        window.localStorage.removeItem(key);
+        return true;
+    } catch (e) {
+        console.log("removing", key, "from storage failed:", e);
+        return false;
+    }
+}

@@ -1,10 +1,14 @@
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useNavigate } from "react-router-dom";
-import { selectionType } from "src/types";
+import { selectionType, tokenType } from "src/types";
 import { Selector } from "../index";
 import { colors } from "src/colors";
 import { texts } from "./UserSelector.lang";
-import { Coffee, Power, Sliders } from "react-feather";
+import { postRequest } from "src/functions/connection";
+import { getFromStorage, removeFromStorage } from "src/functions/storage";
+import { List, Calendar, Power, Plus } from "react-feather";
+import { jwtAccessKey, jwtRefreshKey } from "src/constants";
 
 interface props {
   show: boolean;
@@ -13,33 +17,53 @@ interface props {
 
 export default function UserSelector({ show, onClick }: props) {
   const { language } = useGlobalContext();
+  const { goTo } = useLoggedContext();
   const userTexts = texts.get(language);
   const navigate = useNavigate();
 
   const options: selectionType[] = [
-    //TODO include the functionality for these icons
-    // {
-    //   icon: <Coffee color={colors.darkWhite} width={15} height={15} />,
-    //   text: userTexts.myData,
-    // },
-    // {
-    //   icon: <Sliders color={colors.darkWhite} width={15} height={15} />,
-    //   text: userTexts.settings,
-    // },
+    {
+      icon: <Calendar color={colors.darkWhite} width={15} height={15} />,
+      text: userTexts.myWeek,
+    },
+    {
+      icon: <List color={colors.darkWhite} width={15} height={15} />,
+      text: userTexts.myLists,
+    },
+    {
+      icon: <Plus color={colors.darkWhite} width={15} height={15} />,
+      text: userTexts.activity,
+    },
     {
       icon: <Power color={colors.pink} width={15} height={15} />,
-      text: userTexts.logoff,
+      text: userTexts.logout,
     },
   ];
 
   const onOptionClick = (option: string) => {
     switch (option) {
-      case userTexts.myData:
-      case userTexts.settings:
-        //TODO implement functionalities for cases above
+      case userTexts.myLists:
+        goTo("lists");
         onClick(option);
         break;
-      case userTexts.logoff:
+      case userTexts.myWeek:
+        goTo("activities");
+        onClick(option);
+        break;
+      case userTexts.activity:
+        goTo("activity-settings");
+        onClick(option);
+        break;
+      case userTexts.logout:
+        const token = getFromStorage(jwtRefreshKey);
+        const tokenType: tokenType = "refresh";
+        if(token){
+          const link = "/logout";
+          const params = {tokenType};
+          postRequest({link, params, token});
+          removeFromStorage(jwtAccessKey);
+          removeFromStorage(jwtRefreshKey);
+        }
         navigate("/login");
         break;
     }
