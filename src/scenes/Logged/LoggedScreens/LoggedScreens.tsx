@@ -3,30 +3,23 @@ import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animat
 import { Background, Header, Loading } from "src/components";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
+import { serverReplyType } from "src/types";
+import { postRequest } from "src/functions/connection";
 import { useNavigate } from "react-router-dom";
-import { dataType } from "src/types";
+import { useTime } from "src/hooks/time";
 import { texts } from "./LoggedScreens.lang";
-import { api } from "src/services/api";
 import Dashboard from "./Dashboard";
 import Activities from "./Activities";
 import Lists from "./Lists";
 import ActivitySettings from "./ActivitySettings";
 import { BigContainer, Gsap, SmallContainer } from "./LoggedScreens.style";
-import { useTime } from "src/hooks/time";
-
-type serverReplyType = {
-    status: "SUCCESS" | "SUCCESS_DATA" | "SUCCESS_UPDATE" | "ERROR" | "ERROR_NO_REGISTERED_USER" | "ERROR_MISSING_CREDENTIALS" | "ERROR_INVALID_DATA",
-    data: dataType;
-    content: string;
-};
+import { getFromStorage, saveOnStorage } from "src/functions/storage";
 
 export default function LoggedScreens(){
     const navigate = useNavigate();
     const { minute } = useTime();
-    const { language, user, innerWidth, showPopup } = useGlobalContext();
+    const { language, user, innerWidth, showPopup, setUser } = useGlobalContext();
     const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
-
-    const [waitingForServer, setWaitingForServer] = useState<boolean>(() => true);
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
     const loadingRef = useRef(null);
@@ -38,71 +31,83 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    const parseServerReply = (reply: serverReplyType) => {
-        if(reply.content.includes("ERROR"))
-        if(reply.status === "SUCCESS_UPDATE"){
-            return console.log("Data updated successfuly on server side.");
-        }
-        switch(reply.data){
-            case "week": updateWeek(JSON.parse(reply.content)); break;
-            case "todo": updateList("todo", JSON.parse(reply.content)); break;
-            case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
+    const validateToken = (tokenType: "access" | "refresh", updateUser?: boolean) => {
+        const token = getFromStorage(`jwt-${tokenType}`);
+        if(updateUser) setUser({token});
+        request("/token", {}, token, tokenType);
+    }
+
+    const request = (link: string, requestParams: any, alternativeToken?: string, alternativeTokenType?: "access" | "refresh") => {
+        if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
+        const token = alternativeToken?? user.token;
+        const params = {
+            ...requestParams,
+            tokenType: alternativeTokenType?? "access"
+        };
+        postRequest({link, params, token, onSuccess, onError});
+    }
+
+
+    const onSuccess = (reply: serverReplyType) => {
+        if(reply.content && reply.content.includes("ERROR")) return;
+        if(!reply.status) return;
+        switch(reply.status){
+            case "SUCCESS_ACCESS_TOKEN":
+                return;
+            case "SUCCESS_REFRESH_TOKEN":
+                if(!reply.content) return onError({status: "ERROR"});
+                saveOnStorage("jwt-access", reply.content);
+                setUser({token: reply.content});
+                return console.log("new access token is", reply.content);
             default:
-                console.log("error parsing data. received:", reply);
-                return showPopup(loggedTexts.errorFetchingData, {
-                type: "warning-failure",
-                timeout: 4000,
-            });
+                if(!reply.data || !reply.content) return;
+                switch(reply.data){
+                    case "week": updateWeek(JSON.parse(reply.content)); break;
+                    case "todo": updateList("todo", JSON.parse(reply.content)); break;
+                    case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
+                    default:
+                        console.log("error parsing data. received:", reply);
+                        return showPopup(loggedTexts.errorFetchingData, {
+                        type: "warning-failure",
+                        timeout: 4000,
+                    });
+                }
+            return setTimeout(() => setReceivedFirstContent(true), 2000);
         }
-        setTimeout(() => setReceivedFirstContent(true), 2000);
     };
 
 
-    const handleServerReply = (reply: serverReplyType) => {
+    const onError = (reply: serverReplyType) => {
         switch (reply.status) {
-        case "ERROR":
-        case "ERROR_INVALID_DATA":
-        case "ERROR_MISSING_CREDENTIALS":
-        case "ERROR_NO_REGISTERED_USER":
-            showPopup(loggedTexts.somethingWentWrong, {
-                type: "warning-failure",
-                timeout: 4000,
-            }); break;
-        default:
-            parseServerReply(reply);
+            case "ERROR_INVALID_ACCESS_TOKEN":
+                validateToken("refresh");
+                break;
+            case "ERROR":
+            case "ERROR_INVALID_DATA":
+            case "ERROR_MISSING_CREDENTIALS":
+            case "ERROR_NO_REGISTERED_USER":
+            case "ERROR_INVALID_REFRESH_TOKEN":
+                console.log(reply.status, "(redirecting to login screen)");
+                showPopup(loggedTexts.somethingWentWrong, {
+                    type: "warning-failure",
+                    timeout: 4000,
+                });
+                navigate("/login");
+            break;
         }
     };
-
-
-    const postRequest = (link: string, params: any, catchCall?: () => void) => {
-        setWaitingForServer(true);
-        api
-        .post(link, { ...params })
-        .then((resp) => {
-            handleServerReply(resp.data);
-            setWaitingForServer(false);
-        })
-        .catch(() => {
-            catchCall && catchCall();
-            setWaitingForServer(false);
-        });
-    };
-
 
     useEffect(() => {
-        if (!user) navigate("/login");
+        validateToken("access", true);
     }, []);
-
 
     useEffect(() => {
         if(!selected.activity) {
-            const { name, password } = user;
-            postRequest("/get-data", {data: "week", name, password});
-            postRequest("/get-data", {data: "shopping", name, password});
-            postRequest("/get-data", {data: "todo", name, password});
+            request("/get-data", {data: "week"});
+            request("/get-data", {data: "shopping"});
+            request("/get-data", {data: "todo"});
         }
-    }, [minute, user]);
-
+    }, [minute]);
 
     useEffect(() => {
         if(updateServer){
@@ -112,14 +117,12 @@ export default function LoggedScreens(){
                 case "todo": jsonContent = [...todoList]; break;
                 case "shopping": jsonContent = [...shoppingList]; break; 
             }
-            const { name, password } = user;
             const data = updateServer;
             const content = JSON.stringify(jsonContent);
-            postRequest("/update-data", {data, content, name, password});
+            request("/update-data", {data, content});
             setUpdateServer(null);
         }
     }, [updateServer, user]);
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

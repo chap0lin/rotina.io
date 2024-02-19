@@ -1,11 +1,19 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isEmailValid, isPasswordValid } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { isEmailValid, isPasswordValid } from "src/functions";
+import { loginScreens, serverReplyType } from "src/types";
+import { saveOnStorage } from "src/functions/storage";
+import { postRequest } from "src/functions/connection";
 import { colors } from "src/colors";
 import { texts } from "./Login.lang";
-import { api } from "src/services/api";
-import { Background, Header, Credential, Button, Logo } from "components/index";
+import {
+  Background,
+  Header,
+  Credential,
+  Button,
+  Logo,
+} from "components/index";
 import {
   move,
   moveAndVanish,
@@ -28,46 +36,16 @@ import {
 
 const MIN_PASSWORD_SIZE = 8;
 
-type screenType =
-  | "sign-in"
-  | "sign-up"
-  | "forgot-password"
-  | "sent-sign-up-email"
-  | "sent-recovery-email"
-;
-
-  type serverReplyType =
-  | "SUCCESS"
-  | "SUCCESS_LOGGED_IN"
-  | "SUCCESS_ACTIVATING_USER"
-  | "SUCCESS_RECOVERING_USER"
-  | "ERROR"
-  | "ERROR_USERNAME_ALREADY_TAKEN"
-  | "ERROR_EMAIL_ALREADY_TAKEN"
-  | "ERROR_NO_REGISTERED_USER"
-  | "ERROR_EMAIL"
-  | "ERROR_AUTHENTICATION"
-  | "ERROR_MISSING_CREDENTIALS"
-;
-
 export default function Login() {
   const navigate = useNavigate();
-  const { language, innerHeight, keyPressed, setUser, showPopup } =
-    useGlobalContext();
+  const { language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
   const loginTexts = texts.get(language);
-  const [screen, setScreen] = useState<screenType>(() => "sign-in");
-  const [hintText, setHintText] = useState<string>(
-    () => loginTexts.forgotMyPassword
-  );
-  const [buttonText, setButtonText] = useState<string>(
-    () => loginTexts.buttonSignIn
-  );
+  const [screen, setScreen] = useState<loginScreens>(() => "sign-in");
+  const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
+  const [buttonText, setButtonText] = useState<string>(() => loginTexts.buttonSignIn);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(() => true);
-  const [waitingForServer, setWaitingForServer] = useState<boolean>(
-    () => false
-  );
-  const canGoBack =
-    !waitingForServer && (screen === "sign-up" || screen === "forgot-password");
+  const [waitingResponse, setWaitingResponse] = useState<boolean>(() => false);
+  const canGoBack = !waitingResponse && (screen === "sign-up" || screen === "forgot-password");
 
   const username = useRef<string>("");
   const email = useRef<string>("");
@@ -83,27 +61,10 @@ export default function Login() {
   const signUpRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const postRequest = (link: string, params: any, catchCall?: () => void) => {
-    setWaitingForServer(true);
-    api
-      .post(link, { ...params })
-      .then((resp) => {
-        handleServerReply(resp.data.status);
-        setWaitingForServer(false);
-      })
-      .catch(() => {
-        catchCall && catchCall();
-        setWaitingForServer(false);
-      });
-  };
-
-  const login = () => {
-    setUser({
-      id: "",
-      email: "",
-      name: username.current,
-      password: password.current,
-    });
+  const login = (accessToken: string, refreshToken: string) => {
+    saveOnStorage("jwt-access", accessToken);
+    saveOnStorage("jwt-refresh", refreshToken);
+    setUser({token: accessToken});
     navigate("/logged");
   };
 
@@ -159,10 +120,13 @@ export default function Login() {
     setButtonDisabled(!checkAllInputs());
   };
 
-  const handleServerReply = (reply: serverReplyType) => {
-    switch (reply) {
+
+//COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  const onSuccess = (reply: serverReplyType) => {
+    switch (reply.status) {
       case "SUCCESS_LOGGED_IN":
-        login();
+        login(reply.accessToken, reply.refreshToken);
         break;
       case "SUCCESS_ACTIVATING_USER":
         setScreen("sent-sign-up-email");
@@ -170,6 +134,12 @@ export default function Login() {
       case "SUCCESS_RECOVERING_USER":
         setScreen("sent-recovery-email");
         break;
+    }
+  };
+
+  const onError = (reply: serverReplyType) => {
+    console.log(reply);
+    switch(reply.status){
       case "ERROR_AUTHENTICATION":
         showPopup(loginTexts.noAccount, {
           type: "warning-failure",
@@ -201,18 +171,22 @@ export default function Login() {
         });
         break;
     }
+  }
+
+  const request = (link: string, params: any) => {
+    postRequest({link, params, onSuccess, onError, setWaitingResponse});
   };
 
   const onButtonClick = () => {
     switch (screen) {
       case "sign-in":
-        postRequest("/login", {
+        request("/login", {
           name: username.current,
           password: password.current,
         });
         break;
       case "sign-up":
-        postRequest("/activate", {
+        request("/activate", {
           name: username.current,
           password: password.current,
           email: email.current,
@@ -220,7 +194,7 @@ export default function Login() {
         });
         break;
       case "forgot-password":
-        postRequest("/recovery", {
+        request("/recovery", {
           email: email.current,
           lang: language,
         });
@@ -231,6 +205,9 @@ export default function Login() {
         break;
     }
   };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   useEffect(() => {
     if (keyPressed === "Enter" && checkAllInputs()) {
@@ -330,7 +307,7 @@ export default function Login() {
               <Credential
                 zIndex={10}
                 title={loginTexts.user}
-                disabled={waitingForServer}
+                disabled={waitingResponse}
                 onChange={(e) => {
                   username.current = e;
                   handleButtonStatus();
@@ -339,9 +316,10 @@ export default function Login() {
             </Gsap>
             <Gsap ref={emailRef}>
               <Credential
+                inputLimit={50}
                 zIndex={8}
                 title={loginTexts.email}
-                disabled={waitingForServer}
+                disabled={waitingResponse}
                 onChange={(e) => {
                   email.current = e;
                   handleButtonStatus();
@@ -353,7 +331,7 @@ export default function Login() {
                 safe
                 zIndex={10}
                 title={loginTexts.password}
-                disabled={waitingForServer}
+                disabled={waitingResponse}
                 onChange={(e) => {
                   password.current = e;
                   handleButtonStatus();
@@ -365,7 +343,7 @@ export default function Login() {
                 safe
                 zIndex={8}
                 title={loginTexts.repeatPassword}
-                disabled={waitingForServer}
+                disabled={waitingResponse}
                 onChange={(e) => {
                   repPassword.current = e;
                   handleButtonStatus();
@@ -376,7 +354,7 @@ export default function Login() {
           <HintGsap ref={hintRef}>
             <HintText
               onClick={() => {
-                !waitingForServer &&
+                !waitingResponse &&
                   screen === "sign-in" &&
                   setScreen("forgot-password");
               }}
@@ -391,7 +369,7 @@ export default function Login() {
           <Gsap ref={buttonRef}>
             <Button
               disabled={buttonDisabled}
-              loading={waitingForServer}
+              loading={waitingResponse}
               onClick={onButtonClick}>
               {buttonText}
             </Button>
@@ -400,7 +378,7 @@ export default function Login() {
         <BottomContent>
           <DiscreteText ref={signUpRef}>
             {loginTexts.haventSignedUpYet}&nbsp;
-            <Bold onClick={() => !waitingForServer && setScreen("sign-up")}>
+            <Bold onClick={() => !waitingResponse && setScreen("sign-up")}>
               {loginTexts.buttonSignUp}
             </Bold>
           </DiscreteText>

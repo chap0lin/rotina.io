@@ -40,8 +40,38 @@ export type dayType = {
   activities: activityType[];
 };
 
+export type statusType = 
+  | "SUCCESS"
+  | "SUCCESS_LOGGED_IN"
+  | "SUCCESS_ACTIVATING_USER"
+  | "SUCCESS_RECOVERING_USER"
+  | "SUCCESS_DATA"
+  | "SUCCESS_UPDATE" 
+  | "SUCCESS_ACCESS_TOKEN"
+  | "SUCCESS_REFRESH_TOKEN"
+  | "ERROR" 
+  | "ERROR_AUTHENTICATION"
+  | "ERROR_EMAIL_ALREADY_TAKEN"
+  | "ERROR_USERNAME_ALREADY_TAKEN"
+  | "ERROR_NO_REGISTERED_USER" 
+  | "ERROR_MISSING_CREDENTIALS" 
+  | "ERROR_INVALID_DATA"
+  | "ERROR_NO_TOKENS_FOUND"
+  | "ERROR_INVALID_ACCESS_TOKEN"
+  | "ERROR_INVALID_REFRESH_TOKEN"
+;
+
 export type dataType = "week" | "todo" | "shopping";
+export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-sign-up-email" | "sent-recovery-email";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
+
+export type serverReplyType = {
+  status: statusType;
+  data?: dataType;
+  content?: string;
+  accessToken?: string;
+  refreshToken?: string;
+};
 
 export type activitySelectionType = {
   activity: activityType;
@@ -65,10 +95,7 @@ export type itemType = {
 
 export type userType = {
   auth: {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
+    token: string;
   },
   app: {
     weekActivities: activityType[][];

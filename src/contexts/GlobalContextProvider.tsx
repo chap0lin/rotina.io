@@ -26,7 +26,7 @@ interface GlobalContextValue {
   innerWidth: number;
   user: userType["auth"] | null;
   language: languageOption;
-  popupType: string | null;
+  popupType: popupType;
   setUser: React.Dispatch<React.SetStateAction<userType["auth"]>>;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
   showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
@@ -37,7 +37,7 @@ const initialValues: GlobalContextValue = {
   keyPressed: "",
   innerHeight: 768,
   innerWidth: 1366,
-  user: null,
+  user: {token: null},
   language: "pt-br",
   popupType: null,
   setUser: () => null,
@@ -58,15 +58,15 @@ export function useGlobalContext() {
 }
 
 export default function GlobalProvider(props: GlobalProviderProps) {
-  const [language, setLanguage] = useState<languageOption>(() => "pt-br");
+  const [language, setLanguage] = useState<languageOption>(() => initialValues.language);
   const [innerWidth, setInnerWidth] = useState<number>(() => window.innerWidth);
   const [innerHeight, setInnerHeight] = useState<number>(
     () => window.innerHeight
   );
-  const [user, setUser] = useState<userType["auth"]>(() => null);
-  const [keyPressed, setKeyPressed] = useState<string>(() => "");
+  const [user, setUser] = useState<userType["auth"]>(() => initialValues.user);
+  const [keyPressed, setKeyPressed] = useState<string>(() => initialValues.keyPressed);
   const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
-  const [popupType, setPopupType] = useState<popupType>(() => null);
+  const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
