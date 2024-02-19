@@ -48,12 +48,15 @@ export const InvalidWarning = styled.div`
   bottom: 10px;
   border: 1px solid ${colors.pink};
   border-radius: 5px;
-  padding: 2px 5px;
-  width: 300px;
+  padding: 5px;
+  max-width: 310px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  @media(max-height: 750px){
+    padding: 2px 5px;
+  }
 `;
 
 export const InvalidCause = styled.div`
