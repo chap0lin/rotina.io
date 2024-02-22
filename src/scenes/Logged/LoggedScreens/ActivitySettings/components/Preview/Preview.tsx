@@ -3,7 +3,7 @@ import { colors } from "src/colors";
 import { activityType, timeCheckType } from "src/types";
 import { Check, X } from "react-feather";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { ActivityCard, CustomCircleIcon } from "src/components";
+import { ActivityCard, CustomCircleIcon, Popup } from "src/components";
 import {
   Buttons,
   Container,
@@ -57,6 +57,17 @@ export default function Preview({
     reactToClick(noRef.current, onDiscard);
   };
 
+  const ErrorPopup = (
+    <InvalidWarning>
+      <InvalidCause>
+        {error && error.cause}
+      </InvalidCause>
+      <InvalidText>
+        {error && error.message}
+      </InvalidText>
+    </InvalidWarning>
+  );
+
   return (
     <Container>
       <UpperBar>
@@ -86,16 +97,13 @@ export default function Preview({
         </Buttons>
       </UpperBar>
       <ActivityCard highlighted {...activity} />
-      {error && 
-        <InvalidWarning>
-          <InvalidCause>
-            {error.cause}
-          </InvalidCause>
-          <InvalidText>
-            {error.message}
-          </InvalidText>
-        </InvalidWarning>
-      }
+      <Popup
+        description={ErrorPopup}
+        show={(error !== null)}
+        type={"info"}
+        descriptionColor={colors.black}
+        backgroundColor={colors.white}
+      />
     </Container>
   );
 }

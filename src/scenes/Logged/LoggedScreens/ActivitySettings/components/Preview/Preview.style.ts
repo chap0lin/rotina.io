@@ -44,18 +44,13 @@ export const Gsap = styled.div`
 `;
 
 export const InvalidWarning = styled.div`
-  position: absolute;
-  bottom: 10px;
-  border: 1px solid ${colors.pink};
   border-radius: 5px;
-  padding: 5px;
-  max-width: 310px;
+  padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   @media(max-height: 750px){
-    padding: 2px 5px;
+    padding-bottom: 0px;
   }
 `;
 
@@ -63,23 +58,28 @@ export const InvalidCause = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%; 
+  width: 120px;
+  height: 40px; 
   background: ${colors.pink};
   color: ${colors.white};
   font-weight: bold;
   font-size: 16px;
   border-radius: 5px;
-  padding: 5px 10px;
   @media(max-height: 750px){
-    height: auto;
     font-size: 15px;
   }
 `;
 
 export const InvalidText = styled.p`
+  display: flex;
+  align-items: center;
   border-radius: 5px;
-  width: auto;
-  color: ${colors.black};
+  background: ${colors.grey};
+  min-height: 40px;
+  height: 100%;
+  width: 100%;
+  padding: 5px 10px;
+  color: ${colors.white};
   font-size: 16px;
   line-height: 18.5px;
   @media (max-height: 750px) {

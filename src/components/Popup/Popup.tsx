@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { X, CheckCircle, AlertTriangle, XCircle } from "react-feather";
+import { CheckCircle, AlertTriangle, XCircle } from "react-feather";
+import { popupType } from "src/types";
 import { colors } from "src/colors";
 import cookieIcon from "./assets/cookie.png";
 import gsap from "gsap";
@@ -14,7 +15,7 @@ import {
   WarningContainer,
   WarningDescription,
 } from "./Popup.style";
-import { popupType } from "src/types";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 
 interface PopupProps {
   type: popupType;
@@ -41,12 +42,11 @@ export default function Popup({
   comesFromTop,
   titleColor,
   iconColor,
-  exitIconColor,
   descriptionColor,
   backgroundColor,
   border,
-  exit,
 }: PopupProps) {
+  const { innerHeight } = useGlobalContext();
   const infoRef = useRef();
   const warningRef = useRef();
   const cookieRef = useRef();
@@ -54,13 +54,13 @@ export default function Popup({
   const releaseProps = comesFromTop
     ? {
         scale: 1,
-        top: 85,
+        top: 0,
         duration: 0.6,
         ease: "power2",
       }
     : {
         scale: 1,
-        bottom: 20,
+        bottom: (innerHeight > 750)? 20 : 10,
         duration: 0.6,
         ease: "power2",
       };

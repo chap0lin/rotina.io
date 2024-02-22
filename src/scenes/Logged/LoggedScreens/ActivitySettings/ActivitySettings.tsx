@@ -73,14 +73,16 @@ export default function ActivitySettings({}: props) {
   const endRef = useRef(null);
 
   const hasConflict = (): activityType => {
-    const existing = weekActivities[selectedDay].find((activity) =>
+    const existing = weekActivities[selectedDay].filter((activity) =>
         isBefore(newActivity.startsAt, activity.endsAt) &&
         isAfter(newActivity.endsAt, activity.startsAt)
     );
 
-    if (!existing || areActivitiesEqual(existing, selected.activity))
-      return null;
-    return existing;
+    if (!existing || !existing.length) return null;
+    for(let i = 0; i < existing.length; i++){
+      if (!areActivitiesEqual(existing[i], selected.activity)) return existing[i];
+    }
+    return null;
   };
 
 
@@ -176,7 +178,7 @@ export default function ActivitySettings({}: props) {
     newActivity &&
     newActivity.startsAt &&
     newActivity.endsAt &&
-    setTimeCheckMessage(() => {
+    setTimeCheckMessage(() => {   //TODO fix same-day rescheduling
       if (isEqual(newActivity.startsAt, newActivity.endsAt))
         return {
           cause: detailsTexts.errorCause,

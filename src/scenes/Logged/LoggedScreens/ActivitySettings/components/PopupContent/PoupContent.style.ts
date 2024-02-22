@@ -30,6 +30,7 @@ export const Container = styled(FlexColumn)`
   gap: 5px;
   overflow: hidden;
   border-radius: 0 20px;
+  margin-bottom: 20px;
 `;
 
 export const TitleContainer = styled.div`
