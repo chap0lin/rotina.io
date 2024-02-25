@@ -52,6 +52,7 @@ export const spawn = (
     .to(what, {
       display: display ?? "flex",
       duration: 0,
+      opacity: 0,
     })
     .to(what, {
       opacity: 1,

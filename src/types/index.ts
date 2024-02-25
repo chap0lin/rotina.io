@@ -50,11 +50,17 @@ export type statusType =
   | "SUCCESS_ACCESS_TOKEN"
   | "SUCCESS_REFRESH_TOKEN"
   | "SUCCESS_LOGGED_OUT"
-  | "ERROR" 
+  | "SUCCESS_VALID_PURPOSE"
+  | "SUCCESS_REGISTERED_USER"
+  | "SUCCESS_RECOVERED_USER"
+  | "ERROR"
+  | "ERROR_INVALID_PURPOSE"
   | "ERROR_AUTHENTICATION"
   | "ERROR_EMAIL_ALREADY_TAKEN"
   | "ERROR_USERNAME_ALREADY_TAKEN"
   | "ERROR_NO_REGISTERED_USER" 
+  | "ERROR_NO_ACTIVATING_USER"
+  | "ERROR_NO_RECOVERING_USER"
   | "ERROR_MISSING_CREDENTIALS" 
   | "ERROR_INVALID_DATA"
   | "ERROR_NO_TOKENS_FOUND"
@@ -64,7 +70,7 @@ export type statusType =
 
 export type tokenType = "access" | "refresh"; 
 export type dataType = "week" | "todo" | "shopping";
-export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-sign-up-email" | "sent-recovery-email";
+export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-code-activate" | "sent-code-recovery";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
 
 export type serverReplyType = {

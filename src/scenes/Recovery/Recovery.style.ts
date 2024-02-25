@@ -26,7 +26,7 @@ export const LoadingDiv = styled.div`
 `;
 
 export const Title = styled.p`
-  font-size: 26px;
+  font-size: 32px;
   color: ${colors.black};
   text-transform: uppercase;
   font-family: "Motley";

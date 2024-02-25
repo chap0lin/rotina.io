@@ -1,32 +1,25 @@
 import styled from "@emotion/styled";
 import { colors } from "src/colors";
 
-export const Gsap = styled.div`
-  width: 100%;
-  height: 100%;
-  position: fixed;
-`;
 
-export const FlexColumn = styled.div`
+const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 `;
 
-export const TopContent = styled(FlexColumn)`
-  padding-top: 180px;
+export const Gsap = styled.div`
+  position: absolute;
+`;
+
+export const Content = styled(FlexColumn)`
+  margin-top: 180px;
   position: relative;
-  gap: 40px;
+  flex: 1;
+  width: 100%;
   @media (max-height: 750px) {
-    padding-top: 90px;
+    margin-top: 90px;
   }
-`;
-
-export const Texts = styled(FlexColumn)`
-  gap: 20px;
-  height: 160px;
-  justify-content: flex-start;
 `;
 
 export const WelcomeText = styled.p`

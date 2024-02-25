@@ -11,6 +11,7 @@ interface props {
   zIndex?: number;
   disabled?: boolean;
   underlined?: boolean;
+  uppercased?: boolean;
   inputLimit?: number;
   allowSpace?: boolean;
   hourType?: boolean;
@@ -27,6 +28,7 @@ export default function Credential({
   zIndex,
   disabled,
   underlined,
+  uppercased,
   inputLimit,
   allowSpace,
   onChange,
@@ -44,7 +46,9 @@ export default function Credential({
     }
 
     e.target.value = input.length <= limit ? input : input.substring(0, limit);
-    onChange(input.trim());
+    input = input.trim();
+    if(uppercased) input = input.toUpperCase();
+    onChange(input);
     setHasInput(input.length > 0);
   };
 
@@ -64,7 +68,10 @@ export default function Credential({
       }}>
       {title && <Title>{title}:</Title>}
       <Input
-        style={underlined ? { borderBottom: `1px solid ${colors.grey}` } : {}}
+        style={{
+          borderBottom: underlined? `1px solid ${colors.grey}` : "",
+          textTransform: uppercased? "uppercase" : "none",
+        }}
         placeholder={placeholder ?? ""}
         type={hide ? "password" : "text"}
         onChange={updateInput}

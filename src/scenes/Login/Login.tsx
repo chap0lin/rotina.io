@@ -39,7 +39,7 @@ const MIN_PASSWORD_SIZE = 8;
 
 export default function Login() {
   const navigate = useNavigate();
-  const { user, language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
+  const { language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
   const loginTexts = texts.get(language);
   const [screen, setScreen] = useState<loginScreens>(() => "sign-in");
   const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
@@ -52,12 +52,14 @@ export default function Login() {
   const email = useRef<string>("");
   const password = useRef<string>("");
   const repPassword = useRef<string>("");
+  const code = useRef<string>("");
 
   const logoRef = useRef(null);
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passRef = useRef(null);
   const repPassRef = useRef(null);
+  const codeRef = useRef(null);
   const hintRef = useRef(null);
   const signUpRef = useRef(null);
   const buttonRef = useRef(null);
@@ -112,8 +114,10 @@ export default function Login() {
         return checkSignInInputs();
       case "sign-up":
         return checkSignUpInputs();
-      default:
+      case "forgot-password":
         return isEmailValid(email.current);
+      default:
+        return true;
     }
   };
 
@@ -130,10 +134,20 @@ export default function Login() {
         login(reply.accessToken, reply.refreshToken);
         break;
       case "SUCCESS_ACTIVATING_USER":
-        setScreen("sent-sign-up-email");
+        setScreen("sent-code-activate");
         break;
       case "SUCCESS_RECOVERING_USER":
-        setScreen("sent-recovery-email");
+        setScreen("sent-code-recovery");
+        break;
+      case "SUCCESS_VALID_PURPOSE":
+        saveOnStorage("code", code.current);
+        saveOnStorage("action", "recovery");
+        navigate("/recovery");
+        break;
+      case "SUCCESS_REGISTERED_USER":
+        saveOnStorage("username", username.current);
+        saveOnStorage("action", "activate");
+        navigate("/activate");
         break;
       case "SUCCESS_ACCESS_TOKEN":
         navigate("/logged");
@@ -175,6 +189,13 @@ export default function Login() {
           type: "warning-failure",
           timeout: 4000,
         });
+        break;
+      case "ERROR_NO_ACTIVATING_USER":
+      case "ERROR_NO_RECOVERING_USER":
+        showPopup(loginTexts.invalidCode, {
+          type: "warning-failure",
+          timeout: 4000,
+        });
       break;
     }
   }
@@ -213,9 +234,13 @@ export default function Login() {
           lang: language,
         });
         break;
-      case "sent-recovery-email":
-      case "sent-sign-up-email":
-        setScreen("sign-in");
+      case "sent-code-activate":
+      case "sent-code-recovery":
+        const codePurpose = screen.split("-").at(2);
+        request("/validate", {
+          code: code.current,
+          purpose: codePurpose,
+        });
         break;
     }
   };
@@ -233,7 +258,7 @@ export default function Login() {
   }, [keyPressed]);
 
   useLayoutEffect(() => {
-    vanish([emailRef.current, repPassRef.current]);
+    vanish([emailRef.current, repPassRef.current, codeRef.current]);
     move(
       [
         nameRef.current,
@@ -242,6 +267,7 @@ export default function Login() {
         repPassRef.current,
         hintRef.current,
         buttonRef.current,
+        codeRef.current,
       ],
       { y: 90 }
     );
@@ -258,7 +284,7 @@ export default function Login() {
         move([logoRef.current], { y: 0 }, 1);
         move([hintRef.current], { y: 220 }, 1);
         move([buttonRef.current], { y: 300 }, 1);
-        moveAndVanish([emailRef.current], { y: 90 }, 1);
+        moveAndVanish([emailRef.current, codeRef.current], { y: 90 }, 1);
         moveAndVanish([repPassRef.current], { y: 150 }, 1);
         spawn([signUpRef.current], 1);
         break;
@@ -279,37 +305,26 @@ export default function Login() {
         setButtonText(lang.buttonSend);
         spawn([emailRef.current], 1);
         vanish([nameRef.current], 0.3);
-        moveAndVanish([passRef.current], { y: 90 }, 1);
-        moveAndVanish([repPassRef.current], { y: 90 }, 1);
+        moveAndVanish([passRef.current, repPassRef.current], { y: 90 }, 1);
         move([hintRef.current], { y: 160 }, 1);
         move([buttonRef.current], { y: 240 }, 1);
         vanish([signUpRef.current], 1);
         break;
-      case "sent-sign-up-email":
-      case "sent-recovery-email":
-        const text =
-          screen === "sent-sign-up-email"
-            ? lang.willSendSignUpEmail
-            : lang.willSendRecoverEmail;
-        setHintText(text);
-        setButtonText(lang.goBack);
-        moveAndVanish(
-          [
-            nameRef.current,
-            emailRef.current,
-            passRef.current,
-            repPassRef.current,
-          ],
-          { y: 0 },
-          1
-        );
-        move([logoRef.current], { y: 0 }, 1);
-        move([hintRef.current], { y: 90 }, 1);
-        move([buttonRef.current], { y: 190 }, 1);
+      case "sent-code-activate":
+      case "sent-code-recovery":
+        setHintText((screen === "sent-code-activate")? lang.willSendSignUpEmail: lang.willSendRecoverEmail);
+        moveAndVanish([nameRef.current, emailRef.current, passRef.current, repPassRef.current], { y: 90 }, 1);
+        setButtonText(lang.verify);
+        spawn(codeRef.current, 1);
+        move(logoRef.current, { y: 0 }, 1);        
+        move(hintRef.current, { y: 170 }, 1);
+        move([buttonRef.current], { y: 280 }, 1);
+        vanish([signUpRef.current], 1);
         break;
     }
     handleButtonStatus();
   }, [screen, language]);
+
 
   return (
     <Background>
@@ -364,6 +379,17 @@ export default function Login() {
                 onChange={(e) => {
                   repPassword.current = e;
                   handleButtonStatus();
+                }}
+              />
+            </Gsap>
+            <Gsap ref={codeRef}>
+              <Credential
+                uppercased
+                zIndex={8}
+                title={loginTexts.code}
+                disabled={waitingResponse}
+                onChange={(e) => {
+                  code.current = e;
                 }}
               />
             </Gsap>

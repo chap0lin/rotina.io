@@ -5,6 +5,7 @@ type textTypes = {
   email: string;
   password: string;
   repeatPassword: string;
+  code: string;
   forgotMyPassword: string;
   enterEmail: string;
   signUpHint: string;
@@ -23,7 +24,8 @@ type textTypes = {
   willSendSignUpEmail: string;
   willSendRecoverEmail: string;
   somethingWentWrong: string;
-  goBack: string;
+  invalidCode: string;
+  verify: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
@@ -33,6 +35,7 @@ texts.set("pt-br", {
   email: "E-mail",
   password: "Senha",
   repeatPassword: "Repetir senha",
+  code: "Código",
   forgotMyPassword: "esqueci minha senha :(",
   enterEmail: "entre com o seu e-mail registrado.",
   signUpHint:
@@ -51,11 +54,12 @@ texts.set("pt-br", {
   emailAlreadyExists: "E-mail já em uso. Por favor insira outro.",
   emailNotRegistered: "Não há nenhuma conta associada a este e-mail.",
   willSendSignUpEmail:
-    "Quase lá! Acabamos de mandar um link de ativação para o e-mail informado. Acesse e clique para finalizar seu registro!",
+    "Quase lá! Acabamos de mandar um código para o email informado. Insira-o para concluir seu registro!",
   willSendRecoverEmail:
-    "Legal! Enviamos um link para o e-mail fornecido. Abra-o e siga as instruções.",
+    "Legal! Enviamos um código para o email fornecido. Insira-o para concluir a recuperação da conta.",
   somethingWentWrong: "Alguma coisa deu errado. Tente novamente mais tarde.",
-  goBack: "voltar p/ início",
+  invalidCode: "O código é inválido. Tente novamente.",
+  verify: "verificar",
 });
 
 texts.set("en-us", {
@@ -63,6 +67,7 @@ texts.set("en-us", {
   email: "E-mail",
   password: "Password",
   repeatPassword: "Repeat password",
+  code: "Code",
   forgotMyPassword: "I forgot my password :(",
   enterEmail: "enter your registered account e-mail.",
   signUpHint:
@@ -80,10 +85,11 @@ texts.set("en-us", {
   nameAlreadyExists: "Username already in use. Please insert a new one.",
   emailAlreadyExists: "E-mail already in use. Please insert a new one.",
   emailNotRegistered: "There's no account associated with this e-mail.",
-  willSendSignUpEmail: `Almost there! We"ve just sent an activation link to the given e-mail address. Access and click to complete your registration!`,
-  willSendRecoverEmail: `Great! We've just sent a recovery link to the given e-mail.`,
+  willSendSignUpEmail: `Almost there! We've just sent a code to the given e-mail. Insert it above to conclude your registry!`,
+  willSendRecoverEmail: `Great! We've just sent a recovery code to the given e-mail. Insert it above to complete the account recovery.`,
   somethingWentWrong: "Something went wrong. Please try again later.",
-  goBack: "back to start",
+  invalidCode: "The code is invalid. Try again.",
+  verify: "verify",
 });
 
 export { texts };

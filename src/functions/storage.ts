@@ -28,3 +28,9 @@ export const removeFromStorage = (key: string) => {
         return false;
     }
 }
+
+export const getAndRemoveFromStorage = (key: string) => {
+    const item = getFromStorage(key);
+    if(item) removeFromStorage(key);
+    return item;
+}

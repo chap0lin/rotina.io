@@ -1,91 +1,54 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { getAndRemoveFromStorage, getFromStorage, removeFromStorage } from "src/functions/storage";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { isPasswordValid } from "src/functions";
+import { serverReplyType } from "src/types";
+import { useNavigate } from "react-router-dom";
+import { postRequest } from "src/functions/connection";
+import { texts } from "./Recovery.lang";
+import {
+  Gsap,
+  HintText,
+  Content,
+  Title
+} from "./Recovery.style";
 import {
   moveAndVanish,
-  spawn,
   spawnAndMove,
-  vanish,
 } from "src/functions/animation";
 import {
-  Loading,
   Header,
   Background,
   Button,
   Credential,
 } from "components/index";
-import { isPasswordValid } from "src/functions";
-import { texts } from "./Recovery.lang";
-import { api } from "src/services/api";
-import { Gsap, HintText, LoadingDiv, Content, Title } from "./Recovery.style";
 
 const MIN_PASSWORD_SIZE = 8;
 
 type screenType = "input" | "success" | "failure";
-type serverReply =
-  | "SUCCESS_RECOVERED_USER"
-  | "SUCCESS_VALID_PURPOSE"
-  | "ERROR_INVALID_PURPOSE"
-  | "ERROR_NO_RECOVERING_USER"
-  | "ERROR_AUTHENTICATION";
-
-const getQueryString = () => {
-  const query = useSearchParams();
-  const id = query[0].get("id");
-  const lang = query[0].get("lang");
-  return { id, lang };
-};
 
 export default function Recovery() {
   const navigate = useNavigate();
-  const { id, lang } = getQueryString();
-  const { language, keyPressed, setLanguage } = useGlobalContext();
+  const { language, keyPressed } = useGlobalContext();
   const recoveryTexts = texts.get(language);
+  const [code, setCode] = useState<string>(() => "");
   const [screen, setScreen] = useState<screenType>(() => "input");
-  const [titleText, setTitleText] = useState<string>(
-    () => recoveryTexts.createNewPassword
-  );
-  const [hintText, setHintText] = useState<string>(
-    () => recoveryTexts.newPasswordHint
-  );
-  const [buttonText, setButtonText] = useState<string>(
-    () => recoveryTexts.send
-  );
-  const [hasValidated, setHasValidated] = useState<boolean>(() => false);
+  const [titleText, setTitleText] = useState<string>(() => recoveryTexts.createNewPassword);
+  const [hintText, setHintText] = useState<string>(() => recoveryTexts.newPasswordHint);
+  const [buttonText, setButtonText] = useState<string>(() => recoveryTexts.send);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(() => true);
-  const [waitingForServer, setWaitingForServer] = useState<boolean>(
-    () => false
-  );
+  const [waitingResponse, setWaitingResponse] = useState<boolean>(() => false);
 
   const password = useRef<string>("");
   const repPassword = useRef<string>("");
   const oldPassword = useRef<string>("");
 
   const contentRef = useRef(null);
-  const loadingRef = useRef(null);
   const titleRef = useRef(null);
   const passRef = useRef(null);
   const repPassRef = useRef(null);
   const hintRef = useRef(null);
   const buttonRef = useRef(null);
-
-  const thingsGoneWrong = () => {
-    setScreen("failure");
-    setHasValidated(true);
-  };
-
-  const postRequest = (link: string, params: any, catchCall?: () => void) => {
-    setWaitingForServer(true);
-    api
-      .post(link, { ...params })
-      .then((resp) => {
-        handleServerReply(resp.data.status);
-      })
-      .catch(() => {
-        catchCall && catchCall();
-        setWaitingForServer(false);
-      });
-  };
 
   const checkInputs = () => {
     let status = false;
@@ -104,64 +67,49 @@ export default function Recovery() {
     }
     setHintText(hint);
     return status;
-  };
+  }
 
-  const handleServerReply = (reply: serverReply) => {
-    switch (reply) {
-      case "SUCCESS_VALID_PURPOSE":
-        setHasValidated(true);
-        break;
-      case "SUCCESS_RECOVERED_USER":
-        setScreen("success");
-        break;
-      case "ERROR_INVALID_PURPOSE":
-        thingsGoneWrong();
-        break;
-      case "ERROR_AUTHENTICATION":
-      case "ERROR_NO_RECOVERING_USER":
-        setScreen("failure");
-        break;
-    }
-    setWaitingForServer(false);
-  };
+  const onSuccess = (reply: serverReplyType) => {
+    (reply.status === "SUCCESS_RECOVERED_USER") && setScreen("success");
+  }
+
+  const onError = () => {
+    setScreen("failure");
+  }
 
   const onButtonClick = () => {
     switch (screen) {
       case "input":
-       postRequest("/change-password", {
-          id: id,
-          password: password.current,
-        });
+        const link = "/change-password";
+        const params = {code, password: password.current};
+        postRequest({ link, params, onSuccess, onError, setWaitingResponse});
         break;
       case "success":
       case "failure":
-        navigate("/");
+        navigate("/login");
         break;
     }
   };
 
-  useEffect(() => {
-    if (keyPressed === "Enter" && checkInputs()) {
-      onButtonClick();
-    }
-  }, [keyPressed]);
 
   useEffect(() => {
-    setLanguage(lang === "en-us" ? lang : "pt-br");
-    if (id && id.length) {
-      oldPassword.current = id.split("*").at(0);
-     postRequest(
-        "/validate",
-        {
-          id: id,
-          purpose: "recover",
-        },
-        thingsGoneWrong
-      );
+    const recoveryCode = getAndRemoveFromStorage("code");
+    const action = getAndRemoveFromStorage("action");
+    console.log("got from storage: ", recoveryCode, action);
+    
+    if((!recoveryCode) || (!action) || (action !== "recovery")){
+      setScreen("failure");
     } else {
-      navigate("/");
+      setCode(recoveryCode);
     }
   }, []);
+
+
+  useEffect(() => {
+    (keyPressed === "Enter") &&
+    checkInputs() &&
+    onButtonClick();
+  }, [keyPressed]);
 
   useLayoutEffect(() => {
     moveAndVanish(
@@ -177,42 +125,37 @@ export default function Recovery() {
   }, []);
 
   useLayoutEffect(() => {
-    if (!hasValidated) {
-      spawn(loadingRef.current);
-    } else {
-      vanish(loadingRef.current, 0.5);
-      const lang = texts.get(language);
-      switch (screen) {
-        case "input":
-          setTitleText(lang.createNewPassword);
-          setHintText(lang.newPasswordHint);
-          setButtonText(lang.send);
-          setButtonDisabled(!checkInputs());
-          spawnAndMove([titleRef.current], { y: 0 }, 1);
-          spawnAndMove([passRef.current], { y: 70 }, 1);
-          spawnAndMove([repPassRef.current], { y: 130 }, 1);
-          spawnAndMove([hintRef.current], { y: 190 }, 1);
-          spawnAndMove([buttonRef.current], { y: 280 }, 1);
-          break;
-        default:
-          if (screen === "success") {
-            setTitleText(lang.yey);
-            setHintText(lang.passwordChangeWasSuccessful);
-            setButtonText(lang.ok);
-          } else {
-            setTitleText(lang.hmmm);
-            setHintText(lang.somethingWentWrong);
-            setButtonText(lang.goBack);
-          }
-          setButtonDisabled(false);
-          spawnAndMove([titleRef.current], { y: 45 }, 1);
-          spawnAndMove([hintRef.current], { y: 100 }, 1);
-          spawnAndMove([buttonRef.current], { y: 205 }, 1);
-          moveAndVanish([passRef.current, repPassRef.current], { y: 120 }, 1);
-          break;
-      }
+    const lang = texts.get(language);
+    switch (screen) {
+      case "input":
+        setTitleText(lang.createNewPassword);
+        setHintText(lang.newPasswordHint);
+        setButtonText(lang.send);
+        setButtonDisabled(!checkInputs());
+        spawnAndMove([titleRef.current], { y: 0 }, 1);
+        spawnAndMove([passRef.current], { y: 70 }, 1);
+        spawnAndMove([repPassRef.current], { y: 130 }, 1);
+        spawnAndMove([hintRef.current], { y: 190 }, 1);
+        spawnAndMove([buttonRef.current], { y: 280 }, 1);
+        break;
+      default:
+        if (screen === "success") {
+          setTitleText(lang.yey);
+          setHintText(lang.passwordChangeWasSuccessful);
+          setButtonText(lang.ok);
+        } else {
+          setTitleText(lang.hmmm);
+          setHintText(lang.somethingWentWrong);
+          setButtonText(lang.goBack);
+        }
+        setButtonDisabled(false);
+        spawnAndMove([titleRef.current], { y: 45 }, 1);
+        spawnAndMove([hintRef.current], { y: 100 }, 1);
+        spawnAndMove([buttonRef.current], { y: 205 }, 1);
+        moveAndVanish([passRef.current, repPassRef.current], { y: 120 }, 1);
+        break;
     }
-  }, [hasValidated, screen, language]);
+  }, [screen, language]);
 
   return (
     <Background>
@@ -226,7 +169,7 @@ export default function Recovery() {
             safe
             zIndex={10}
             title={recoveryTexts.password}
-            disabled={waitingForServer}
+            disabled={waitingResponse}
             onChange={(e) => {
               password.current = e;
               setButtonDisabled(!checkInputs());
@@ -238,7 +181,7 @@ export default function Recovery() {
             safe
             zIndex={8}
             title={recoveryTexts.repeatPassword}
-            disabled={waitingForServer}
+            disabled={waitingResponse}
             onChange={(e) => {
               repPassword.current = e;
               setButtonDisabled(!checkInputs());
@@ -249,14 +192,11 @@ export default function Recovery() {
           <HintText>{hintText}</HintText>
         </Gsap>
         <Gsap ref={buttonRef}>
-          <Button disabled={buttonDisabled} onClick={onButtonClick}>
+          <Button loading={waitingResponse} disabled={buttonDisabled} onClick={onButtonClick}>
             {buttonText}
           </Button>
         </Gsap>
       </Content>
-      <LoadingDiv ref={loadingRef}>
-        <Loading />
-      </LoadingDiv>
     </Background>
   );
 }
