@@ -8,6 +8,7 @@ export const colors = {
   pink: "#FF1053",
   gold: "#FFB300",
   yellow: "#EFCA08",
+  amber: "#FF8503",
   orange: "#EB4511",
   purple: "#83269A",
   grey: "#7B8085",

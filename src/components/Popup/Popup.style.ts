@@ -81,11 +81,13 @@ export const Description = styled.div`
   }
   @media (max-height: 750px) {
     max-height: 450px;
-    font-size: 16px;
+    font-size: 15px;
   }
 `;
 
 export const WarningDescription = styled(Description)`
+  justify-content: flex-start;
   flex-direction: row;
+  align-items: center;
   gap: 20px;
 `;

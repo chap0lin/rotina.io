@@ -82,7 +82,6 @@ export default function Activities({}: props) {
     );
   };
 
-
   return (
     <Background>
       <Hint>{activitiesTexts.yourRoutine}</Hint>
@@ -90,6 +89,7 @@ export default function Activities({}: props) {
         <CarouselEdge />
         {weekActivities.map((dayActivities, index) => (
           <DayViewer
+            index={index}
             key={index}
             activities={dayActivities}
             isToday={today === index}

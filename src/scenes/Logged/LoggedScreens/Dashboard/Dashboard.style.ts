@@ -97,7 +97,7 @@ export const SectionTitle = styled(Text)`
 
 export const BottomContainer = styled.div`
   position: fixed;
-  bottom: 10px;
+  bottom: 15px;
   width: 100%;
   padding: 0 30px;
   display: flex;

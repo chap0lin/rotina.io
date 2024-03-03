@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { activitySelectionType, activityType, dataType, itemType, loggedScreens } from "src/types";
 import { areActivitiesEqual, isSelectionValid } from "src/functions";
-import { emptyWeek } from "src/constants";
+import { dayViewerElementId, emptyWeek } from "src/constants";
 import { isBefore } from "src/functions/time";
 import { useTime } from "src/hooks/time";
 
@@ -78,6 +78,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
             isBefore(a.startsAt, b.startsAt) ? -1 : 1
         );
         setWeekActivities(newWeek);
+        document.getElementById(`${dayViewerElementId}${selection.day}`).scrollIntoView();
         updateServer && setUpdateServer("week");
     }
 

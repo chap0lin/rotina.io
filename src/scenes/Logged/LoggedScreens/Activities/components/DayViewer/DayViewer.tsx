@@ -1,8 +1,9 @@
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { areActivitiesEqual } from "src/functions";
+import { dayViewerElementId } from "src/constants";
 import { texts } from "./DayViewer.lang";
 import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
-import { areActivitiesEqual } from "src/functions";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import {
   Activities,
   ActivityContainer,
@@ -15,8 +16,10 @@ import {
   Title,
   TitleContainer,
 } from "./DayViewer.style";
+
 interface props {
   day: string;
+  index: number;
   isToday: boolean;
   activities?: activityType[];
   selectedActivity: activityType;
@@ -25,6 +28,7 @@ interface props {
 
 export default function DayViewer({
   day,
+  index,
   isToday,
   activities,
   selectedActivity,
@@ -36,7 +40,7 @@ export default function DayViewer({
 
   return (
     <OuterSpacer>
-      <Container>
+      <Container id={`${dayViewerElementId}${index}`}>
         <TitleContainer>
           <Title>{day}</Title>
           {isToday && <Badge>{dayTexts.today}</Badge>}

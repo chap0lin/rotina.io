@@ -59,7 +59,7 @@ export const InvalidCause = styled.div`
   align-items: center;
   justify-content: center;
   width: 120px;
-  height: 40px; 
+  height: 100%; 
   background: ${colors.pink};
   color: ${colors.white};
   font-weight: bold;

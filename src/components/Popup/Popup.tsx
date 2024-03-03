@@ -79,59 +79,47 @@ export default function Popup({
         ease: "power2",
       };
 
-  const getBorder = () => {
+  const getDescriptionColor = () => {
     switch (type) {
-      case "cookies":
-      case "info":
-      case "prompt":
-        return `none`;
       case "warning-alert":
-        return `2px solid ${colors.white}`;
       case "warning-failure":
-        return `2px solid ${colors.red}`;
       case "warning-success":
-        return `2px solid ${colors.lime}`;
+        return colors.white;
+      default:
+        return colors.black;
+    }
+  };
+
+  const getBackgroundColor = () => {
+    switch (type) {
+      case "warning-alert": return colors.amber;
+      case "warning-failure": return colors.pink;
+      case "warning-success": return colors.lime;
+      default: return "none";
     }
   };
 
   const getIcon = () => {
+    let Icon = null;
     switch (type) {
-      case "warning-success":
-        return (
-          <CheckCircle
-            color={iconColor ?? colors.lime}
-            width={30}
-            height={30}
-            style={{ flexShrink: 0 }}
-          />
-        );
-      case "warning-alert":
-        return (
-          <AlertTriangle
-            color={iconColor ?? colors.yellow}
-            width={30}
-            height={30}
-            style={{ flexShrink: 0 }}
-          />
-        );
-      case "warning-failure":
-        return (
-          <XCircle
-            color={iconColor ?? colors.red}
-            width={30}
-            height={30}
-            style={{ flexShrink: 0 }}
-          />
-        );
-      default:
-        return null;
+      case "warning-success": Icon = CheckCircle; break;
+      case "warning-alert": Icon = AlertTriangle; break;
+      case "warning-failure": Icon = XCircle; break;
+      default: return null;
     }
+    return (
+      <Icon
+        color={iconColor ?? colors.white}
+        width={25}
+        height={25}
+        style={{ flexShrink: 0 }}
+      />
+    )
   };
 
   const popupStyle = {
     height: height ?? "auto",
-    backgroundColor: backgroundColor ?? colors.white,
-    border: border ?? getBorder(),
+    backgroundColor: backgroundColor ?? getBackgroundColor(),
   };
 
   const getPopupType = () => {
@@ -178,10 +166,11 @@ export default function Popup({
       return (
         <BottomContainer ref={warningRef}>
           <WarningContainer style={popupStyle}>
-            <WarningDescription
-              style={descriptionColor ? { color: descriptionColor } : {}}>
-              {description}
+            <WarningDescription style={{
+              color: descriptionColor?? getDescriptionColor()
+            }}>
               {getIcon()}
+              {description}
             </WarningDescription>
           </WarningContainer>
         </BottomContainer>

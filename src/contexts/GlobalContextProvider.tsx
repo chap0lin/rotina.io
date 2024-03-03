@@ -135,9 +135,6 @@ export default function GlobalProvider(props: GlobalProviderProps) {
         description={popupText}
         show={popupVisibility}
         type={popupType}
-        exitIconColor={colors.black}
-        descriptionColor={colors.black}
-        backgroundColor={colors.white}
       />
     </GlobalContext.Provider>
   );
