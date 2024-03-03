@@ -1,5 +1,4 @@
 /* eslint-disable no-useless-escape */
-
 import { activitySelectionType, activityType } from "src/types";
 
 export const isEmailValid = (email: string) => {
@@ -37,3 +36,7 @@ export const isSelectionValid = (selection: activitySelectionType) => {
   if (selection.day < 0) return false;
   return true;
 };
+
+export const getDirt = (size?: number) => {
+  return Math.random().toString(36).substring(2, size?(size + 2):(18)).toLowerCase();
+}

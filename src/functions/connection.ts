@@ -3,7 +3,7 @@ import { serverReplyType } from "src/types";
 
 type requestProps = {
     link: string,
-    params: any,
+    params?: any,
     token?: string,
     onSuccess?: (response: serverReplyType) => void,
     onError?: (response: serverReplyType) => void,

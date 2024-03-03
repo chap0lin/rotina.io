@@ -47,8 +47,7 @@ export type statusType =
   | "SUCCESS_RECOVERING_USER"
   | "SUCCESS_DATA"
   | "SUCCESS_UPDATE" 
-  | "SUCCESS_ACCESS_TOKEN"
-  | "SUCCESS_REFRESH_TOKEN"
+  | "SUCCESS_TOKEN"
   | "SUCCESS_LOGGED_OUT"
   | "SUCCESS_VALID_PURPOSE"
   | "SUCCESS_REGISTERED_USER"
@@ -64,11 +63,10 @@ export type statusType =
   | "ERROR_MISSING_CREDENTIALS" 
   | "ERROR_INVALID_DATA"
   | "ERROR_NO_TOKENS_FOUND"
-  | "ERROR_INVALID_ACCESS_TOKEN"
-  | "ERROR_INVALID_REFRESH_TOKEN"
+  | "ERROR_INVALID_TOKEN"
+  | "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"
 ;
 
-export type tokenType = "access" | "refresh"; 
 export type dataType = "week" | "todo" | "shopping";
 export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-code-activate" | "sent-code-recovery";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
@@ -77,8 +75,7 @@ export type serverReplyType = {
   status: statusType;
   data?: dataType;
   content?: string;
-  accessToken?: string;
-  refreshToken?: string;
+  token?: string;
 };
 
 export type activitySelectionType = {

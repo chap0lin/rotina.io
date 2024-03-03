@@ -2,10 +2,10 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { isEmailValid, isPasswordValid } from "src/functions";
-import { loginScreens, serverReplyType, tokenType } from "src/types";
-import { jwtAccessKey, jwtRefreshKey } from "src/constants";
+import { loginScreens, serverReplyType } from "src/types";
 import { getFromStorage, saveOnStorage } from "src/functions/storage";
 import { postRequest } from "src/functions/connection";
+import { tokenKey } from "src/constants";
 import { colors } from "src/colors";
 import { texts } from "./Login.lang";
 import {
@@ -64,10 +64,9 @@ export default function Login() {
   const signUpRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const login = (accessToken: string, refreshToken: string) => {
-    saveOnStorage(jwtAccessKey, accessToken);
-    saveOnStorage(jwtRefreshKey, refreshToken);
-    setUser({token: accessToken});
+  const login = (token: string) => {
+    saveOnStorage(tokenKey, token);
+    setUser({ token });
     navigate("/logged");
   };
 
@@ -131,7 +130,7 @@ export default function Login() {
   const onSuccess = (reply: serverReplyType) => {
     switch (reply.status) {
       case "SUCCESS_LOGGED_IN":
-        login(reply.accessToken, reply.refreshToken);
+        login(reply.token);
         break;
       case "SUCCESS_ACTIVATING_USER":
         setScreen("sent-code-activate");
@@ -149,23 +148,15 @@ export default function Login() {
         saveOnStorage("action", "activate");
         navigate("/activate");
         break;
-      case "SUCCESS_ACCESS_TOKEN":
+      case "SUCCESS_TOKEN":
         navigate("/logged");
         break;
-      case "SUCCESS_REFRESH_TOKEN":
-        if(!reply.content) return onError({status: "ERROR"});
-        saveOnStorage(jwtAccessKey, reply.content);
-        setUser({token: reply.content});
-        return console.log("new access token is", reply.content);
     }
   };
 
   const onError = (reply: serverReplyType) => {
     console.log(reply);
     switch(reply.status){
-      case "ERROR_INVALID_ACCESS_TOKEN":
-        validateToken("refresh");
-        break;
       case "ERROR_AUTHENTICATION":
         showPopup(loginTexts.noAccount, {
           type: "warning-failure",
@@ -204,12 +195,11 @@ export default function Login() {
     postRequest({link, params, onSuccess, onError, setWaitingResponse});
   };
 
-  const validateToken = (type: tokenType) => {
-    const token = getFromStorage(`jwt-${type}`);
+  const validateToken = () => {
+    const token = getFromStorage(tokenKey);
     if(!token) return;
     const link = "/token";
-    const params = {tokenType: type};
-    postRequest({link, params, token, onSuccess, onError});
+    postRequest({link, token, onSuccess, onError});
   }
 
   const onButtonClick = () => {
@@ -248,7 +238,7 @@ export default function Login() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    validateToken("access");
+    validateToken();
   }, []);
 
   useEffect(() => {

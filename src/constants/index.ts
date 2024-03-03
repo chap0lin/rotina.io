@@ -25,5 +25,4 @@ export const emptyWeek: activityType[][] = [
   ],
 ];
 
-export const jwtAccessKey = "jwt-access";
-export const jwtRefreshKey = "jwt-refresh";
+export const tokenKey = "tknky";                  //tried to save on .env but it didn't work

@@ -1,14 +1,14 @@
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useNavigate } from "react-router-dom";
-import { selectionType, tokenType } from "src/types";
+import { selectionType } from "src/types";
+import { tokenKey } from "src/constants";
 import { Selector } from "../index";
 import { colors } from "src/colors";
 import { texts } from "./UserSelector.lang";
 import { postRequest } from "src/functions/connection";
-import { getFromStorage, removeFromStorage } from "src/functions/storage";
+import { emptyStorage, getFromStorage } from "src/functions/storage";
 import { List, Calendar, Power, Plus } from "react-feather";
-import { jwtAccessKey, jwtRefreshKey } from "src/constants";
 
 interface props {
   show: boolean;
@@ -55,14 +55,11 @@ export default function UserSelector({ show, onClick }: props) {
         onClick(option);
         break;
       case userTexts.logout:
-        const token = getFromStorage(jwtRefreshKey);
-        const tokenType: tokenType = "refresh";
+        const token = getFromStorage(tokenKey);
         if(token){
           const link = "/logout";
-          const params = {tokenType};
-          postRequest({link, params, token});
-          removeFromStorage(jwtAccessKey);
-          removeFromStorage(jwtRefreshKey);
+          postRequest({link, token});
+          emptyStorage();
         }
         navigate("/login");
         break;

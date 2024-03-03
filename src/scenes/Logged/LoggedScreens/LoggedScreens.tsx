@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
+import { emptyStorage, getFromStorage, saveOnStorage } from "src/functions/storage";
 import { Background, Header, Loading } from "src/components";
-import { serverReplyType, tokenType } from "src/types";
+import { serverReplyType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
-import { jwtAccessKey } from "src/constants";
 import { postRequest } from "src/functions/connection";
 import { useNavigate } from "react-router-dom";
+import { tokenKey } from "src/constants";
 import { useTime } from "src/hooks/time";
 import { texts } from "./LoggedScreens.lang";
 import Dashboard from "./Dashboard";
@@ -14,11 +15,10 @@ import Activities from "./Activities";
 import Lists from "./Lists";
 import ActivitySettings from "./ActivitySettings";
 import { BigContainer, Gsap, SmallContainer } from "./LoggedScreens.style";
-import { getFromStorage, saveOnStorage } from "src/functions/storage";
 
 export default function LoggedScreens(){
     const navigate = useNavigate();
-    const { minute, seconds } = useTime();
+    const { minute } = useTime();
     const { language, user, innerWidth, showPopup, setUser } = useGlobalContext();
     const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
@@ -32,19 +32,16 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    const validateToken = (type: tokenType, updateUser?: boolean) => {
-        const token = getFromStorage(`jwt-${type}`);
+    const validateToken = (updateUser?: boolean) => {
+        const token = getFromStorage(tokenKey);
+        if(!token) return;
         if(updateUser) setUser({token});
-        request("/token", {}, token, type);
+        request("/token", token);
     }
 
-    const request = (link: string, requestParams: any, alternativeToken?: string, alternativeTokenType?: tokenType) => {
+    const request = (link: string, params: any, alternativeToken?: string) => {
         if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
         const token = alternativeToken?? user.token;
-        const params = {
-            ...requestParams,
-            tokenType: alternativeTokenType?? "access"
-        };
         postRequest({link, params, token, onSuccess, onError});
     }
 
@@ -52,14 +49,13 @@ export default function LoggedScreens(){
     const onSuccess = (reply: serverReplyType) => {
         if(!reply.status) return;
         switch(reply.status){
-            case "SUCCESS_ACCESS_TOKEN":
-                return;
-            case "SUCCESS_REFRESH_TOKEN":
-                if(!reply.content) return onError({status: "ERROR"});
-                saveOnStorage(jwtAccessKey, reply.content);
-                setUser({token: reply.content});
-                return console.log("new access token is", reply.content);
+            case "SUCCESS_TOKEN":
+                if(!reply.token) return onError({status: "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"});
+                saveOnStorage(tokenKey, reply.token);
+                setUser({token: reply.token});
+                return console.log("new access token is", reply.token);
             default:
+                if(reply.token) saveOnStorage(tokenKey, reply.token);
                 if(!reply.data || !reply.content) return;
                 switch(reply.data){
                     case "week": updateWeek(JSON.parse(reply.content)); break;
@@ -79,27 +75,27 @@ export default function LoggedScreens(){
 
     const onError = (reply: serverReplyType) => {
         switch (reply.status) {
-            case "ERROR_INVALID_ACCESS_TOKEN":
-                validateToken("refresh");
+            case "ERROR_INVALID_TOKEN":
+                console.log(reply.status, "(redirecting to login screen)");
+                navigate("/login");
                 break;
             case "ERROR":
             case "ERROR_INVALID_DATA":
             case "ERROR_MISSING_CREDENTIALS":
             case "ERROR_NO_REGISTERED_USER":
-            case "ERROR_INVALID_REFRESH_TOKEN":
-                console.log(reply.status, "(redirecting to login screen)");
                 showPopup(loggedTexts.somethingWentWrong, {
                     type: "warning-failure",
                     timeout: 4000,
                 });
+                emptyStorage();
                 navigate("/login");
             break;
         }
     };
 
     useEffect(() => {
-        (!user || !user.token) && validateToken("access", true);
-    }, [seconds]);                                                          //this gives you the seconds number but actually updates at a rate defined by the "timeUpdatePeriod" constant
+        validateToken(true);
+    }, []);                                                          //this gives you the seconds number but actually updates at a rate defined by the "timeUpdatePeriod" constant
 
     useEffect(() => {
         if(!selected.activity) {

@@ -39,7 +39,7 @@ export default function Dashboard({ show }: props) {
   };
 
   useEffect(() => {
-    const activityList = weekActivities ? weekActivities[today] : [];
+    const activityList = weekActivities[today]?? [];
     setHappeningNow(
       activityList
         .filter((act) => {

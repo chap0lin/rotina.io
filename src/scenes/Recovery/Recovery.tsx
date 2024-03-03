@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getAndRemoveFromStorage, getFromStorage, removeFromStorage } from "src/functions/storage";
+import { getAndRemoveFromStorage } from "src/functions/storage";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { isPasswordValid } from "src/functions";
 import { serverReplyType } from "src/types";
