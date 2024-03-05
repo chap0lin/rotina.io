@@ -29,7 +29,7 @@ type screenType = "input" | "success" | "failure";
 
 export default function Recovery() {
   const navigate = useNavigate();
-  const { language, keyPressed } = useGlobalContext();
+  const { language, keyPressed, rollingCode } = useGlobalContext();
   const recoveryTexts = texts.get(language);
   const [code, setCode] = useState<string>(() => "");
   const [screen, setScreen] = useState<screenType>(() => "input");
@@ -81,7 +81,7 @@ export default function Recovery() {
     switch (screen) {
       case "input":
         const link = "/change-password";
-        const params = {code, password: password.current};
+        const params = {code, rollingCode, password: password.current};
         postRequest({ link, params, onSuccess, onError, setWaitingResponse});
         break;
       case "success":
@@ -94,9 +94,7 @@ export default function Recovery() {
 
   useEffect(() => {
     const recoveryCode = getAndRemoveFromStorage("code");
-    const action = getAndRemoveFromStorage("action");
-    console.log("got from storage: ", recoveryCode, action);
-    
+    const action = getAndRemoveFromStorage("action");    
     if((!recoveryCode) || (!action) || (action !== "recovery")){
       setScreen("failure");
     } else {
@@ -111,6 +109,7 @@ export default function Recovery() {
     onButtonClick();
   }, [keyPressed]);
 
+
   useLayoutEffect(() => {
     moveAndVanish(
       [
@@ -124,6 +123,7 @@ export default function Recovery() {
     );
   }, []);
 
+  
   useLayoutEffect(() => {
     const lang = texts.get(language);
     switch (screen) {

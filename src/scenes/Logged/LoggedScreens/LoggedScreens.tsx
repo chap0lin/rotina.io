@@ -19,7 +19,7 @@ import { BigContainer, Gsap, SmallContainer } from "./LoggedScreens.style";
 export default function LoggedScreens(){
     const navigate = useNavigate();
     const { minute } = useTime();
-    const { language, user, innerWidth, showPopup, setUser } = useGlobalContext();
+    const { language, user, innerWidth, rollingCode, showPopup, setUser, setRollingCode } = useGlobalContext();
     const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
@@ -36,7 +36,7 @@ export default function LoggedScreens(){
         const token = getFromStorage(tokenKey);
         if(!token) return;
         if(updateUser) setUser({token});
-        request("/token", token);
+        request("/token", { rollingCode }, token);
     }
 
     const request = (link: string, params: any, alternativeToken?: string) => {
@@ -45,15 +45,19 @@ export default function LoggedScreens(){
         postRequest({link, params, token, onSuccess, onError});
     }
 
-
     const onSuccess = (reply: serverReplyType) => {
+        reply.rollingCode && setRollingCode(reply.rollingCode);
         if(!reply.status) return;
         switch(reply.status){
+            case "SUCCESS_CODE":
+                validateToken();
+                break;
             case "SUCCESS_TOKEN":
                 if(!reply.token) return onError({status: "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"});
                 saveOnStorage(tokenKey, reply.token);
                 setUser({token: reply.token});
-                return console.log("new access token is", reply.token);
+                console.log("new access token is", reply.token);
+                break;
             default:
                 if(reply.token) saveOnStorage(tokenKey, reply.token);
                 if(!reply.data || !reply.content) return;
@@ -62,46 +66,52 @@ export default function LoggedScreens(){
                     case "todo": updateList("todo", JSON.parse(reply.content)); break;
                     case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
                     default:
-                        console.log("error parsing data. received:", reply);
                         return showPopup(loggedTexts.errorFetchingData, {
                         type: "warning-failure",
                         timeout: 4000,
                     });
                 }
-            return setTimeout(() => setReceivedFirstContent(true), 2000);
+                setTimeout(() => setReceivedFirstContent(true), 2000);
+                break;
         }
     };
 
 
     const onError = (reply: serverReplyType) => {
+        let errorMsg = loggedTexts.errorFetchingData;
         switch (reply.status) {
             case "ERROR_INVALID_TOKEN":
-                console.log(reply.status, "(redirecting to login screen)");
-                navigate("/login");
+                errorMsg = loggedTexts.sessionExpired;
                 break;
             case "ERROR":
             case "ERROR_INVALID_DATA":
             case "ERROR_MISSING_CREDENTIALS":
             case "ERROR_NO_REGISTERED_USER":
-                showPopup(loggedTexts.somethingWentWrong, {
-                    type: "warning-failure",
-                    timeout: 4000,
-                });
-                emptyStorage();
-                navigate("/login");
-            break;
+                errorMsg = loggedTexts.somethingWentWrong;
+                break;
         }
+        showPopup(errorMsg, {
+            type: "warning-failure",
+            timeout: 4000,
+        });
+        emptyStorage();
+        navigate("/login");
     };
 
+
     useEffect(() => {
-        validateToken(true);
-    }, []);                                                          //this gives you the seconds number but actually updates at a rate defined by the "timeUpdatePeriod" constant
+        if(!rollingCode){
+            const link = "/rolling-code";
+            postRequest({link, onSuccess, onError});
+        }
+    }, [rollingCode]);
+
 
     useEffect(() => {
         if(!selected.activity) {
-            request("/get-data", {data: "week"});
-            request("/get-data", {data: "shopping"});
-            request("/get-data", {data: "todo"});
+            request("/get-data", {rollingCode, data: "week"});
+            request("/get-data", {rollingCode, data: "shopping"});
+            request("/get-data", {rollingCode, data: "todo"});
         }
     }, [minute]);
 
@@ -115,7 +125,7 @@ export default function LoggedScreens(){
             }
             const data = updateServer;
             const content = JSON.stringify(jsonContent);
-            request("/update-data", {data, content});
+            request("/update-data", {rollingCode, data, content});
             setUpdateServer(null);
         }
     }, [updateServer, user]);
