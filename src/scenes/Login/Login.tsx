@@ -39,7 +39,7 @@ const MIN_PASSWORD_SIZE = 8;
 
 export default function Login() {
   const navigate = useNavigate();
-  const { language, innerHeight, keyPressed, setUser, showPopup } = useGlobalContext();
+  const { rollingCode, language, innerHeight, keyPressed, setUser, showPopup, setRollingCode } = useGlobalContext();
   const loginTexts = texts.get(language);
   const [screen, setScreen] = useState<loginScreens>(() => "sign-in");
   const [hintText, setHintText] = useState<string>(() => loginTexts.forgotMyPassword);
@@ -128,7 +128,11 @@ export default function Login() {
 //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const onSuccess = (reply: serverReplyType) => {
+    reply.rollingCode && setRollingCode(reply.rollingCode);
     switch (reply.status) {
+      case "SUCCESS_CODE":
+        validateToken();
+        break;
       case "SUCCESS_LOGGED_IN":
         login(reply.token);
         break;
@@ -199,7 +203,8 @@ export default function Login() {
     const token = getFromStorage(tokenKey);
     if(!token) return;
     const link = "/token";
-    postRequest({link, token, onSuccess, onError});
+    const params = { rollingCode };
+    postRequest({link, token, params, onSuccess, onError});
   }
 
   const onButtonClick = () => {
@@ -208,6 +213,7 @@ export default function Login() {
         request("/login", {
           name: username.current,
           password: password.current,
+          rollingCode,
         });
         break;
       case "sign-up":
@@ -216,12 +222,14 @@ export default function Login() {
           password: password.current,
           email: email.current,
           lang: language,
+          rollingCode,
         });
         break;
       case "forgot-password":
         request("/recovery", {
           email: email.current,
           lang: language,
+          rollingCode,
         });
         break;
       case "sent-code-activate":
@@ -230,6 +238,7 @@ export default function Login() {
         request("/validate", {
           code: code.current,
           purpose: codePurpose,
+          rollingCode, 
         });
         break;
     }
@@ -238,8 +247,11 @@ export default function Login() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    validateToken();
-  }, []);
+    if(!rollingCode){
+      const link = "/rolling-code";
+      postRequest({link, onSuccess, onError});
+    }
+  }, [rollingCode]);
 
   useEffect(() => {
     if (keyPressed === "Enter" && checkAllInputs()) {

@@ -16,7 +16,7 @@ interface props {
 }
 
 export default function UserSelector({ show, onClick }: props) {
-  const { language } = useGlobalContext();
+  const { language, rollingCode } = useGlobalContext();
   const { goTo } = useLoggedContext();
   const userTexts = texts.get(language);
   const navigate = useNavigate();
@@ -58,7 +58,8 @@ export default function UserSelector({ show, onClick }: props) {
         const token = getFromStorage(tokenKey);
         if(token){
           const link = "/logout";
-          postRequest({link, token});
+          const params = { rollingCode };
+          postRequest({link, params, token});
           emptyStorage();
         }
         navigate("/login");

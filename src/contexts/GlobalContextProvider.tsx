@@ -1,3 +1,6 @@
+import gsap from "gsap";
+import { Popup } from "src/components";
+import { languageOption, popupType, userType } from "../types";
 import {
   createContext,
   ReactNode,
@@ -6,10 +9,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import gsap from "gsap";
-import { languageOption, popupType, userType } from "../types";
-import { colors } from "src/colors";
-import { Popup } from "src/components";
 
 interface popupPropsType {
   type?: popupType;
@@ -21,12 +20,14 @@ interface GlobalProviderProps {
   children: ReactNode;
 }
 interface GlobalContextValue {
+  rollingCode: string | null;
   keyPressed: string;
   innerHeight: number;
   innerWidth: number;
   user: userType["auth"] | null;
   language: languageOption;
   popupType: popupType;
+  setRollingCode: React.Dispatch<React.SetStateAction<string | null>>; 
   setUser: React.Dispatch<React.SetStateAction<userType["auth"]>>;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
   showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
@@ -34,12 +35,14 @@ interface GlobalContextValue {
 }
 
 const initialValues: GlobalContextValue = {
+  rollingCode: null,
   keyPressed: "",
   innerHeight: 768,
   innerWidth: 1366,
   user: {token: null},
   language: "pt-br",
   popupType: null,
+  setRollingCode: () => null,
   setUser: () => null,
   setLanguage: () => null,
   showPopup: () => null,
@@ -58,12 +61,11 @@ export function useGlobalContext() {
 }
 
 export default function GlobalProvider(props: GlobalProviderProps) {
+  const [user, setUser] = useState<userType["auth"]>(() => initialValues.user);
   const [language, setLanguage] = useState<languageOption>(() => initialValues.language);
   const [innerWidth, setInnerWidth] = useState<number>(() => window.innerWidth);
-  const [innerHeight, setInnerHeight] = useState<number>(
-    () => window.innerHeight
-  );
-  const [user, setUser] = useState<userType["auth"]>(() => initialValues.user);
+  const [innerHeight, setInnerHeight] = useState<number>(() => window.innerHeight);
+  const [rollingCode, setRollingCode] = useState<string | null>(() => initialValues.rollingCode);
   const [keyPressed, setKeyPressed] = useState<string>(() => initialValues.keyPressed);
   const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
   const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
@@ -113,15 +115,21 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     document.documentElement.lang = lang;
   }, [language]);
 
+  useEffect(() => {
+    console.log("new rolling code:", rollingCode);
+  }, [rollingCode]);
+
   const { children } = props;
 
   const value: GlobalContextValue = {
+    rollingCode,
     keyPressed,
     innerWidth,
     innerHeight,
     user,
     language,
     popupType,
+    setRollingCode,
     setUser,
     setLanguage,
     showPopup,

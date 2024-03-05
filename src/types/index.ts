@@ -42,6 +42,7 @@ export type dayType = {
 
 export type statusType = 
   | "SUCCESS"
+  | "SUCCESS_CODE"
   | "SUCCESS_LOGGED_IN"
   | "SUCCESS_ACTIVATING_USER"
   | "SUCCESS_RECOVERING_USER"
@@ -53,10 +54,14 @@ export type statusType =
   | "SUCCESS_REGISTERED_USER"
   | "SUCCESS_RECOVERED_USER"
   | "ERROR"
+  | "ERROR_EMAIL"
+  | "ERROR_INTERNAL"
+  | "ERROR_BAD_REQUEST"
   | "ERROR_INVALID_PURPOSE"
   | "ERROR_AUTHENTICATION"
   | "ERROR_EMAIL_ALREADY_TAKEN"
   | "ERROR_USERNAME_ALREADY_TAKEN"
+  | "ERROR_DUPLICATE_USER"
   | "ERROR_NO_REGISTERED_USER" 
   | "ERROR_NO_ACTIVATING_USER"
   | "ERROR_NO_RECOVERING_USER"
@@ -76,6 +81,7 @@ export type serverReplyType = {
   data?: dataType;
   content?: string;
   token?: string;
+  rollingCode?: string;
 };
 
 export type activitySelectionType = {
