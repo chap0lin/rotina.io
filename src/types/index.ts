@@ -72,7 +72,7 @@ export type statusType =
   | "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"
 ;
 
-export type dataType = "week" | "todo" | "shopping";
+export type dataType = "week" | "lists";
 export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-code-activate" | "sent-code-recovery";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
 
@@ -104,14 +104,19 @@ export type itemType = {
   marked: boolean;
 };
 
+
+export type listType = {
+  name: string;
+  items: itemType[];
+}
+
 export type userType = {
   auth: {
     token: string;
   },
   app: {
     weekActivities: activityType[][];
-    todoList: itemType[];
-    shoppingList: itemType[];
+    lists: listType[];
   } 
 };
 

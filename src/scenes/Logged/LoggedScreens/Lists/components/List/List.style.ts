@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { colors } from "src/colors";
 
 const FlexColumn = styled.div`
   width: 100%;
@@ -7,9 +6,14 @@ const FlexColumn = styled.div`
   flex-direction: column;
 `;
 
+export const Container = styled.div`
+  width: 100%;
+  position: absolute;
+`;
+
 export const Items = styled(FlexColumn)`
   flex: 1;
-  gap: 20px;
+  gap: 10px;
   overflow-x: hidden;
   overflow-y: scroll;
   ::-webkit-scrollbar {

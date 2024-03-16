@@ -1,51 +1,79 @@
 import styled from "@emotion/styled";
 import { colors } from "src/colors";
 
+const Full = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
 const FlexColumn = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const Text = styled.p`
-  flex-shrink: 0;
-  width: 100%;
-  color: ${colors.black};
-`;
-
 export const MainContent = styled(FlexColumn)`
   position: relative;
   height: 100%;
-  padding: 40px;
-  justify-content: space-between;
-  @media(max-height: 750px){
-    padding: 20px 40px 30px 40px;
+  align-items: center;
+`;
+
+export const Carousel = styled.div`
+  position: absolute;
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  ::-webkit-scrollbar {
+    display: none;
   }
 `;
 
-export const Section = styled(FlexColumn)`
-  position: relative;
+export const CarouselEdge = styled.div`
+    width: 20px;
+    height: 100%;
+    flex-shrink: 0;
+    @media(max-height: 750px){
+        width: 32px;
+    }
 `;
 
-export const Title = styled(Text)`
+export const ListContainer = styled(Full)`
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  scroll-snap-align: center;
+  width: calc(100% - 40px);
+`;
+
+export const Title = styled.p` 
+  max-width: calc(100% - 20px);
   position: absolute;
+  left: 0;
+  top: 30px;
+  border-radius: 10px;
+  color: ${colors.white};
   text-align: left;
-  font-size: 35px;
-  height: 40px;
+  font-size: 32px;
+  line-height: 35px;
+  padding: 12px 15px;
   font-weight: 400;
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   @media (max-height: 750px) {
     font-size: 28px;
-    height: 35px;
+    line-height: 28px;
   }
 `;
 
 export const ItemInput = styled.input`
   position: absolute;
-  width: 100%;
+  width: calc(100% - 60px);
   padding: 10px 10px 10px 0;
   background: none;
-  top: 50px;
+  top: 110px;
   border: none;
   outline: none;
   border-bottom: 1px solid ${colors.black};
@@ -56,12 +84,10 @@ export const ItemInput = styled.input`
   }
 `;
 
-export const ListSection = styled(FlexColumn)`
-  position: absolute;
-  top: 120px;
-  gap: 15px;
-  overflow-x: hidden;
-  overflow-y: scroll;
+export const ListSection = styled.div`
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
   ::-webkit-scrollbar {
     display: none;
   }

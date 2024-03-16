@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { activitySelectionType, activityType, dataType, itemType, loggedScreens } from "src/types";
+import { activitySelectionType, activityType, dataType, itemType, listType, loggedScreens } from "src/types";
 import { areActivitiesEqual, isSelectionValid } from "src/functions";
 import { dayViewerElementId, emptyWeek } from "src/constants";
 import { isBefore } from "src/functions/time";
@@ -13,8 +13,7 @@ interface LoggedContextValue {
     updateServer: dataType,
     screen: loggedScreens,
     today: number,
-    shoppingList: itemType[],
-    todoList: itemType[],
+    lists: listType[],
     weekActivities: activityType[][],
     selected: activitySelectionType | null,
     setUpdateServer: React.Dispatch<React.SetStateAction<dataType>>,
@@ -23,7 +22,8 @@ interface LoggedContextValue {
     addActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     updateActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     deleteActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
-    updateList: (whichOne: "shopping" | "todo", updatedList: itemType[], updateServer?: boolean) => void,
+    updateList: (whichOne: string, updatedList: itemType[], updateServer?: boolean) => void,
+    setLists: React.Dispatch<React.SetStateAction<listType[]>>,
     resetSelectedActivity: (toSomeSpecificDay?: number) => void,
     goTo: (newScreen: loggedScreens) => void,
     goBack: (shouldReset?: boolean) => void,
@@ -33,8 +33,7 @@ const initialValues: LoggedContextValue = {
     updateServer: null,
     screen: "dashboard",
     today: 0,
-    shoppingList: [],
-    todoList: [],
+    lists: [],
     weekActivities: emptyWeek,
     selected: { activity: null, day: 0 },
     setUpdateServer: () => null,
@@ -44,6 +43,7 @@ const initialValues: LoggedContextValue = {
     updateActivity: () => null,
     deleteActivity: () => null,
     updateList: () => null,
+    setLists: () => null,
     resetSelectedActivity: () => null,
     goTo: () => null,
     goBack: () => null,
@@ -62,8 +62,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     const {hour} = useTime();
     const [screen, setScreen] = useState<loggedScreens>(() => initialValues.screen);
     const [today, setToday] = useState<number>(() => initialValues.today);
-    const [shoppingList, setShoppingList] = useState<itemType[]>(() => initialValues.shoppingList);
-    const [todoList, setTodoList] = useState<itemType[]>(() => initialValues.todoList);
+    const [lists, setLists] = useState<listType[]>(() => initialValues.lists);
     const [selected, setSelected] = useState<activitySelectionType | null>(() => initialValues.selected);
     const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => initialValues.weekActivities);
     const [updateServer, setUpdateServer] = useState<dataType>(() => initialValues.updateServer);
@@ -109,10 +108,15 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }
 
 
-    const updateList = (whichOne: dataType, updatedList: itemType[], updateServer?: boolean) => {
-        const setList = (whichOne === "shopping")? setShoppingList : setTodoList;
-        setList(updatedList);
-        updateServer && setUpdateServer(whichOne);
+    const updateList = (whichOne: string, updatedList: itemType[], updateServer?: boolean) => {;
+        setLists((prev) =>{
+            const index = prev.findIndex(list => list.name === whichOne);
+            if(index < 0) return prev;
+            const newLists = [...prev];
+            newLists[index].items = [...updatedList];
+            return newLists;
+        });
+        updateServer && setUpdateServer("lists");
     }
 
     const resetSelectedActivity = (toSomeSpecificDay?: number) => {
@@ -149,17 +153,21 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }, [hour]);
 
 
+    useEffect(() => {
+        console.log("listas: ", lists);
+    }, [lists]);
+
     const { children } = props;
     const value: LoggedContextValue = {
         updateServer,
         screen,
         today,
-        shoppingList,
-        todoList,
+        lists,
         weekActivities,
         selected,
         setUpdateServer,
         updateList,
+        setLists,
         updateWeek,
         updateActivity,
         addActivity,

@@ -6,8 +6,7 @@ type textTypes = {
   todo: string;
   shopping: string;
   placeholder: string;
-  nothingToDo: string;
-  nothingToShop: string;
+  nothingHere: string;
   juliusPhrase: string | JSX.Element;
 };
 
@@ -19,8 +18,7 @@ texts.set("pt-br", {
     todo: "afazeres",
     shopping: "compras",
     placeholder: "Insira um item...",
-    nothingToDo: "Nada pra fazer! yey!",
-    nothingToShop: "Nada para comprar. ainda.",
+    nothingHere: "Nada por aqui!",
     juliusPhrase: <>Se você não comprar,<br/>o desconto é maior.</>
 });
 
@@ -30,8 +28,7 @@ texts.set("en-us", {
     todo: "to-do",
     shopping: "shopping",
     placeholder: "Insert an item...",
-    nothingToDo: "Nothing to do! yey!",
-    nothingToShop: "Nothing to buy. yet.",
+    nothingHere: "Nothing in here!",
     juliusPhrase: <>if you don't buy,<br/>the discount is bigger.</>
 });
 

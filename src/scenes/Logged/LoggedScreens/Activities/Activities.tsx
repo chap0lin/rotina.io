@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { areActivitiesEqual } from "src/functions";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";

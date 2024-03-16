@@ -20,7 +20,7 @@ export default function LoggedScreens(){
     const navigate = useNavigate();
     const { minute } = useTime();
     const { language, user, innerWidth, rollingCode, showPopup, setUser, setRollingCode } = useGlobalContext();
-    const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
+    const {screen, weekActivities, lists, updateServer, selected, setUpdateServer, goBack, updateWeek, setLists } = useLoggedContext();
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
     const loadingRef = useRef(null);
@@ -63,8 +63,7 @@ export default function LoggedScreens(){
                 if(!reply.data || !reply.content) return;
                 switch(reply.data){
                     case "week": updateWeek(JSON.parse(reply.content)); break;
-                    case "todo": updateList("todo", JSON.parse(reply.content)); break;
-                    case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
+                    case "lists": setLists(JSON.parse(reply.content)); break;
                     default:
                         return showPopup(loggedTexts.errorFetchingData, {
                         type: "warning-failure",
@@ -110,8 +109,7 @@ export default function LoggedScreens(){
     useEffect(() => {
         if(!selected.activity) {
             request("/get-data", {rollingCode, data: "week"});
-            request("/get-data", {rollingCode, data: "shopping"});
-            request("/get-data", {rollingCode, data: "todo"});
+            request("/get-data", {rollingCode, data: "lists"});
         }
     }, [minute]);
 
@@ -120,8 +118,7 @@ export default function LoggedScreens(){
             let jsonContent = [];
             switch(updateServer){
                 case "week": jsonContent = [...weekActivities]; break;
-                case "todo": jsonContent = [...todoList]; break;
-                case "shopping": jsonContent = [...shoppingList]; break; 
+                case "lists": jsonContent = [...lists]; break;
             }
             const data = updateServer;
             const content = JSON.stringify(jsonContent);
