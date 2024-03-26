@@ -4,10 +4,10 @@ import { activityType, timeCheckType, timeType } from "src/types";
 import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
+import { ColorOption } from "src/components";
 import { colors } from "src/colors";
 import { texts } from "./ActivitySettings.lang";
 import Preview from "./components/Preview";
-import ColorOption from "./components/ColorOption";
 import PopupContent from "./components/PopupContent";
 import {
   Background,

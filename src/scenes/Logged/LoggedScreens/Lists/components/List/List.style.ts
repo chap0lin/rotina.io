@@ -6,21 +6,21 @@ const FlexColumn = styled.div`
   flex-direction: column;
 `;
 
-export const Container = styled.div`
-  width: 100%;
-  position: absolute;
-`;
-
 export const Items = styled(FlexColumn)`
-  flex: 1;
+  margin-top: 23%;
+  width: 100%;
+  height: 600px;
   gap: 10px;
   overflow-x: hidden;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     display: none;
   }
+  @media(max-height: 900px){
+    height: 500px;
+  }
   @media(max-height: 750px){
-    top: 100px;
+    height: 330px;
   }
 `;
 
@@ -37,14 +37,14 @@ export const Number = styled.span`
 
 export const Content = styled.p`
   cursor: pointer;
-  width: calc(100% - 30px);
-  font-size: 16px;
-  line-height: 18px;
+  width: 80%;
+  font-size: 17px;
+  line-height: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   user-select: auto;
   @media(max-height: 750px){
-    font-size: 15px;
+    font-size: 16px;
     line-height: 17px;
   }
 `;

@@ -19,11 +19,11 @@ export const MainContent = styled(FlexColumn)`
 `;
 
 export const Carousel = styled.div`
-  position: absolute;
   width: 100%;
   display: flex;
-  gap: 20px;
+  gap: 15%;
   overflow-x: scroll;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   ::-webkit-scrollbar {
     display: none;
@@ -31,12 +31,12 @@ export const Carousel = styled.div`
 `;
 
 export const CarouselEdge = styled.div`
-    width: 20px;
-    height: 100%;
-    flex-shrink: 0;
-    @media(max-height: 750px){
-        width: 32px;
-    }
+  width: 20px;
+  height: 100%;
+  flex-shrink: 0;
+  @media(max-height: 750px){
+      width: 32px;
+  }
 `;
 
 export const ListContainer = styled(Full)`
@@ -44,55 +44,69 @@ export const ListContainer = styled(Full)`
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
-  width: calc(100% - 40px);
+  width: 85%;
 `;
 
-export const Title = styled.p` 
-  max-width: calc(100% - 20px);
-  position: absolute;
-  left: 0;
-  top: 30px;
+export const ListSection = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+export const TitleSection = styled.div`
+  margin-top: 5%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+`;
+
+export const Title = styled.p`
+  text-align: left;
   border-radius: 10px;
   color: ${colors.white};
-  text-align: left;
-  font-size: 32px;
+  font-size: 28px;
   line-height: 35px;
-  padding: 12px 15px;
+  padding: 10px 15px;
   font-weight: 400;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  transition: background 0.25s;
   @media (max-height: 750px) {
-    font-size: 28px;
+    font-size: 24px;
     line-height: 28px;
+  }
+`;
+
+export const Icon = styled.div`
+  flex-shrink: 0;
+  width: 10px;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  @media(max-height: 750px){
+    width: 35px;
+    height: 35px;
   }
 `;
 
 export const ItemInput = styled.input`
   position: absolute;
-  width: calc(100% - 60px);
+  width: 83%;
   padding: 10px 10px 10px 0;
   background: none;
-  top: 110px;
+  top: 12%;
   border: none;
   outline: none;
   border-bottom: 1px solid ${colors.black};
   font-size: 16px;
   @media(max-height: 750px){
-    top: 45px;
+    top: 75px;
     font-size: 15px;
-  }
-`;
-
-export const ListSection = styled.div`
-  width: 100%;
-  position: relative;
-  flex-shrink: 0;
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  @media(max-height: 750px){
-    top: 108px;
   }
 `;
 
@@ -129,3 +143,4 @@ export const PlaceholderText = styled.p`
     font-size: 14px;
   }
 `;
+

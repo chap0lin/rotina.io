@@ -107,6 +107,7 @@ export type itemType = {
 
 export type listType = {
   name: string;
+  color: string;
   items: itemType[];
 }
 

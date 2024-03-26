@@ -1,77 +1,110 @@
 import { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { Background } from "src/components";
-import { texts } from "./Lists.lang";
-import catYarn from "src/assets/images/cat-yarn.png";
-import List from "./components/List";
+import { listViewerElementId } from "src/constants";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { List, Footer, EditPopup } from "./components";
+import { Background } from "src/components";
 import { listType } from "src/types";
-import { Title, Carousel, ItemInput, ListSection, PlaceholderImage, PlaceholderContainer, PlaceholderText, CarouselEdge, ListContainer } from "./Lists.style";
-import { colors } from "src/colors";
-
+import { texts } from "./Lists.lang";
+import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, TitleSection } from "./Lists.style";
 
 interface props {}
 
 export default function Lists({}: props){
-    const { keyPressed, language, innerHeight } = useGlobalContext();
-    const {lists, updateList} = useLoggedContext();
+    const { keyPressed, language, innerHeight, innerWidth, showPopup } = useGlobalContext();
+    const { lists, updateList } = useLoggedContext();
     const listsTexts = texts.get(language);
 
-    const [currentList, setCurrentList] = useState<listType>(() => ({name: "", items: []}));
+    const [currentList, setCurrentList] = useState<number>(() => 0);
+    const [editingList, setEditingList] = useState<listType>(() => null);
+    const [blurred, setBlurred] = useState<boolean>(() => false);
 
     const inputRef = useRef(null);
+    const carouselRef = useRef(null);
+
+    const scrollIntoView = (index: number) => {
+        document.getElementById(`${listViewerElementId}${index}`).scrollIntoView({behavior: "smooth"});
+    }
+
+    const onCarouselScroll = () => {
+        setCurrentList(Math.floor(
+            (1.05 * carouselRef.current.scrollLeft) / innerWidth
+        ));
+    };
+
+    const editCurrentList = () => {
+        showPopup(
+            <EditPopup
+                originalList={lists[currentList]}
+                onUpdate={setEditingList}
+            />, 
+            {
+                type: "prompt",
+                onBlur: () => setBlurred(true),
+            }
+        );
+    }
 
     const addItem = () => {
         const content = inputRef.current.value.trim();
         if (content.length === 0) return;
-        const updated = [{content, marked: false}, ...currentList.items];
-        updateList(currentList.name, updated, true);
+        const updated: listType = {
+            ...lists[currentList],
+            items: [
+                {content, marked: false},
+                ...lists[currentList].items
+            ] 
+        };
+        updateList(currentList, updated, true);
         inputRef.current.value = "";
     };
 
-    const removeItem = (i: number) => {
-        const updated = [...currentList.items];
-        updated.splice(i, 1);
-        updateList(currentList.name, updated, true);
+    const removeItem = (index: number) => {
+        const updated = {...lists[currentList]};
+        updated.items.splice(index, 1);
+        updateList(currentList, updated, true);
     };
 
-    const toggleMark = (i: number) => {
-        const updated = [...currentList.items];
-        updated[i] = {...updated[i], marked: !updated[i].marked };
-        updateList(currentList.name, updated, true);    
+    const toggleMark = (index: number) => {
+        const updated = {...lists[currentList]};
+        console.log();
+        updated.items[index] = {...updated.items[index], marked: !updated.items[index].marked };
+        updateList(currentList, updated, true);
     }
 
-    const placeholder = (
-        <PlaceholderContainer>
-            <PlaceholderImage src={catYarn}/>
-            <PlaceholderText>
-                {listsTexts.nothingHere}
-            </PlaceholderText>
-        </PlaceholderContainer>
-    )
-
+    useEffect(() => {
+        if(blurred){
+            console.log("list after editing:", editingList);
+            updateList(currentList, editingList, true);
+            setEditingList(null);
+            setBlurred(false);
+        }
+    }, [blurred]);
 
     useEffect(() => {
         (keyPressed === "Enter") && addItem();
-    }, [keyPressed]);
+    }, [keyPressed, editingList]);
 
 
     return (
         <Background>
-            <Carousel>
+            <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
                 <CarouselEdge />
                 {lists.map((list, index) => (
-                    <ListContainer key={index}>
-                        <CarouselEdge />
-                        <ListSection style={{height:(0.7 * innerHeight)}}>
-                            <Title style={{background: colors.clickBlue}}>
-                                {list.name}
-                            </Title>
+                    <ListContainer
+                        key={index}
+                        id={`${listViewerElementId}${index}`}
+                    >
+                        <ListSection>
+                            <TitleSection onClick={editCurrentList}>
+                                <Title style={{background: list.color}} onClick={editCurrentList}>
+                                    {list.name}
+                                </Title>
+                            </TitleSection>
                             <List
-                                top={180}
-                                placeholder={placeholder}
                                 source={list.items}
                                 onMark={toggleMark}
+                                markColor={list.color}
                                 onRemove={removeItem}
                             />
                         </ListSection>
@@ -79,7 +112,17 @@ export default function Lists({}: props){
                 ))}
                 <CarouselEdge />
             </Carousel>
-            <ItemInput placeholder={listsTexts.placeholder} ref={inputRef}/>
+            <ItemInput
+                placeholder={listsTexts.placeholder}
+                ref={inputRef}
+            />
+            <Footer
+                lists={lists}
+                selectedIndex={currentList}
+                onListSelect={scrollIntoView}
+                onListCopy={() => null}
+                onNewList={() => null}
+            />
         </Background>
     )
 }

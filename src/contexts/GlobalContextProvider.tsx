@@ -14,6 +14,7 @@ interface popupPropsType {
   type?: popupType;
   timeout?: number;
   height?: number;
+  onBlur?: () => void;
 }
 
 interface GlobalProviderProps {
@@ -71,6 +72,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
+  const popupBlurCallback = useRef<popupPropsType["onBlur"]>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const handleResize = () => {
@@ -86,6 +88,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const type = props ? props.type : null;
     const timeout = props ? props.timeout : null;
+    popupBlurCallback.current = props? props.onBlur : null;
     setPopupText(message);
     setPopupType(type ?? "warning-failure");
     setPopupVisibility(true);
@@ -96,6 +99,10 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   };
 
   const hidePopup = () => {
+    if(popupBlurCallback.current) {
+      popupBlurCallback.current();
+      popupBlurCallback.current = null;
+    }
     setPopupVisibility(false);
     setPopupType(null);
   };

@@ -22,7 +22,7 @@ interface LoggedContextValue {
     addActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     updateActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     deleteActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
-    updateList: (whichOne: string, updatedList: itemType[], updateServer?: boolean) => void,
+    updateList: (index: number, updatedList: listType, updateServer?: boolean) => void,
     setLists: React.Dispatch<React.SetStateAction<listType[]>>,
     resetSelectedActivity: (toSomeSpecificDay?: number) => void,
     goTo: (newScreen: loggedScreens) => void,
@@ -108,12 +108,11 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }
 
 
-    const updateList = (whichOne: string, updatedList: itemType[], updateServer?: boolean) => {;
+    const updateList = (index: number, updatedList: listType, updateServer?: boolean) => {
         setLists((prev) =>{
-            const index = prev.findIndex(list => list.name === whichOne);
             if(index < 0) return prev;
             const newLists = [...prev];
-            newLists[index].items = [...updatedList];
+            newLists[index] = {...updatedList};
             return newLists;
         });
         updateServer && setUpdateServer("lists");

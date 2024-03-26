@@ -16,8 +16,8 @@ export default function Activities({}: props) {
   const { language, innerWidth, showPopup, hidePopup } = useGlobalContext();
   const { today, weekActivities, selected, goTo, setSelected, updateActivity, deleteActivity, resetSelectedActivity } = useLoggedContext();
   const activitiesTexts = texts.get(language);
-  const selectedScroll = useRef<number>(0);
-
+  
+  const selectedScroll = useRef(0);
   const selectedDayRef = useRef(0);
   const carouselRef = useRef(null);
 
