@@ -29,13 +29,13 @@ export default function Header({
   lang,
   arrow,
 }: props) {
-  const { innerHeight, popupType, setLanguage, showPopup, hidePopup } = useGlobalContext();
+  const { innerHeight, popupType, setLanguage, hidePopup } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
     () => false
   );
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
   const isAnyMenuShowing = showLanguagesMenu || showUserMenu;
-  const blurry = popupType === "prompt";
+  const blurry = (popupType === "prompt");
 
   const containerRef = useRef(null);
   const logoRef = useRef(null);
@@ -46,7 +46,7 @@ export default function Header({
   const rightSideRef = useRef(null);
 
   const moveIfNecessary = (what: any, condition: boolean, howMuch: number) => {
-    move(what, { x: condition ? howMuch : 0 }, 1);
+    move(what, { x: condition ? howMuch : 0 }, {duration: 1});
   };
 
   const clear = () => {

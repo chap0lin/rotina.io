@@ -72,7 +72,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
-  const popupBlurCallback = useRef<popupPropsType["onBlur"]>(null);
+  const blurCallback = useRef<popupPropsType["onBlur"]>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const handleResize = () => {
@@ -84,11 +84,11 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
-  const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {
+  const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {    //TODO remover blur callback destas opções! desacoplar blur e blurCallback dos popups
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const type = props ? props.type : null;
     const timeout = props ? props.timeout : null;
-    popupBlurCallback.current = props? props.onBlur : null;
+    blurCallback.current = props? props.onBlur : null;
     setPopupText(message);
     setPopupType(type ?? "warning-failure");
     setPopupVisibility(true);
@@ -99,9 +99,9 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   };
 
   const hidePopup = () => {
-    if(popupBlurCallback.current) {
-      popupBlurCallback.current();
-      popupBlurCallback.current = null;
+    if(blurCallback.current) {
+      blurCallback.current();
+      blurCallback.current = null;
     }
     setPopupVisibility(false);
     setPopupType(null);

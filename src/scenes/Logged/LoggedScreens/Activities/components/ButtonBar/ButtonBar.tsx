@@ -27,7 +27,7 @@ interface props {
   onDeleteClick: () => void;
 }
 
-const ANIMATION_DELAY = 1;
+const ANIMATION_DURATION = 1;
 
 export default function ButtonBar({
   activitySelected,
@@ -54,18 +54,18 @@ export default function ButtonBar({
 
   useEffect(() => {
     if (!activitySelected) {
-      resize(addRef.current, { width: addButtonResize[0] }, ANIMATION_DELAY);
+      resize(addRef.current, { width: addButtonResize[0] }, ANIMATION_DURATION);
       fadeOut([editRef.current, acceptRef.current, deleteRef.current], 0.5);
       move(
         [editRef.current, acceptRef.current, deleteRef.current],
         { x: 0 },
-        1
+        {duration: 1}
       );
     } else {
-      resize(addRef.current, { width: addButtonResize[1] }, ANIMATION_DELAY);
+      resize(addRef.current, { width: addButtonResize[1] }, ANIMATION_DURATION);
       fadeIn([editRef.current, acceptRef.current, deleteRef.current], 0.5);
-      move(deleteRef.current, { x: 2 * iconSpacing }, ANIMATION_DELAY);
-      move(acceptRef.current, { x: iconSpacing }, ANIMATION_DELAY);
+      move(deleteRef.current, { x: 2 * iconSpacing }, {duration: ANIMATION_DURATION});
+      move(acceptRef.current, { x: iconSpacing }, {duration: ANIMATION_DURATION});
     }
   }, [activitySelected]);
 

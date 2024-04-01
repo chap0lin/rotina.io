@@ -283,9 +283,9 @@ export default function Login() {
         setButtonText(lang.buttonSignIn);
         spawnAndMove([nameRef.current], { y: 90 }, 1);
         spawnAndMove([passRef.current], { y: 150 }, 1);
-        move([logoRef.current], { y: 0 }, 1);
-        move([hintRef.current], { y: 220 }, 1);
-        move([buttonRef.current], { y: 300 }, 1);
+        move([logoRef.current], { y: 0 }, {duration: 1});
+        move([hintRef.current], { y: 220 }, {duration: 1});
+        move([buttonRef.current], { y: 300 }, {duration: 1});
         moveAndVanish([emailRef.current, codeRef.current], { y: 90 }, 1);
         moveAndVanish([repPassRef.current], { y: 150 }, 1);
         spawn([signUpRef.current], 1);
@@ -293,13 +293,13 @@ export default function Login() {
       case "sign-up":
         setHintText(lang.signUpHint);
         setButtonText(lang.buttonSignUp);
-        move([logoRef.current], { y: -75 }, 1);
-        move([nameRef.current], { y: 0 }, 1);
+        move([logoRef.current], { y: -75 }, {duration: 1});
+        move([nameRef.current], { y: 0 }, {duration: 1});
         spawnAndMove([emailRef.current], { y: 60 }, 1);
-        move([passRef.current], { y: 120 }, 1);
+        move([passRef.current], { y: 120 }, {duration: 1});
         spawnAndMove([repPassRef.current], { y: 180 }, 1);
-        move([hintRef.current], { y: 260 }, 1);
-        move([buttonRef.current], { y: 340 }, 1);
+        move([hintRef.current], { y: 260 }, {duration: 1});
+        move([buttonRef.current], { y: 340 }, {duration: 1});
         vanish([signUpRef.current], 1);
         break;
       case "forgot-password":
@@ -308,8 +308,8 @@ export default function Login() {
         spawn([emailRef.current], 1);
         vanish([nameRef.current], 0.3);
         moveAndVanish([passRef.current, repPassRef.current], { y: 90 }, 1);
-        move([hintRef.current], { y: 160 }, 1);
-        move([buttonRef.current], { y: 240 }, 1);
+        move([hintRef.current], { y: 160 }, { duration: 1});
+        move([buttonRef.current], { y: 240 }, { duration: 1});
         vanish([signUpRef.current], 1);
         break;
       case "sent-code-activate":
@@ -318,9 +318,9 @@ export default function Login() {
         moveAndVanish([nameRef.current, emailRef.current, passRef.current, repPassRef.current], { y: 90 }, 1);
         setButtonText(lang.verify);
         spawn(codeRef.current, 1);
-        move(logoRef.current, { y: 0 }, 1);        
-        move(hintRef.current, { y: 170 }, 1);
-        move([buttonRef.current], { y: 280 }, 1);
+        move(logoRef.current, { y: 0 }, { duration: 1});        
+        move(hintRef.current, { y: 170 }, { duration: 1});
+        move([buttonRef.current], { y: 280 }, { duration: 1});
         vanish([signUpRef.current], 1);
         break;
     }

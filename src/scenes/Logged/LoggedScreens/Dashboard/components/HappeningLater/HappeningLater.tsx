@@ -15,17 +15,18 @@ interface props {
 }
 
 export default function HappeningLater({ show, happeningLater }: props) {
-  const { language, innerHeight } = useGlobalContext();
+  const { language, innerWidth, innerHeight } = useGlobalContext();
   const { goTo, resetSelectedActivity } = useLoggedContext();
   const happeningTexts = texts.get(language);
   const sectionRef = useRef(null);
 
   useLayoutEffect(() => {
-    move(sectionRef.current, { x: -400 });
-  }, []);
-
-  useLayoutEffect(() => {
-    move(sectionRef.current, { x: show ? 0 : -400 }, 1, 1);
+    move(sectionRef.current, {
+      x: show ? 0 : -innerWidth
+    }, {
+      duration: show? 1 : 0,
+      delay: show? 1 : 0,
+    });
   }, [show]);
 
   const createNewActivity = (

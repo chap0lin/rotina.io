@@ -3,38 +3,72 @@ import { colors } from "src/colors";
 
 export const Container = styled.div`
   border-radius: 10px;
-  border: 1px solid ${colors.lightGrey};
   border: none;
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  gap: 15px;
+  gap: 10px;
 `;
 
 export const Title = styled.p`
-  font-family: Motley;
-  text-transform: uppercase;
-  font-size: 24px;
+  font-size: 20px;
+  font-weight: 700;
+  color: ${colors.black};
+  padding-left: 5px;
+  @media(max-height: 750px){
+    font-size: 18px;
+  }
+`;
+
+export const DangerTitle = styled(Title)`
+  color: ${colors.pink};
+`;
+
+export const EditSection = styled(Container)`
+  padding: 20px;
+  gap: 15px;
+  border: 1px solid ${colors.darkWhite};
+  @media(max-height: 750px){
+    padding: 15px;
+  }
+`;
+
+export const DangerSection = styled(EditSection)`
+  border-color: ${colors.pink};
+  overflow: hidden;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  transition: opacity 0.5s;
+  position: relative;
+`;
+
+export const ButtonSection = styled(Container)`
+  flex-direction: row;
+  gap: 20px;
+  position: relative;
 `;
 
 export const Row = styled.div`
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   width: 100%;
+  position: relative;
+  z-index: 100;
 `;
 
 export const Text = styled.p`
   padding: 1px 5px;
   border-radius: 5px;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   color: ${colors.black};
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
   @media(max-height: 750px){
     font-size: 16px;
   }
@@ -57,7 +91,7 @@ export const Input = styled.input`
   font-size: 18px;
   text-overflow: ellipsis;
   @media(max-height: 750px){
-    font-size: 16px7
+    font-size: 16px;
   }
 `;
 
@@ -81,4 +115,40 @@ export const Option = styled.button`
 
 export const InputButton = styled(Option)`
   border: 1px solid ${colors.black};
+`;
+
+export const DangerButton = styled(Option)`
+  padding: 4px;
+`;
+
+export const DangerConfirm = styled.div`
+  position: absolute;
+  background: ${colors.white};
+  width: 100%;
+  height: 85px;
+  bottom: -85px;
+  left: 0;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+`;
+
+export const DangerText = styled(Text)`
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 20px;
+  @media(max-height: 750px){
+    font-size: 16px;
+  }
+`;
+
+export const ConfirmButtons = styled.div`
+  flex: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  gap: 5px;
 `;

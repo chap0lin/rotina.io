@@ -46,7 +46,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
         setShowingLists(false);
     }, [selectedIndex]);
 
-    useLayoutEffect(() => {
+    useLayoutEffect(() => {                                             //TODO mostrar as listas deve dar blur também!
         showingLists
         ? spawnAndMove(listsRef.current, {x: 0}, 0.5)
         : moveAndVanish(listsRef.current, {x: 200}, 0.5);
@@ -75,7 +75,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
             <Text>
                 {lists[selectedIndex] && `${lists[selectedIndex].items.length} items`}
             </Text>
-            <Lists ref={listsRef}>
+            <Lists ref={listsRef}>                  
                 {lists.map((list, index) => (
                     <ListName
                         key={index}

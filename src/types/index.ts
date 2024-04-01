@@ -90,13 +90,13 @@ export type activitySelectionType = {
 };
 
 export type coordinateType = {
-  x?: number;
-  y?: number;
+  x?: number | string;
+  y?: number | string;
 };
 
 export type sizeType = {
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
 };
 
 export type itemType = {

@@ -108,15 +108,19 @@ export const Lists = styled(Right)`
 `;
 
 export const ListName = styled.p`
+    font-size: 18px;
     padding: 5px 15px;
     border-radius: 5px;
     color: ${colors.white};
     width: 100%;
-    max-width: 200px;
+    max-width: 220px;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    @media(max-height: 750px){
+        font-size: 16px;
+    }
 `;
 
 export const NewListSection = styled.div`

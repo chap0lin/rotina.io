@@ -64,14 +64,14 @@ export const spawn = (
 export const move = (
   what: gsap.TweenTarget,
   where: coordinateType,
-  duration?: number,
-  delay?: number
+  options?: gsap.TweenVars,
 ) => {
   gsap.to(what, {
-    ...where,
     ease: "back",
-    duration: duration ?? 0,
-    delay: delay ?? 0,
+    duration: 0,
+    delay: 0,
+    ...where,
+    ...options,
   });
 };
 
