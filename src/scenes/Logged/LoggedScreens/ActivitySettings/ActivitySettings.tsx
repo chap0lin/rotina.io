@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { stringifyTime, parseTime, isEqual, isAfter, isBefore } from "src/functions/time";
-import { activityType, timeCheckType, timeType } from "src/types";
+import { activityPropsType, activityType, timeCheckType } from "src/types";
 import { areActivitiesEqual } from "src/functions";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
@@ -23,19 +23,7 @@ import {
   Weekdays,
 } from "./ActivitySettings.style";
 
-type whatType = { what: string };
-type whereType = { where: string };
-type whoType = { who: string };
-type startType = { startsAt: timeType };
-type endType = { endsAt: timeType };
-type colorType = { color: string };
-type propertyType =
-  | whatType
-  | whereType
-  | whoType
-  | startType
-  | endType
-  | colorType;
+
 
 const colorsAvailable = [
   colors.darkRed,
@@ -97,7 +85,7 @@ export default function ActivitySettings({}: props) {
   };
 
 
-  const updateActivityProperty = (property: propertyType) => {
+  const updateActivityProperty = (property: activityPropsType) => {
     setNewActivity((prev) => ({ ...prev, ...property }));
   };
 
@@ -109,8 +97,10 @@ export default function ActivitySettings({}: props) {
         day: selectedDay
       }, true);
       resetSelectedActivity();
-      showPopup(detailsTexts.activityUpdated, {
-        type: "warning-success",
+      showPopup({
+        text: detailsTexts.activityUpdated,
+        type: "warning-success"
+      },{
         timeout: 4000
       }); 
       return;
@@ -119,33 +109,34 @@ export default function ActivitySettings({}: props) {
       activity: newActivity,
       day: selectedDay,
     }, true);
-    showPopup(detailsTexts.activityCreated, {
-      type: "warning-success",
+    showPopup({
+      text: detailsTexts.activityCreated,
+      type: "warning-success"
+    },{
       timeout: 4000
     }); 
   }
 
   const confirmUpdateOrCreate = () => {
-    showPopup(
-      <PopupContent
-        type={"confirm"}
-        dayIndex={selectedDay}
-        activity={newActivity}
-        onYes={() => {
-          hidePopup();
-          resetAll();
-          goBack();               // the goBack followed by the goTo is on purpose here.
-          goTo("activities");     // the goal is to ensure we always get "back" to the activities (not accidentally to the dashboard if we came from there)
-          setTimeout(() => {
-            updateOrCreateActivity();
-          }, 200);
-        }}
-        onNo={() => {
-          hidePopup();
-        }}
-      />,
-      {
-        type: "prompt",
+    showPopup({type: "prompt", text: (
+        <PopupContent
+          type={"confirm"}
+          dayIndex={selectedDay}
+          activity={newActivity}
+          onYes={() => {
+            hidePopup();
+            resetAll();
+            goBack();               // the goBack followed by the goTo is on purpose here.
+            goTo("activities");     // the goal is to ensure we always get "back" to the activities (not accidentally to the dashboard if we came from there)
+            setTimeout(() => {
+              updateOrCreateActivity();
+            }, 200);
+          }}
+          onNo={() => {
+            hidePopup();
+          }}
+        />
+      )},{
         blur: true,
       }
     );
@@ -161,20 +152,19 @@ export default function ActivitySettings({}: props) {
       resetAll();
       return;
     }
-    showPopup(
-      <PopupContent
-        type={"discard"}
-        onYes={() => {
-          hidePopup();
-          resetAll();
-          goBack();
-        }}
-        onNo={() => {
-          hidePopup();
-        }}
-      />,
-      {
-        type: "prompt",
+    showPopup({type: "prompt", text: (
+        <PopupContent
+          type={"discard"}
+          onYes={() => {
+            hidePopup();
+            resetAll();
+            goBack();
+          }}
+          onNo={() => {
+            hidePopup();
+          }}
+        />
+      )},{
         blur: true,
       }
     );

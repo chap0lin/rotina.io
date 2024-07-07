@@ -58,8 +58,10 @@ export default function LoggedScreens(){
                     case "week": updateWeek(JSON.parse(reply.content)); break;
                     case "lists": setLists(JSON.parse(reply.content)); break;
                     default:
-                        return showPopup(loggedTexts.errorFetchingData, {
-                        type: "warning-failure",
+                    return showPopup({
+                        text: loggedTexts.errorFetchingData,
+                        type: "warning-failure"
+                    },{
                         timeout: 4000,
                     });
                 }
@@ -82,9 +84,11 @@ export default function LoggedScreens(){
                 errorMsg = loggedTexts.somethingWentWrong;
                 break;
         }
-        showPopup(errorMsg, {
-            type: "warning-failure",
-            timeout: 4000,
+        showPopup({
+            text: errorMsg,
+            type: "warning-failure" 
+        },{
+            timeout: 4000
         });
         emptyStorage();
         navigate("/login");

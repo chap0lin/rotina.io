@@ -45,12 +45,6 @@ export default function Header({
     move(what, { x: condition ? howMuch : 0 }, {duration: 1});
   };
 
-  const clear = () => {
-    setShowLanguagesMenu(false);
-    setShowUserMenu(false);
-    hidePopup();
-  };
-
   const handleLanguageSelection = (newLang: languageOption) => {
     setLanguage(newLang);
     setShowLanguagesMenu(false);
@@ -95,6 +89,13 @@ export default function Header({
   }, [showUserMenu, showLanguagesMenu]);
 
   useLayoutEffect(() => {
+    if(!blur){
+      setShowLanguagesMenu(false);
+      setShowUserMenu(false);
+    }
+  }, [blur]);
+
+  useLayoutEffect(() => {
     arrow ? fadeIn(arrowRef.current, 1) : fadeOut(arrowRef.current, 1);
     logo ? fadeIn(logoRef.current, 1) : fadeOut(logoRef.current, 1);
     user ? fadeIn(userRef.current, 1) : fadeOut(userRef.current, 1);
@@ -106,7 +107,6 @@ export default function Header({
 
   return (
     <>
-      <Blur show={blur} onClick={clear} />
       <Container ref={containerRef}>
         <LeftSide ref={leftSideRef}>
           <Gsap ref={arrowRef}>
@@ -119,7 +119,7 @@ export default function Header({
                 onClick={handleArrowIconClick}
               />
             </Clickable>
-            <BlurFix show={blur} onClick={clear} />
+            <BlurFix show={blur} onClick={hideBlur} />
           </Gsap>
           <Gsap ref={logoRef}>
             <Clickable>
@@ -128,7 +128,7 @@ export default function Header({
                 fontSize={innerHeight > 750 ? 25 : 24}
               />
             </Clickable>
-            <BlurFix show={blur} onClick={clear} />
+            <BlurFix show={blur} onClick={hideBlur} />
           </Gsap>
         </LeftSide>
         <RightSide ref={rightSideRef}>
@@ -144,7 +144,7 @@ export default function Header({
             </Clickable>
             <BlurFix
               show={blur && !showUserMenu}
-              onClick={clear}
+              onClick={hideBlur}
             />
             <UserSelector show={showUserMenu} onClick={handleUserSelection} />
           </Gsap>
@@ -160,7 +160,7 @@ export default function Header({
             </Clickable>
             <BlurFix
               show={blur && !showLanguagesMenu}
-              onClick={clear}
+              onClick={hideBlur}
             />
             <LanguageSelector
               show={showLanguagesMenu}

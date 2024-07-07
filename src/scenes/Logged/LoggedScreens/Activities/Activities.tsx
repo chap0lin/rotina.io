@@ -41,28 +41,28 @@ export default function Activities({}: props) {
 
 
   const confirmDelete = () => {
-    showPopup(
-      <PopupContent
-        dayIndex={selectedDayRef.current}
-        activity={selected.activity}
-        onYes={() => {
-          hidePopup();
-          setTimeout(() => {
-            deleteActivity(selected, true);
-            resetSelectedActivity();
-            showPopup(
-              activitiesTexts.activityDeleted, {
+    showPopup({type: "prompt", text: (
+        <PopupContent
+          dayIndex={selectedDayRef.current}
+          activity={selected.activity}
+          onYes={() => {
+            hidePopup();
+            setTimeout(() => {
+              deleteActivity(selected, true);
+              resetSelectedActivity();
+              showPopup({
+                text: activitiesTexts.activityDeleted,
                 type: "warning-success",
+              },{
                 timeout: 4000
               });          
-          }, 200);
-        }}
-        onNo={() => {
-          hidePopup();
-        }}
-      />,
-      { 
-        type: "prompt",
+            }, 200);
+          }}
+          onNo={() => {
+            hidePopup();
+          }}
+        />
+      )},{
         blur: true,
       }
     );
@@ -70,19 +70,18 @@ export default function Activities({}: props) {
 
 
   const showNotes = () => {
-    showPopup(
-      <Notes
-        activity={selected.activity}
-        onNotesUpdate={(notes) => {
-          updateActivity({
-            activity: {...selected.activity, notes},
-            day: selected.day,
-          }, true);
-          hidePopup();
-        }}
-      />,
-      {
-        type: "prompt",
+    showPopup({type: "prompt", text: (
+        <Notes
+          activity={selected.activity}
+          onNotesUpdate={(notes) => {
+            updateActivity({
+              activity: {...selected.activity, notes},
+              day: selected.day,
+            }, true);
+            hidePopup();
+          }}
+        />
+      )},{
         blur: true,
       }
     );

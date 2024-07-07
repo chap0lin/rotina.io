@@ -18,11 +18,11 @@ import {
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 
 interface PopupProps {
-  type: popupType;
-  height?: number;
-  title?: string;
-  description: JSX.Element | string;
   show: boolean;
+  type: popupType["type"];
+  description: popupType["text"];
+  height?: popupType["height"];
+  title?: string;
   comesFromTop?: boolean;
   titleColor?: string;
   iconColor?: string;
@@ -44,7 +44,6 @@ export default function Popup({
   iconColor,
   descriptionColor,
   backgroundColor,
-  border,
 }: PopupProps) {
   const { innerHeight } = useGlobalContext();
   const infoRef = useRef();
@@ -118,7 +117,7 @@ export default function Popup({
   };
 
   const popupStyle = {
-    height: height ?? "auto",
+    height: height?? "auto",
     backgroundColor: backgroundColor ?? getBackgroundColor(),
   };
 

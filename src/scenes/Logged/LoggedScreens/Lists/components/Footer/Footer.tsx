@@ -48,7 +48,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
         showingLists
         ? spawnAndMove(listsRef.current, {x: 0}, 0.5)
         : moveAndVanish(listsRef.current, {x: 200}, 0.5);
-        showingLists && showBlur({onHide: () => setShowingLists(false)});
+        //showingLists && showBlur({onHide: () => setShowingLists(false)});
     }, [showingLists]);
 
     return (
@@ -90,12 +90,12 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
                 <NewListSection>
                     {lists.length}/{MAX_LISTS}
                     <Button
-                    disabled={!canCreateNewLists}
-                    borderRadius={5}
-                    padding={0}
-                    width={"auto"}
-                    height={"auto"}
-                    onClick={() => reactToClick(iconRef.current, onNewList, 1)}
+                        disabled={!canCreateNewLists}
+                        borderRadius={5}
+                        padding={0}
+                        width={"auto"}
+                        height={"auto"}
+                        onClick={() => reactToClick(iconRef.current, onNewList, 1)}
                     >
                         <Icon ref={iconRef}>
                             <Plus

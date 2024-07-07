@@ -161,35 +161,35 @@ export default function Login() {
   const onError = (reply: serverReplyType) => {
     switch(reply.status){
       case "ERROR_AUTHENTICATION":
-        showPopup(loginTexts.noAccount, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
+        showPopup(
+          { type: "warning-failure", text: loginTexts.noAccount },
+          { timeout: 4000 }
+        );
         break;
       case "ERROR_NO_REGISTERED_USER":
-        showPopup(loginTexts.emailNotRegistered, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
+        showPopup(
+          { type: "warning-failure", text: loginTexts.emailNotRegistered },
+          { timeout: 4000 }
+        );
         break;
       case "ERROR_EMAIL_ALREADY_TAKEN":
-        showPopup(loginTexts.emailAlreadyExists, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
+        showPopup(
+          { type: "warning-failure", text: loginTexts.emailAlreadyExists },
+          { timeout: 4000 },
+        );
         break;
       case "ERROR_USERNAME_ALREADY_TAKEN":
-        showPopup(loginTexts.nameAlreadyExists, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
+        showPopup(
+          { type: "warning-failure", text: loginTexts.nameAlreadyExists },
+          { timeout: 4000 },
+        );
         break;
       case "ERROR_NO_ACTIVATING_USER":
       case "ERROR_NO_RECOVERING_USER":
-        showPopup(loginTexts.invalidCode, {
-          type: "warning-failure",
-          timeout: 4000,
-        });
+        showPopup(
+          { type: "warning-failure", text: loginTexts.invalidCode },
+          { timeout: 4000 },
+        );
       break;
     }
   }

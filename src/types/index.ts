@@ -1,33 +1,5 @@
 export type languageOption = "en-us" | "pt-br";
 
-export type selectionType = {
-  icon: string | JSX.Element;
-  text: string | languageOption;
-};
-
-export type timeType = {
-  hour: number;
-  minute: number;
-};
-
-export type activityType = {
-  what: string;
-  who: string;
-  where: string;
-  startsAt: timeType;
-  endsAt: timeType;
-  color: string;
-  notes: string[];
-};
-
-export type popupType =
-  | "info"
-  | "prompt"
-  | "warning-success"
-  | "warning-alert"
-  | "warning-failure"
-  | "cookies";
-
 export type dayType = {
   day:
     | "monday"
@@ -72,9 +44,64 @@ export type statusType =
   | "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"
 ;
 
-export type dataType = "week" | "lists";
 export type loginScreens = "sign-in" | "sign-up" | "forgot-password" | "sent-code-activate" | "sent-code-recovery";
 export type loggedScreens = "dashboard" | "lists" | "activities" | "activity-settings";
+export type dataType = "week" | "lists";
+export type popupDisplayType = { type: "info" | "prompt" | "warning-success" | "warning-alert" | "warning-failure" | "cookies" };
+export type heightType = { height?: number };
+export type textType = { text: string | JSX.Element };
+export type visibilityType = { visible: boolean };
+export type whatType = { what: string };
+export type whereType = { where: string };
+export type whoType = { who: string };
+export type startType = { startsAt: timeType };
+export type endType = { endsAt: timeType };
+export type colorType = { color: string };
+export type notesType = { notes: string[] };
+
+export type selectionType = {
+  icon: string | JSX.Element;
+  text: string | languageOption;
+};
+
+export type timeType = {
+  hour: number;
+  minute: number;
+};
+
+export type popupType = 
+  & popupDisplayType
+  & textType
+  & visibilityType
+  & heightType
+;
+
+export type activityType = 
+  & whatType
+  & whoType
+  & whereType
+  & startType
+  & endType
+  & colorType
+  & notesType
+;
+
+export type activityPropsType =   // argumentos para funções usadas no projeto
+  | whatType
+  | whereType
+  | whoType
+  | startType
+  | endType
+  | colorType
+;
+
+export type popupPropsType =      // argumentos para funções usadas no projeto
+  | popupDisplayType
+  | textType
+  | visibilityType
+  | heightType
+;
+
 
 export type serverReplyType = {
   status: statusType;

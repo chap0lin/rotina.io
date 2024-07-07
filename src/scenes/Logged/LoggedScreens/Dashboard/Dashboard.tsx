@@ -64,7 +64,7 @@ export default function Dashboard({ show }: props) {
 
   useEffect(() => {
     takingNotes &&
-      showPopup(
+      showPopup({type: "prompt", text: (
         <Notes
           activity={takingNotes}
           onNotesUpdate={(notes) => {
@@ -72,12 +72,11 @@ export default function Dashboard({ show }: props) {
             hidePopup();
             setTakingNotes(null);
           }}
-        />,
-        {
-          type: "prompt",
-          blur: true,
-        }
-      );
+        />
+      )},{
+        blur: true,
+      }
+    );
   }, [takingNotes]);
 
   useEffect(() => {

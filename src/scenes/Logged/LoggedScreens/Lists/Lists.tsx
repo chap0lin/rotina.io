@@ -33,17 +33,15 @@ export default function Lists({}: props){
     };
 
     const editCurrentList = () => {
-        showPopup(
+        showPopup({type: "prompt", text: (
             <EditPopup
                 originalList={lists[currentList]}
                 onUpdate={setEditingList}
-            />, 
-            {
-                type: "prompt",
-                blur: true,
-                onHide: () => setFinishedEditing(true),
-            }
-        );
+            />
+        )},{
+            blur: true,
+            onHide: () => setFinishedEditing(true),
+        });
     }
 
     const addItem = () => {
