@@ -68,7 +68,6 @@ export default function Lists({}: props){
 
     const toggleMark = (index: number) => {
         const updated = {...lists[currentList]};
-        console.log();
         updated.items[index] = {...updated.items[index], marked: !updated.items[index].marked };
         updateList(currentList, updated, true);
     }

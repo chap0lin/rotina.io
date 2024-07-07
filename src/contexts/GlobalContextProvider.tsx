@@ -106,6 +106,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   }
 
   const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {    //TODO remover blur callback destas opções! desacoplar blur e blurCallback dos popups
+    if(!message) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const type = props ? props.type : null;
     const timeout = props ? props.timeout : null;

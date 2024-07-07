@@ -152,10 +152,6 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }, [hour]);
 
 
-    // useEffect(() => {
-    //     console.log("listas: ", lists);
-    // }, [lists]);
-
     const { children } = props;
     const value: LoggedContextValue = {
         updateServer,

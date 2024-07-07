@@ -32,14 +32,6 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    // const validateToken = (updateUser?: boolean) => {
-    //     const token = getFromStorage(tokenKey);
-    //     console.log("token on storage:", token);
-    //     if(!token) return;
-    //     if(updateUser) setUser({token});
-    //     request("/token", { rollingCode }, token);
-    // }
-
     const request = (link: string, params: any, alternativeToken?: string) => {
         if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
         const token = alternativeToken?? user.token;
@@ -56,7 +48,8 @@ export default function LoggedScreens(){
                 if(!reply.token) return onError({status: "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"});
                 saveOnStorage(tokenKey, reply.token);
                 setUser({token: reply.token});
-                console.log("new access token is", reply.token);
+                request("/get-data", {rollingCode, data: "week"}, reply.token);
+                request("/get-data", {rollingCode, data: "lists"}, reply.token);
                 break;
             default:
                 if(reply.token) saveOnStorage(tokenKey, reply.token);
@@ -77,7 +70,6 @@ export default function LoggedScreens(){
 
 
     const onError = (reply: serverReplyType) => {
-        console.log("error: ", reply);
         let errorMsg = loggedTexts.errorFetchingData;
         switch (reply.status) {
             case "ERROR_INVALID_TOKEN":
@@ -101,18 +93,15 @@ export default function LoggedScreens(){
 
     useEffect(() => {
         if(!rollingCode){
-          console.log("Estamos na área logada, mas não temos um rolling code. Solicitando...");
           postRequest({link: "/rolling-code", onSuccess, onError});
         } else {
-          console.log("O rolling code é: ", rollingCode);
           const token = getFromStorage(tokenKey);
           if(token){
-            console.log("Estamos na área logada e parece que temos um user token. Verificando se ele é válido...");
             const link = "/token";
             const params = { rollingCode };
             postRequest({link, token, params, onSuccess, onError});
           } else {
-            console.log("Nenhum token encontrado no storage. O usuário deve fazer login.");
+            onError({ status: "ERROR_NO_TOKENS_FOUND" });
           }
         }
     }, [rollingCode]);
@@ -120,8 +109,7 @@ export default function LoggedScreens(){
 
     useEffect(() => {
         if(user && user.token && !selected.activity) {
-            console.log("pedindo dados do backend...");
-            request("/get-data", {rollingCode, data: "week"});
+            request("/get-data", {rollingCode, data: "week"});      //TODO criar fluxo unificado de pedidos
             request("/get-data", {rollingCode, data: "lists"});
         }
     }, [minute]);
