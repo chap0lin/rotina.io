@@ -73,7 +73,10 @@ export default function Dashboard({ show }: props) {
             setTakingNotes(null);
           }}
         />,
-        { type: "prompt" }
+        {
+          type: "prompt",
+          blur: true,
+        }
       );
   }, [takingNotes]);
 

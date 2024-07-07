@@ -65,6 +65,7 @@ export default function Login() {
   const buttonRef = useRef(null);
 
   const login = (token: string) => {
+    console.log("Login autorizado. Token recebido: ", token);
     saveOnStorage(tokenKey, token);
     setUser({ token });
     navigate("/logged");
@@ -128,10 +129,10 @@ export default function Login() {
 //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const onSuccess = (reply: serverReplyType) => {
+    if(!reply) return;
     reply.rollingCode && setRollingCode(reply.rollingCode);
     switch (reply.status) {
       case "SUCCESS_CODE":
-        validateToken();
         break;
       case "SUCCESS_LOGGED_IN":
         login(reply.token);
@@ -199,14 +200,6 @@ export default function Login() {
     postRequest({link, params, onSuccess, onError, setWaitingResponse});
   };
 
-  const validateToken = () => {
-    const token = getFromStorage(tokenKey);
-    if(!token) return;
-    const link = "/token";
-    const params = { rollingCode };
-    postRequest({link, token, params, onSuccess, onError});
-  }
-
   const onButtonClick = () => {
     switch (screen) {
       case "sign-in":
@@ -248,8 +241,20 @@ export default function Login() {
 
   useEffect(() => {
     if(!rollingCode){
+      console.log("Não temos um rolling code. Solicitando...");
       const link = "/rolling-code";
       postRequest({link, onSuccess, onError});
+    } else {
+      console.log("O rolling code é: ", rollingCode);
+      const token = getFromStorage(tokenKey);
+      if(token){
+        console.log("Parece que temos um user token. Verificando se ele é válido...");
+        const link = "/token";
+        const params = { rollingCode };
+        postRequest({link, token, params, onSuccess, onError});
+      } else {
+        console.log("Nenhum token encontrado no storage. O usuário deve fazer login.");
+      }
     }
   }, [rollingCode]);
 

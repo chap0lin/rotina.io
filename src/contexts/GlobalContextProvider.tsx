@@ -14,7 +14,12 @@ interface popupPropsType {
   type?: popupType;
   timeout?: number;
   height?: number;
-  onBlur?: () => void;
+  blur?: boolean;
+  onHide?: () => void;
+}
+
+interface blurPropsType {
+  onHide?: () => void;
 }
 
 interface GlobalProviderProps {
@@ -28,8 +33,11 @@ interface GlobalContextValue {
   user: userType["auth"] | null;
   language: languageOption;
   popupType: popupType;
+  blur: boolean;
   setRollingCode: React.Dispatch<React.SetStateAction<string | null>>; 
   setUser: React.Dispatch<React.SetStateAction<userType["auth"]>>;
+  showBlur: (props?: blurPropsType) => void;
+  hideBlur: () => void;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
   showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
   hidePopup: () => void;
@@ -43,8 +51,11 @@ const initialValues: GlobalContextValue = {
   user: {token: null},
   language: "pt-br",
   popupType: null,
+  blur: false,
   setRollingCode: () => null,
   setUser: () => null,
+  showBlur: () => null,
+  hideBlur: () => null,
   setLanguage: () => null,
   showPopup: () => null,
   hidePopup: () => null,
@@ -63,6 +74,7 @@ export function useGlobalContext() {
 
 export default function GlobalProvider(props: GlobalProviderProps) {
   const [user, setUser] = useState<userType["auth"]>(() => initialValues.user);
+  const [blur, setBlur] = useState<boolean>(() => initialValues.blur);
   const [language, setLanguage] = useState<languageOption>(() => initialValues.language);
   const [innerWidth, setInnerWidth] = useState<number>(() => window.innerWidth);
   const [innerHeight, setInnerHeight] = useState<number>(() => window.innerHeight);
@@ -72,7 +84,7 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
   const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
 
-  const blurCallback = useRef<popupPropsType["onBlur"]>(null);
+  const blurCallback = useRef<popupPropsType["onHide"]>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const handleResize = () => {
@@ -84,11 +96,21 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
+  const showBlur = (props?: blurPropsType) => {
+    setBlur(true);
+    blurCallback.current = props? props.onHide : null;
+  }
+
+  const hideBlur = () => {
+    setBlur(false);
+  }
+
   const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {    //TODO remover blur callback destas opções! desacoplar blur e blurCallback dos popups
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const type = props ? props.type : null;
     const timeout = props ? props.timeout : null;
-    blurCallback.current = props? props.onBlur : null;
+    const shouldBlur = props ? props.blur : null;
+    shouldBlur && showBlur({...props});
     setPopupText(message);
     setPopupType(type ?? "warning-failure");
     setPopupVisibility(true);
@@ -99,12 +121,9 @@ export default function GlobalProvider(props: GlobalProviderProps) {
   };
 
   const hidePopup = () => {
-    if(blurCallback.current) {
-      blurCallback.current();
-      blurCallback.current = null;
-    }
     setPopupVisibility(false);
     setPopupType(null);
+    hideBlur();
   };
 
   useEffect(() => {
@@ -122,9 +141,13 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     document.documentElement.lang = lang;
   }, [language]);
 
+
   useEffect(() => {
-    console.log("new rolling code:", rollingCode);
-  }, [rollingCode]);
+    if(!blur && blurCallback.current) {
+      blurCallback.current();
+      blurCallback.current = null;
+    }
+  }, [blur]);
 
   const { children } = props;
 
@@ -136,8 +159,11 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     user,
     language,
     popupType,
+    blur,
     setRollingCode,
     setUser,
+    showBlur,
+    hideBlur,
     setLanguage,
     showPopup,
     hidePopup,

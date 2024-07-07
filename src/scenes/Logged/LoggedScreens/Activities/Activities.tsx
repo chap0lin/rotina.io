@@ -61,7 +61,10 @@ export default function Activities({}: props) {
           hidePopup();
         }}
       />,
-      { type: "prompt" }
+      { 
+        type: "prompt",
+        blur: true,
+      }
     );
   };
 
@@ -78,7 +81,10 @@ export default function Activities({}: props) {
           hidePopup();
         }}
       />,
-      { type: "prompt" }
+      {
+        type: "prompt",
+        blur: true,
+      }
     );
   };
 

@@ -3,9 +3,10 @@ import { Container, Text, Left, Right, Icon, Lists, ListName, NewListSection } f
 import { RotatingButton} from "../index";
 import { Copy, Plus } from "react-feather";
 import { colors } from "src/colors";
-import { moveAndVanish, reactToClick, spawnAndMove } from "src/functions/animation";
 import { listType } from "src/types";
 import { Button } from "src/components";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { moveAndVanish, reactToClick, spawnAndMove } from "src/functions/animation";
 
 const MAX_LISTS = 5;
 
@@ -24,6 +25,7 @@ interface props {
 }
 
 export default function Footer({lists, selectedIndex, onListCopy, onListSelect, onNewList}: props){
+    const { showBlur, hideBlur } = useGlobalContext();
     const [ showingLists, setShowingLists ] = useState<boolean>(() => false);
 
     const editButtonRef = useRef(null);
@@ -42,14 +44,11 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
         onListCopy();
     }
 
-    useEffect(() => {
-        setShowingLists(false);
-    }, [selectedIndex]);
-
-    useLayoutEffect(() => {                                             //TODO mostrar as listas deve dar blur também!
+    useLayoutEffect(() => {                                             
         showingLists
         ? spawnAndMove(listsRef.current, {x: 0}, 0.5)
         : moveAndVanish(listsRef.current, {x: 200}, 0.5);
+        showingLists && showBlur({onHide: () => setShowingLists(false)});
     }, [showingLists]);
 
     return (
@@ -80,7 +79,10 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
                     <ListName
                         key={index}
                         style={{background: list.color}}
-                        onClick={() => onListSelect(index)}
+                        onClick={() => {
+                            onListSelect(index);
+                            hideBlur();
+                        }}
                     >
                         {list.name}
                     </ListName>

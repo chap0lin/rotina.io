@@ -32,12 +32,13 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    const validateToken = (updateUser?: boolean) => {
-        const token = getFromStorage(tokenKey);
-        if(!token) return;
-        if(updateUser) setUser({token});
-        request("/token", { rollingCode }, token);
-    }
+    // const validateToken = (updateUser?: boolean) => {
+    //     const token = getFromStorage(tokenKey);
+    //     console.log("token on storage:", token);
+    //     if(!token) return;
+    //     if(updateUser) setUser({token});
+    //     request("/token", { rollingCode }, token);
+    // }
 
     const request = (link: string, params: any, alternativeToken?: string) => {
         if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
@@ -47,10 +48,9 @@ export default function LoggedScreens(){
 
     const onSuccess = (reply: serverReplyType) => {
         reply.rollingCode && setRollingCode(reply.rollingCode);
-        if(!reply.status) return;
+        if(!reply || !reply.status) return;
         switch(reply.status){
             case "SUCCESS_CODE":
-                validateToken();
                 break;
             case "SUCCESS_TOKEN":
                 if(!reply.token) return onError({status: "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"});
@@ -77,6 +77,7 @@ export default function LoggedScreens(){
 
 
     const onError = (reply: serverReplyType) => {
+        console.log("error: ", reply);
         let errorMsg = loggedTexts.errorFetchingData;
         switch (reply.status) {
             case "ERROR_INVALID_TOKEN":
@@ -100,14 +101,26 @@ export default function LoggedScreens(){
 
     useEffect(() => {
         if(!rollingCode){
-            const link = "/rolling-code";
-            postRequest({link, onSuccess, onError});
+          console.log("Estamos na área logada, mas não temos um rolling code. Solicitando...");
+          postRequest({link: "/rolling-code", onSuccess, onError});
+        } else {
+          console.log("O rolling code é: ", rollingCode);
+          const token = getFromStorage(tokenKey);
+          if(token){
+            console.log("Estamos na área logada e parece que temos um user token. Verificando se ele é válido...");
+            const link = "/token";
+            const params = { rollingCode };
+            postRequest({link, token, params, onSuccess, onError});
+          } else {
+            console.log("Nenhum token encontrado no storage. O usuário deve fazer login.");
+          }
         }
     }, [rollingCode]);
 
 
     useEffect(() => {
-        if(!selected.activity) {
+        if(user && user.token && !selected.activity) {
+            console.log("pedindo dados do backend...");
             request("/get-data", {rollingCode, data: "week"});
             request("/get-data", {rollingCode, data: "lists"});
         }

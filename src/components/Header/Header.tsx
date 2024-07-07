@@ -1,8 +1,8 @@
 import { useRef, useState, useLayoutEffect } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import { LanguageSelector, UserSelector, BlurFix } from "./components/index";
-import { Logo, Blur } from "src/components";
+import { LanguageSelector, UserSelector } from "./components/index";
+import { Logo, Blur, BlurFix } from "src/components";
 import { colors } from "src/colors";
 import { languageOption } from "src/types";
 import { fade, fadeIn, fadeOut, move } from "src/functions/animation";
@@ -29,13 +29,9 @@ export default function Header({
   lang,
   arrow,
 }: props) {
-  const { innerHeight, popupType, setLanguage, hidePopup } = useGlobalContext();
-  const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(
-    () => false
-  );
+  const { innerHeight, blur, setLanguage, hidePopup, showBlur, hideBlur } = useGlobalContext();
+  const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(() => false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
-  const isAnyMenuShowing = showLanguagesMenu || showUserMenu;
-  const blurry = (popupType === "prompt");
 
   const containerRef = useRef(null);
   const logoRef = useRef(null);
@@ -45,7 +41,7 @@ export default function Header({
   const leftSideRef = useRef(null);
   const rightSideRef = useRef(null);
 
-  const moveIfNecessary = (what: any, condition: boolean, howMuch: number) => {
+  const moveIfNecessary = (what: any, condition: boolean, howMuch: number) => { //TODO isso é realmente necessário? não dá só pra botar o move direto onde isso é chamado? kkkk
     move(what, { x: condition ? howMuch : 0 }, {duration: 1});
   };
 
@@ -61,8 +57,7 @@ export default function Header({
   };
 
   const handleUserSelection = (option: string) => {
-    if(option === "language") setShowLanguagesMenu(true);
-    setShowUserMenu((prev) => !prev);
+    setShowUserMenu(false);
   };
 
   const handleUserIconClick = () => {
@@ -95,22 +90,23 @@ export default function Header({
   }, [show]);
 
   useLayoutEffect(() => {
+    (showLanguagesMenu || showUserMenu)
+    ? showBlur() : hideBlur();
+  }, [showUserMenu, showLanguagesMenu]);
+
+  useLayoutEffect(() => {
     arrow ? fadeIn(arrowRef.current, 1) : fadeOut(arrowRef.current, 1);
     logo ? fadeIn(logoRef.current, 1) : fadeOut(logoRef.current, 1);
     user ? fadeIn(userRef.current, 1) : fadeOut(userRef.current, 1);
     lang ? fadeIn(globeRef.current, 1) : fadeOut(globeRef.current, 1);
 
-    moveIfNecessary(
-      leftSideRef.current,
-      !!!arrow,
-      innerHeight > 750 ? -40 : -35
-    );
+    moveIfNecessary(leftSideRef.current, !!!arrow, innerHeight > 750 ? -40 : -35);
     moveIfNecessary(rightSideRef.current, !lang, innerHeight > 750 ? 55 : 50);
   }, [arrow, logo, user, lang]);
 
   return (
     <>
-      <Blur show={blurry || isAnyMenuShowing} onClick={clear} />
+      <Blur show={blur} onClick={clear} />
       <Container ref={containerRef}>
         <LeftSide ref={leftSideRef}>
           <Gsap ref={arrowRef}>
@@ -123,7 +119,7 @@ export default function Header({
                 onClick={handleArrowIconClick}
               />
             </Clickable>
-            <BlurFix show={blurry || isAnyMenuShowing} onClick={clear} />
+            <BlurFix show={blur} onClick={clear} />
           </Gsap>
           <Gsap ref={logoRef}>
             <Clickable>
@@ -132,7 +128,7 @@ export default function Header({
                 fontSize={innerHeight > 750 ? 25 : 24}
               />
             </Clickable>
-            <BlurFix show={blurry || isAnyMenuShowing} onClick={clear} />
+            <BlurFix show={blur} onClick={clear} />
           </Gsap>
         </LeftSide>
         <RightSide ref={rightSideRef}>
@@ -147,7 +143,7 @@ export default function Header({
               />
             </Clickable>
             <BlurFix
-              show={blurry || (isAnyMenuShowing && !showUserMenu)}
+              show={blur && !showUserMenu}
               onClick={clear}
             />
             <UserSelector show={showUserMenu} onClick={handleUserSelection} />
@@ -163,7 +159,7 @@ export default function Header({
               />
             </Clickable>
             <BlurFix
-              show={blurry || (isAnyMenuShowing && !showLanguagesMenu)}
+              show={blur && !showLanguagesMenu}
               onClick={clear}
             />
             <LanguageSelector

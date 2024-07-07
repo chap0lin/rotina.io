@@ -144,7 +144,10 @@ export default function ActivitySettings({}: props) {
           hidePopup();
         }}
       />,
-      { type: "prompt" }
+      {
+        type: "prompt",
+        blur: true,
+      }
     );
   };
 
@@ -170,7 +173,10 @@ export default function ActivitySettings({}: props) {
           hidePopup();
         }}
       />,
-      { type: "prompt" }
+      {
+        type: "prompt",
+        blur: true,
+      }
     );
   };
 

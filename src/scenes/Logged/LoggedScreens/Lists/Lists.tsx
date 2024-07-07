@@ -17,7 +17,7 @@ export default function Lists({}: props){
 
     const [currentList, setCurrentList] = useState<number>(() => 0);
     const [editingList, setEditingList] = useState<listType>(() => null);
-    const [blurred, setBlurred] = useState<boolean>(() => false);
+    const [finishedEditing, setFinishedEditing] = useState<boolean>(() => false);
 
     const inputRef = useRef(null);
     const carouselRef = useRef(null);
@@ -40,7 +40,8 @@ export default function Lists({}: props){
             />, 
             {
                 type: "prompt",
-                onBlur: () => setBlurred(true),
+                blur: true,
+                onHide: () => setFinishedEditing(true),
             }
         );
     }
@@ -73,13 +74,13 @@ export default function Lists({}: props){
     }
 
     useEffect(() => {
-        if(blurred){
+        if(finishedEditing){
             console.log("list after editing:", editingList);
             updateList(currentList, editingList, true);
             setEditingList(null);
-            setBlurred(false);
+            setFinishedEditing(false);
         }
-    }, [blurred]);
+    }, [finishedEditing]);
 
     useEffect(() => {
         (keyPressed === "Enter") && addItem();
