@@ -8,7 +8,7 @@ import { Notes } from "src/components";
 import ButtonBar from "./components/ButtonBar/ButtonBar";
 import DayViewer from "./components/DayViewer";
 import PopupContent from "./components/PopupContent";
-import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
+import { Container, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
 
 interface props {}
 
@@ -88,7 +88,7 @@ export default function Activities({}: props) {
   };
 
   return (
-    <Background>
+    <Container>
       <Hint>{activitiesTexts.yourRoutine}</Hint>
       <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
         <CarouselEdge />
@@ -119,6 +119,6 @@ export default function Activities({}: props) {
           }}
         />
       </ButtonBarContainer>
-    </Background>
+    </Container>
   );
 }

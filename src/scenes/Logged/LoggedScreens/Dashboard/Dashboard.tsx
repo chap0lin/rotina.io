@@ -8,7 +8,7 @@ import { activityType } from "src/types";
 import { useTime } from "src/hooks/time";
 import { texts } from "./Dashboard.lang";
 import { Notes } from "src/components";
-import { Background, BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, BottomContainer } from "./Dashboard.style";
+import { Container, BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, BottomContainer } from "./Dashboard.style";
 
 interface props {
   show: boolean;
@@ -118,7 +118,7 @@ export default function Dashboard({ show }: props) {
   }, [show]);
 
   return (
-    <Background>
+    <Container>
       <MainContent ref={mainContentRef}>
         <TopTexts>
           <BigTitle>
@@ -152,6 +152,6 @@ export default function Dashboard({ show }: props) {
           onWeekClick={() =>  goTo("activities")}
         />
       </BottomContainer>
-    </Background>
+    </Container>
   );
 }

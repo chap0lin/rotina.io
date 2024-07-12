@@ -10,7 +10,7 @@ import { texts } from "./ActivitySettings.lang";
 import Preview from "./components/Preview";
 import PopupContent from "./components/PopupContent";
 import {
-  Background,
+  Container,
   ColorPalette,
   DayOption,
   Edit,
@@ -218,7 +218,7 @@ export default function ActivitySettings({}: props) {
   }, [selected, language]);
 
   return (
-    <Background>
+    <Container>
       <Edit>
         <Hint>
           {selected
@@ -291,6 +291,6 @@ export default function ActivitySettings({}: props) {
         onConfirm={confirmUpdateOrCreate}
         onDiscard={confirmDiscardChanges}
       />
-    </Background>
+    </Container>
   );
 }

@@ -1,4 +1,4 @@
-import { AnimatedLoader, Background, Text } from "./Loading.style";
+import { AnimatedLoader, Container, Text } from "./Loading.style";
 import { Loader } from "react-feather";
 import { colors } from "src/colors";
 import { texts } from "./Loading.lang";
@@ -8,7 +8,7 @@ export default function Loading() {
   const { language } = useGlobalContext();
 
   return (
-    <Background>
+    <Container>
       <Text>{texts.get(language).loading}</Text>
       <AnimatedLoader>
         <Loader
@@ -18,6 +18,6 @@ export default function Loading() {
           color={colors.black}
         />
       </AnimatedLoader>
-    </Background>
+    </Container>
   );
 }
