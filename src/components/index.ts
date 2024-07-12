@@ -11,6 +11,3 @@ export { default as Loading } from "./Loading";
 export { default as ColorOption } from "./ColorOption";
 export { default as ActivityCard } from "./ActivityCard";
 export { default as CustomCircleIcon } from "./CustomCircleIcon";
-
-//TODO isso é uma gambiarra. Ver componente para saber mais
-export { default as BlurFix } from "./BlurFix";

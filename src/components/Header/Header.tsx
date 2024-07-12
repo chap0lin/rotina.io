@@ -1,8 +1,8 @@
 import { useRef, useState, useLayoutEffect } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { ArrowLeft, Globe, User } from "react-feather";
-import { LanguageSelector, UserSelector } from "./components/index";
-import { Logo, Blur, BlurFix } from "src/components";
+import { LanguageSelector, UserSelector, BlurFix } from "./components";
+import { Logo } from "src/components";
 import { colors } from "src/colors";
 import { languageOption } from "src/types";
 import { fade, fadeIn, fadeOut, move } from "src/functions/animation";
@@ -106,69 +106,67 @@ export default function Header({
   }, [arrow, logo, user, lang]);
 
   return (
-    <>
-      <Container ref={containerRef}>
-        <LeftSide ref={leftSideRef}>
-          <Gsap ref={arrowRef}>
-            <Clickable>
-              <ArrowLeft
-                strokeWidth={1}
-                width={innerHeight > 750 ? 40 : 35}
-                height={innerHeight > 750 ? 40 : 35}
-                color={colors.black}
-                onClick={handleArrowIconClick}
-              />
-            </Clickable>
-            <BlurFix show={blur} onClick={hideBlur} />
-          </Gsap>
-          <Gsap ref={logoRef}>
-            <Clickable>
-              <Logo
-                color={colors.black}
-                fontSize={innerHeight > 750 ? 25 : 24}
-              />
-            </Clickable>
-            <BlurFix show={blur} onClick={hideBlur} />
-          </Gsap>
-        </LeftSide>
-        <RightSide ref={rightSideRef}>
-          <Gsap ref={userRef}>
-            <Clickable>
-              <User
-                strokeWidth={1}
-                width={innerHeight > 750 ? 35 : 30}
-                height={innerHeight > 750 ? 35 : 30}
-                color={colors.black}
-                onClick={handleUserIconClick}
-              />
-            </Clickable>
-            <BlurFix
-              show={blur && !showUserMenu}
-              onClick={hideBlur}
+    <Container ref={containerRef}>
+      <LeftSide ref={leftSideRef}>
+        <Gsap ref={arrowRef}>
+          <Clickable>
+            <ArrowLeft
+              strokeWidth={1}
+              width={innerHeight > 750 ? 40 : 35}
+              height={innerHeight > 750 ? 40 : 35}
+              color={colors.black}
+              onClick={handleArrowIconClick}
             />
-            <UserSelector show={showUserMenu} onClick={handleUserSelection} />
-          </Gsap>
-          <Gsap ref={globeRef}>
-            <Clickable>
-              <Globe
-                strokeWidth={1}
-                width={innerHeight > 750 ? 35 : 30}
-                height={innerHeight > 750 ? 35 : 30}
-                color={colors.black}
-                onClick={handleGlobeIconClick}
-              />
-            </Clickable>
-            <BlurFix
-              show={blur && !showLanguagesMenu}
-              onClick={hideBlur}
+          </Clickable>
+          <BlurFix show={blur} onClick={hideBlur} />
+        </Gsap>
+        <Gsap ref={logoRef}>
+          <Clickable>
+            <Logo
+              color={colors.black}
+              fontSize={innerHeight > 750 ? 25 : 24}
             />
-            <LanguageSelector
-              show={showLanguagesMenu}
-              onClick={handleLanguageSelection}
+          </Clickable>
+          <BlurFix show={blur} onClick={hideBlur} />
+        </Gsap>
+      </LeftSide>
+      <RightSide ref={rightSideRef}>
+        <Gsap ref={userRef}>
+          <Clickable>
+            <User
+              strokeWidth={1}
+              width={innerHeight > 750 ? 35 : 30}
+              height={innerHeight > 750 ? 35 : 30}
+              color={colors.black}
+              onClick={handleUserIconClick}
             />
-          </Gsap>
-        </RightSide>
-      </Container>
-    </>
+          </Clickable>
+          <BlurFix
+            show={blur && !showUserMenu}
+            onClick={hideBlur}
+          />
+          <UserSelector show={showUserMenu} onClick={handleUserSelection} />
+        </Gsap>
+        <Gsap ref={globeRef}>
+          <Clickable>
+            <Globe
+              strokeWidth={1}
+              width={innerHeight > 750 ? 35 : 30}
+              height={innerHeight > 750 ? 35 : 30}
+              color={colors.black}
+              onClick={handleGlobeIconClick}
+            />
+          </Clickable>
+          <BlurFix
+            show={blur && !showLanguagesMenu}
+            onClick={hideBlur}
+          />
+          <LanguageSelector
+            show={showLanguagesMenu}
+            onClick={handleLanguageSelection}
+          />
+        </Gsap>
+      </RightSide>
+    </Container>
   );
 }

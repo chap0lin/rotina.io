@@ -135,9 +135,12 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
 
   useEffect(() => {
-    if(!blur && blurCallback.current) {
-      blurCallback.current();
-      blurCallback.current = null;
+    if(!blur){
+      if(popup.visible) hidePopup();
+      if(blurCallback.current) {
+        blurCallback.current();
+        blurCallback.current = null;
+      }
     }
   }, [blur]);
 

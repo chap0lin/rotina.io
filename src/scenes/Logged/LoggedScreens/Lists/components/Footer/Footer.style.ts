@@ -25,28 +25,6 @@ export const Right = styled(Gsap)`
     right: 7.5%;
 `;
 
-export const EditBox = styled(Left)`
-    bottom: 70px;
-    border: 1px solid ${colors.lightGrey};
-    border-radius: 10px;
-    width: 85%;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 10px;
-    @media(max-height: 750px){
-        bottom: 65px;
-    }
-`;
-
-export const Row = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-`;
-
 export const Text = styled.p`
     font-size: 16px;
     font-weight: 500;

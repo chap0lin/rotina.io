@@ -48,7 +48,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
         showingLists
         ? spawnAndMove(listsRef.current, {x: 0}, 0.5)
         : moveAndVanish(listsRef.current, {x: 200}, 0.5);
-        //showingLists && showBlur({onHide: () => setShowingLists(false)});
+        showingLists && showBlur({onHide: () => setShowingLists(false)});
     }, [showingLists]);
 
     return (

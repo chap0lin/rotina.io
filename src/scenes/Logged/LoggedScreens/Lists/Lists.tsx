@@ -11,7 +11,7 @@ import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, T
 interface props {}
 
 export default function Lists({}: props){
-    const { keyPressed, language, innerHeight, innerWidth, showPopup } = useGlobalContext();
+    const { keyPressed, language, innerWidth, showPopup } = useGlobalContext();
     const { lists, updateList } = useLoggedContext();
     const listsTexts = texts.get(language);
 

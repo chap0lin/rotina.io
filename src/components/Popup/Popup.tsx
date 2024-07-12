@@ -2,11 +2,9 @@ import { useEffect, useRef } from "react";
 import { CheckCircle, AlertTriangle, XCircle } from "react-feather";
 import { popupType } from "src/types";
 import { colors } from "src/colors";
-import cookieIcon from "./assets/cookie.png";
 import gsap from "gsap";
 import {
   BottomContainer,
-  Cookie,
   Description,
   Header,
   PopupContainer,
@@ -48,7 +46,6 @@ export default function Popup({
   const { innerHeight } = useGlobalContext();
   const infoRef = useRef();
   const warningRef = useRef();
-  const cookieRef = useRef();
 
   const releaseProps = comesFromTop
     ? {
@@ -129,9 +126,6 @@ export default function Popup({
       case "prompt":
         ref = warningRef;
         break;
-      case "cookies":
-        ref = cookieRef;
-        break;
       default:
         type.includes("warning") && (ref = warningRef);
     }
@@ -144,21 +138,6 @@ export default function Popup({
   }, [show]);
 
   switch (type) {
-    case "cookies":
-      return (
-        <BottomContainer ref={cookieRef}>
-          <PopupContainer>
-            <Header>
-              <Title>Nham... cookies</Title>
-              <Cookie src={cookieIcon} />
-            </Header>
-            <Description
-              style={descriptionColor ? { color: descriptionColor } : {}}>
-              {description}
-            </Description>
-          </PopupContainer>
-        </BottomContainer>
-      );
     case "warning-alert":
     case "warning-failure":
     case "warning-success":

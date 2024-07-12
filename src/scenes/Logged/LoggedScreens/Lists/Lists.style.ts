@@ -1,22 +1,6 @@
 import styled from "@emotion/styled";
 import { colors } from "src/colors";
 
-const Full = styled.div`
-  width: 100%;
-  height: 100%;
-`;
-
-const FlexColumn = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-export const MainContent = styled(FlexColumn)`
-  position: relative;
-  height: 100%;
-  align-items: center;
-`;
 
 export const Carousel = styled.div`
   width: 100%;
@@ -39,12 +23,13 @@ export const CarouselEdge = styled.div`
   }
 `;
 
-export const ListContainer = styled(Full)`
+export const ListContainer = styled.div`
   flex-shrink: 0;
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
   width: 85%;
+  height: 100%;
 `;
 
 export const ListSection = styled.div`
@@ -95,7 +80,8 @@ export const Icon = styled.div`
 `;
 
 export const ItemInput = styled.input`
-  position: absolute;
+  position: fixed;
+  z-index: 100;
   width: 83%;
   padding: 10px 10px 10px 0;
   background: none;
