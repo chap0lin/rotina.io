@@ -80,12 +80,12 @@ export const Icon = styled.div`
 `;
 
 export const ItemInput = styled.input`
-  position: fixed;
-  z-index: 100;
+  position: absolute;
   width: 83%;
   padding: 10px 10px 10px 0;
   background: none;
-  top: 12%;
+  top: 11%;
+  left: 8.5%;
   border: none;
   outline: none;
   border-bottom: 1px solid ${colors.black};

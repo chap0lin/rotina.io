@@ -22,7 +22,7 @@ interface LoggedContextValue {
     addActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     updateActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     deleteActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
-    updateList: (index: number, updatedList: listType, updateServer?: boolean) => void,
+    updateList: (index: number, updatedList: listType, updateServer?: boolean) => number,
     setLists: React.Dispatch<React.SetStateAction<listType[]>>,
     resetSelectedActivity: (toSomeSpecificDay?: number) => void,
     goTo: (newScreen: loggedScreens) => void,
@@ -108,14 +108,20 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     }
 
 
-    const updateList = (index: number, updatedList: listType, updateServer?: boolean) => {
+    const updateList = (index: number, updatedList: listType | null, updateServer?: boolean) => {
         setLists((prev) =>{
             if(index < 0) return prev;
             const newLists = [...prev];
-            newLists[index] = {...updatedList};
+            if(!updatedList){
+                newLists.splice(index, 1);
+            } else {
+                newLists[index] = {...updatedList};
+            }
             return newLists;
         });
         updateServer && setUpdateServer("lists");
+        if(!updatedList) return 0;
+        return index;
     }
 
     const resetSelectedActivity = (toSomeSpecificDay?: number) => {
@@ -145,6 +151,9 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         });
     }
 
+    useEffect(() => {
+        console.log(lists);
+    }, [lists]);
 
     useEffect(() => {
         const date = new Date();

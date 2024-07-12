@@ -8,6 +8,9 @@ type textTypes = {
   placeholder: string;
   nothingHere: string;
   juliusPhrase: string | JSX.Element;
+  listCleared: string;
+  listDeleted: string;
+  listCreated: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
@@ -19,7 +22,10 @@ texts.set("pt-br", {
     shopping: "compras",
     placeholder: "Insira um item...",
     nothingHere: "Nada por aqui!",
-    juliusPhrase: <>Se você não comprar,<br/>o desconto é maior.</>
+    juliusPhrase: <>Se você não comprar,<br/>o desconto é maior.</>,
+    listCleared: "Lista limpa!",
+    listDeleted: "Lista apagada!",
+    listCreated: "Lista criada!"
 });
 
 texts.set("en-us", {
@@ -29,7 +35,10 @@ texts.set("en-us", {
     shopping: "shopping",
     placeholder: "Insert an item...",
     nothingHere: "Nothing in here!",
-    juliusPhrase: <>if you don't buy,<br/>the discount is bigger.</>
+    juliusPhrase: <>if you don't buy,<br/>the discount is bigger.</>,
+    listCleared: "List cleared!",
+    listDeleted: "Lista deleted!",
+    listCreated: "Lista created!"
 });
 
 export { texts };

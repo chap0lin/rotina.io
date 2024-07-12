@@ -5,7 +5,6 @@ import { Copy, Plus } from "react-feather";
 import { colors } from "src/colors";
 import { listType } from "src/types";
 import { Button } from "src/components";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { moveAndVanish, reactToClick, spawnAndMove } from "src/functions/animation";
 
 const MAX_LISTS = 5;
@@ -25,7 +24,6 @@ interface props {
 }
 
 export default function Footer({lists, selectedIndex, onListCopy, onListSelect, onNewList}: props){
-    const { showBlur, hideBlur } = useGlobalContext();
     const [ showingLists, setShowingLists ] = useState<boolean>(() => false);
 
     const editButtonRef = useRef(null);
@@ -44,11 +42,20 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
         onListCopy();
     }
 
+    const onOutsideClick = (event) => {
+        if (!listsRef.current.contains(event.target)){
+            setShowingLists(false);
+            window.removeEventListener("click", onOutsideClick);
+        }
+    }
+
     useLayoutEffect(() => {                                             
-        showingLists
-        ? spawnAndMove(listsRef.current, {x: 0}, 0.5)
-        : moveAndVanish(listsRef.current, {x: 200}, 0.5);
-        showingLists && showBlur({onHide: () => setShowingLists(false)});
+        if(showingLists){
+            spawnAndMove(listsRef.current, {x: 0}, 0.5);
+            setTimeout(() => window.addEventListener("click", onOutsideClick), 100);
+        } else {
+            moveAndVanish(listsRef.current, {x: 200}, 0.5);
+        }
     }, [showingLists]);
 
     return (
@@ -63,7 +70,8 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
             </Left>
             <Right ref={listsButtonRef}>
                 <RotatingButton
-                    rotateLeftOnClick={!showingLists}
+                    rotateDirection={(showingLists)? "left" : "right"}
+                    rotateOnCondition={showingLists}
                     border={`1px solid ${colors.black}`}
                     background={colors.white}
                     onClick={() => toggleLists()}
@@ -81,7 +89,6 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
                         style={{background: list.color}}
                         onClick={() => {
                             onListSelect(index);
-                            hideBlur();
                         }}
                     >
                         {list.name}

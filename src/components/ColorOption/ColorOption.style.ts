@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 
 export const Box = styled.div`
+  cursor: pointer;
   width: 30px;
   height: 30px;
   display: flex;

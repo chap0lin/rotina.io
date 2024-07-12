@@ -10,32 +10,57 @@ import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, T
 interface props {}
 
 export default function Lists({}: props){
-    const { keyPressed, language, innerWidth, showPopup } = useGlobalContext();
+    const { keyPressed, language, innerWidth, showPopup, hidePopup } = useGlobalContext();
     const { lists, updateList } = useLoggedContext();
     const listsTexts = texts.get(language);
 
-    const [currentList, setCurrentList] = useState<number>(() => 0);
-    const [editingList, setEditingList] = useState<listType>(() => null);
+    const [currentIndex, setCurrentIndex] = useState<number>(() => (lists.length - 1));
+    const [currentList, setCurrentList] = useState<listType>(() => null);
     const [finishedEditing, setFinishedEditing] = useState<boolean>(() => false);
 
     const inputRef = useRef(null);
     const carouselRef = useRef(null);
 
     const scrollIntoView = (index: number) => {
-        document.getElementById(`${listViewerElementId}${index}`).scrollIntoView({behavior: "smooth"});
+        const element = document.getElementById(`${listViewerElementId}${index}`);
+        element && element.scrollIntoView({behavior: "smooth"});
     }
 
     const onCarouselScroll = () => {
-        setCurrentList(Math.floor(
+        setCurrentIndex(Math.floor(
             (1.05 * carouselRef.current.scrollLeft) / innerWidth
         ));
     };
 
+    const clearCurrentList = () => {
+        setCurrentList((prev) => ({...prev, items: []}));
+        hidePopup();
+        setTimeout(() => showPopup({
+            text: listsTexts.listCleared,
+            type: "warning-success"
+        },{
+            timeout: 4000
+        }), 200);
+    }
+
+    const deleteCurrentList = () => {
+        setCurrentList(null);
+        hidePopup();
+        setTimeout(() => showPopup({
+            text: listsTexts.listDeleted,
+            type: "warning-success"
+        },{
+            timeout: 4000
+        }), 200);
+    }
+
     const editCurrentList = () => {
         showPopup({type: "prompt", text: (
             <EditPopup
-                originalList={lists[currentList]}
-                onUpdate={setEditingList}
+                editing={currentList}
+                onUpdate={setCurrentList}
+                onClear={clearCurrentList}
+                onDelete={deleteCurrentList}
             />
         )},{
             blur: true,
@@ -47,41 +72,51 @@ export default function Lists({}: props){
         const content = inputRef.current.value.trim();
         if (content.length === 0) return;
         const updated: listType = {
-            ...lists[currentList],
+            ...lists[currentIndex],
             items: [
                 {content, marked: false},
-                ...lists[currentList].items
-            ] 
+                ...lists[currentIndex].items
+            ]
         };
-        updateList(currentList, updated, true);
+        updateList(currentIndex, updated, true);
         inputRef.current.value = "";
-    };
+    }
 
     const removeItem = (index: number) => {
-        const updated = {...lists[currentList]};
+        const updated = {...lists[currentIndex]};
         updated.items.splice(index, 1);
-        updateList(currentList, updated, true);
-    };
+        updateList(currentIndex, updated, true);
+    }
 
     const toggleMark = (index: number) => {
-        const updated = {...lists[currentList]};
+        const updated = {...lists[currentIndex]};
         updated.items[index] = {...updated.items[index], marked: !updated.items[index].marked };
-        updateList(currentList, updated, true);
+        updateList(currentIndex, updated, true);
     }
 
     useEffect(() => {
-        if(finishedEditing){
-            console.log("list after editing:", editingList);
-            updateList(currentList, editingList, true);
-            setEditingList(null);
-            setFinishedEditing(false);
-        }
-    }, [finishedEditing]);
+        (keyPressed === "Enter") && addItem();
+    }, [keyPressed]);
+
 
     useEffect(() => {
-        (keyPressed === "Enter") && addItem();
-    }, [keyPressed, editingList]);
+        if(currentIndex < lists.length) setCurrentList({...lists[currentIndex]});
+    }, [currentIndex]);
 
+    useEffect(() => {
+        currentList && updateList(currentIndex, currentList);
+    }, [currentList]);
+
+    useEffect(() => {
+        if(finishedEditing){
+            console.log("final:", currentList);
+            const newIndex = updateList(currentIndex, currentList, true);
+            setCurrentIndex(newIndex);
+            scrollIntoView(newIndex);
+            setFinishedEditing(false);
+            lists[newIndex] && setCurrentList({...lists[newIndex]});
+        }
+    }, [finishedEditing]);
 
     return (
         <>
@@ -115,7 +150,7 @@ export default function Lists({}: props){
             />
             <Footer
                 lists={lists}
-                selectedIndex={currentList}
+                selectedIndex={currentIndex}
                 onListSelect={scrollIntoView}
                 onListCopy={() => null}
                 onNewList={() => null}

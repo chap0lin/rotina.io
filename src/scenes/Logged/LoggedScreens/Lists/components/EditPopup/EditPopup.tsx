@@ -9,8 +9,10 @@ import { ChevronUp, Edit2 } from "react-feather";
 import { ButtonSection, ConfirmButtons, Container, DangerButton, DangerConfirm, DangerSection, DangerText, DangerTitle, EditSection, Input, InputButton, Option, Options, Row, Text, Title } from "./EditPopup.style";
 
 interface props {
-  originalList: listType,
+  editing: listType;
   onUpdate: (newList: listType) => void;
+  onClear: () => void;
+  onDelete: () => void;
 }
 
 const colorsAvailable = [
@@ -20,15 +22,42 @@ const colorsAvailable = [
   colors.black
 ]
 
-export default function EditListPopup({originalList, onUpdate}: props){
+export default function EditListPopup({editing, onUpdate, onClear, onDelete}: props){
   const { language } = useGlobalContext();
   const popupTexts = texts.get(language);
 
-  const [editing, setEditing] = useState<listType>(() => originalList);
   const [showingDanger, setShowingDanger] = useState<boolean>(() => false);
-  const [confirming, setConfirming] = useState<boolean>(() => false);
   const [confirmText, setConfirmText] = useState<string | null>(() => null);
+  
+  /*
+    TODO gambiarra. Apenas um useState deveria ser preciso
+    para a cor, em vez de um useState e um useRef, mas estou
+    tendo problemas significativos em persistir o estado do
+    componente pai quando o popup desaparece. Parece que
+    adotar um useEffect para atualizar o estado do pai é quem
+    está causando o problema. Essencialmente, se fizermos isso...
 
+    const update = () => {
+      if(!inputRef.current) return;
+      const name = inputRef.current.value.trim();
+      if(!name.length) return;
+      onUpdate({...editing, name, color});
+    }
+
+    useEffect(() => {
+      update();
+    }, [color]);
+
+    ...em vez da jeito atual, o estado original da lista quando
+    este popup nasceu é restaurado, independentemente de quantas
+    modificações fizemos, e isso é inaceitável. 
+    
+    Gostaria de investigar mais, mas sinceramente estou
+    ficando sem paciência.
+  */
+  const [color, setColor] = useState<string>(() => editing.color);
+  const colorRef = useRef(color);
+  
   const inputRef = useRef(null);
   const iconRef = useRef(null);
   const dangerRef = useRef(null);
@@ -36,6 +65,15 @@ export default function EditListPopup({originalList, onUpdate}: props){
   const dangerButtonsRef = useRef(null);
   const dangerToggleRef = useRef(null);
   const dangerConfirmRef = useRef(null);
+
+  const onYes = () => {
+    if(confirmText === popupTexts.clear) return onClear();
+    onDelete();
+  }
+
+  const onNo = () => {
+    setConfirmText(null);
+  }
 
   const focusOnInput = () => {
     if(!inputRef.current) return;
@@ -49,27 +87,20 @@ export default function EditListPopup({originalList, onUpdate}: props){
     setShowingDanger(prev => !prev);
   }
 
-  const update = (newColor?: string) => {
-    const newName = (inputRef.current)? inputRef.current.value.trim() : "";
-    setEditing((previous) => ({
-      ...previous,
-      name: newName.length? newName : originalList.name,
-      color: newColor?? previous.color,
-    }));
+  const update = () => {
+    if(!inputRef.current) return;
+    const name = inputRef.current.value.trim();
+    const color = colorRef.current;
+    if(!name.length) return;
+    onUpdate({...editing, name, color});
   }
 
-  useEffect(() => {
-    editing && onUpdate(editing);
-  }, [editing]);
-
-  useEffect(() => {
-    confirmText && setConfirming(true);
-  }, [confirmText]);
 
   useLayoutEffect(() => {
     resize(dangerRef.current, {height: 70});
     move(dangerConfirmRef.current, {y: 0});
   }, []);
+
 
   useLayoutEffect(() => {
     resize(dangerRef.current, {
@@ -78,28 +109,29 @@ export default function EditListPopup({originalList, onUpdate}: props){
     rotate(dangerToggleRef.current,
       (showingDanger)? -180 : 0,
     1);
-
     !showingDanger && setConfirmText(null);
   }, [showingDanger]);
 
+
   useLayoutEffect(() => {
-    move(dangerConfirmRef.current, {          //TODO trocar todos os spawnAndMove por simples move!
-      y: (confirming)? -85 : 0
+    move(dangerConfirmRef.current, {
+      y: (confirmText)? -85 : 0
     }, {
       duration: 1,
-      ease: confirming? "back" : "power2",
-      opacity: (confirming)? 1 : 0
+      ease: confirmText? "back" : "power2",
+      opacity: (confirmText)? 1 : 0
     });
     fade(dangerButtonsRef.current, 
-      confirming? 0 : 1,
+      confirmText? 0 : 1,
       0.5,
-      confirming? 0 : 0.25
+      confirmText? 0 : 0.25
     );
     
-    !confirming && setTimeout(() => {
+    !confirmText && setTimeout(() => {
       setConfirmText(null);
     }, 500);
-  }, [confirming]);
+  }, [confirmText]);
+
 
   return (
     <Container>
@@ -114,9 +146,9 @@ export default function EditListPopup({originalList, onUpdate}: props){
             <Options>
                 <Input 
                   ref={inputRef}
-                  defaultValue={originalList.name}
+                  defaultValue={editing.name}
                   placeholder={popupTexts.insertName}
-                  onChange={() => update()}
+                  onChange={update}
                 />
                 <InputButton ref={iconRef}>
                   <Edit2 strokeWidth={3} width={"100%"} height={"100%"} onClick={focusOnInput}/>
@@ -128,12 +160,16 @@ export default function EditListPopup({originalList, onUpdate}: props){
               {popupTexts.color}:
             </Text>
             <Options>
-              {colorsAvailable.map((color, colorIndex) => (
+              {colorsAvailable.map((col, index) => (
                 <ColorOption
-                  key={colorIndex}
-                  color={color}
-                  selected={editing && (color === editing.color)}
-                  onClick={() => update(color)}
+                  key={index}
+                  color={col}
+                  selected={editing && (color === col)}
+                  onClick={() => {
+                    colorRef.current = col;
+                    setColor(col);
+                    update();
+                  }}
                 />
               ))}
             </Options>
@@ -150,7 +186,7 @@ export default function EditListPopup({originalList, onUpdate}: props){
         </Row>
         <ButtonSection ref={dangerButtonsRef}>
           <Button
-            disabled={!showingDanger || !originalList.items.length}
+            disabled={!showingDanger || !editing.items.length}
             height={45}
             borderRadius={10}
             onClick={() => setConfirmText(popupTexts.clear)}
@@ -169,27 +205,25 @@ export default function EditListPopup({originalList, onUpdate}: props){
         </ButtonSection>
         <DangerConfirm ref={dangerConfirmRef}>
             <DangerText>
-              {`${confirmText} ${popupTexts.list}`}?
+              {(confirmText)? `${confirmText} ${popupTexts.list}?` : ""}
             </DangerText>
             <ConfirmButtons>
               <Button
-                disabled={!showingDanger || !originalList.items.length}
                 width={70}
                 height={40}
                 borderRadius={10}
-                onClick={() => setConfirming(false)}
+                onClick={onYes}
               >
                 {popupTexts.yep}
               </Button>
               <Button
-                disabled={!showingDanger || !originalList.items.length}
                 width={70}
                 height={40}
                 borderRadius={10}
                 border={`1px solid ${colors.black}`}
                 background={colors.white}
                 color={colors.black}
-                onClick={() => setConfirming(false)}
+                onClick={onNo}
               >
                 {popupTexts.nope}
               </Button>
