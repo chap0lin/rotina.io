@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { Blur, Popup } from "src/components";
+import { Background, Blur, Popup } from "src/components";
 import { languageOption, popupPropsType, popupType, userType } from "../types";
 import {
   createContext,
@@ -166,16 +166,18 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
   return (
     <GlobalContext.Provider value={value}>
-      <Blur
-        show={blur}
-        onClick={hideBlur}
-      />
-      {children}
-      <Popup
-        description={popup.text}
-        show={popup.visible}
-        type={popup.type}
-      />
+      <Background>
+        <Blur
+          show={blur}
+          onClick={hideBlur}
+        />
+        {children}
+        <Popup
+          description={popup.text}
+          show={popup.visible}
+          type={popup.type}
+        />
+      </Background>
     </GlobalContext.Provider>
   );
 }

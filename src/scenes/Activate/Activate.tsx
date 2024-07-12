@@ -3,7 +3,7 @@ import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useNavigate } from "react-router-dom";
 import { texts } from "./Activate.lang";
 import { getAndRemoveFromStorage } from "src/functions/storage";
-import { Header, Background, Button } from "components/index";
+import { Header, Button } from "components/index";
 import { spawn, spawnAndMove } from "src/functions/animation";
 import {
   Bold,
@@ -38,7 +38,7 @@ export default function Activate() {
   }, []);
 
   return (
-    <Background>
+    <>
       <Header logo lang />
       <Content ref={contentRef}>
         <Gsap ref={titleRef}>
@@ -61,6 +61,6 @@ export default function Activate() {
         </Button>
         </Gsap>
       </Content>
-    </Background>
+    </>
   );
 }

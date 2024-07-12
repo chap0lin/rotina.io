@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { emptyStorage, getFromStorage, saveOnStorage } from "src/functions/storage";
-import { Background, Header, Loading } from "src/components";
+import { Header, Loading } from "src/components";
 import { serverReplyType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
@@ -190,7 +190,7 @@ export default function LoggedScreens(){
     }, [screen]);
 
     return (
-        <Background>
+        <>
             <Header 
                 logo user lang show={receivedFirstContent} 
                 arrow={(screen !== "dashboard") ? goBack : null}
@@ -212,6 +212,6 @@ export default function LoggedScreens(){
             <Gsap ref={loadingRef}>
                 <Loading />
             </Gsap>
-        </Background>
+        </>
     )
 }

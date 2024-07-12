@@ -18,7 +18,6 @@ import {
 } from "src/functions/animation";
 import {
   Header,
-  Background,
   Button,
   Credential,
 } from "components/index";
@@ -158,7 +157,7 @@ export default function Recovery() {
   }, [screen, language]);
 
   return (
-    <Background>
+    <>
       <Header logo lang />
       <Content ref={contentRef}>
         <Gsap ref={titleRef}>
@@ -197,6 +196,6 @@ export default function Recovery() {
           </Button>
         </Gsap>
       </Content>
-    </Background>
+    </>
   );
 }

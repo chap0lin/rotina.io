@@ -3,7 +3,6 @@ import { listViewerElementId } from "src/constants";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { List, Footer, EditPopup } from "./components";
-import { Background } from "src/components";
 import { listType } from "src/types";
 import { texts } from "./Lists.lang";
 import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, TitleSection } from "./Lists.style";
@@ -85,7 +84,7 @@ export default function Lists({}: props){
 
 
     return (
-        <Background>
+        <>
             <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
                 <CarouselEdge />
                 {lists.map((list, index) => (
@@ -121,6 +120,6 @@ export default function Lists({}: props){
                 onListCopy={() => null}
                 onNewList={() => null}
             />
-        </Background>
+        </>
     )
 }

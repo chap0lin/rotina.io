@@ -9,7 +9,6 @@ import { tokenKey } from "src/constants";
 import { colors } from "src/colors";
 import { texts } from "./Login.lang";
 import {
-  Background,
   Header,
   Credential,
   Button,
@@ -327,7 +326,7 @@ export default function Login() {
 
 
   return (
-    <Background>
+    <>
       <Header lang arrow={canGoBack ? () => setScreen("sign-in") : null} />
       <Content>
         <TopContent>
@@ -427,6 +426,6 @@ export default function Login() {
           </DiscreteText>
         </BottomContent>
       </Content>
-    </Background>
+    </>
   );
 }

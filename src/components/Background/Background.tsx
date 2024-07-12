@@ -1,7 +1,7 @@
 import { Container } from "./Background.style";
 
 interface props {
-  children: JSX.Element | JSX.Element[];
+  children: any;
 }
 
 export default function Background({ children }: props) {
