@@ -2,6 +2,6 @@
 
 Repositório do front-end do app Rotina.io (web app)
 
-## Setup inicial
+## Setup
 
 Versão do Node.js: 18.17.0
