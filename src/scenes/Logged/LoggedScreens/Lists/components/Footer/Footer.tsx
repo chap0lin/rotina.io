@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Container, Text, Left, Right, Icon, Lists, ListName, NewListSection } from "./Footer.style";
 import { RotatingButton} from "../index";
 import { Copy, Plus } from "react-feather";
@@ -7,7 +7,7 @@ import { listType } from "src/types";
 import { Button } from "src/components";
 import { moveAndVanish, reactToClick, spawnAndMove } from "src/functions/animation";
 
-const MAX_LISTS = 5;
+const maxLists = import.meta.env.VITE_MAX_LISTS;
 
 const iconProps = {
     color: colors.white,
@@ -31,7 +31,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
     const listsRef = useRef(null);
     const iconRef = useRef(null);
 
-    const canCreateNewLists = (lists.length < MAX_LISTS);
+    const canCreateNewLists = (lists.length < maxLists);
 
     const toggleLists = () => {
         setShowingLists((prev) => !prev);
@@ -95,7 +95,7 @@ export default function Footer({lists, selectedIndex, onListCopy, onListSelect, 
                     </ListName>
                 ))}
                 <NewListSection>
-                    {lists.length}/{MAX_LISTS}
+                    {lists.length}/{maxLists}
                     <Button
                         disabled={!canCreateNewLists}
                         borderRadius={5}

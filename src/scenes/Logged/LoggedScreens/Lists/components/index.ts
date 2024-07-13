@@ -1,7 +1,6 @@
 export { default as Footer } from "./Footer";
 export { default as List } from "./List";
-export { default as RotatingButton } from "./RotatingButton";
+export { default as NoList } from "./NoList";
+export { default as AddList } from "./AddList";
 export { default as EditPopup } from "./EditPopup";
-
-//TODO isso é uma gambiarra. Ver componente para saber mais
-export { default as BlurFix } from "./BlurFix";
+export { default as RotatingButton } from "./RotatingButton";

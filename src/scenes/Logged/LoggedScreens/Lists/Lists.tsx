@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { listViewerElementId } from "src/constants";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { List, Footer, EditPopup } from "./components";
+import { AddList, NoList, List, Footer, EditPopup } from "./components";
 import { listType } from "src/types";
 import { texts } from "./Lists.lang";
 import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, TitleSection } from "./Lists.style";
+
+const maxLists = import.meta.env.VITE_MAX_LISTS;
 
 interface props {}
 
@@ -18,6 +20,7 @@ export default function Lists({}: props){
     const [currentList, setCurrentList] = useState<listType>(() => null);
     const [finishedEditing, setFinishedEditing] = useState<boolean>(() => false);
 
+    const isEditing = useRef<boolean>(false);
     const inputRef = useRef(null);
     const carouselRef = useRef(null);
 
@@ -55,9 +58,10 @@ export default function Lists({}: props){
     }
 
     const editCurrentList = () => {
+        isEditing.current = true;
         showPopup({type: "prompt", text: (
             <EditPopup
-                editing={currentList}
+                editing={{...lists[currentIndex]}}
                 onUpdate={setCurrentList}
                 onClear={clearCurrentList}
                 onDelete={deleteCurrentList}
@@ -104,7 +108,8 @@ export default function Lists({}: props){
     }, [currentIndex]);
 
     useEffect(() => {
-        currentList && updateList(currentIndex, currentList);
+        isEditing.current && currentList &&
+        updateList(currentIndex, currentList);
     }, [currentList]);
 
     useEffect(() => {
@@ -114,7 +119,7 @@ export default function Lists({}: props){
             setCurrentIndex(newIndex);
             scrollIntoView(newIndex);
             setFinishedEditing(false);
-            lists[newIndex] && setCurrentList({...lists[newIndex]});
+            isEditing.current = false;
         }
     }, [finishedEditing]);
 
@@ -122,7 +127,8 @@ export default function Lists({}: props){
         <>
             <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
                 <CarouselEdge />
-                {lists.map((list, index) => (
+                {!lists.length && <NoList/>}
+                {lists.length && lists.map((list, index) => (
                     <ListContainer
                         key={index}
                         id={`${listViewerElementId}${index}`}
@@ -142,6 +148,7 @@ export default function Lists({}: props){
                         </ListSection>
                     </ListContainer>
                 ))}
+                {(lists.length < maxLists) && <AddList/>}
                 <CarouselEdge />
             </Carousel>
             <ItemInput
