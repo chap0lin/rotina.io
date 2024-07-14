@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { listViewerElementId } from "src/constants";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { AddList, NoList, List, Footer, EditPopup } from "./components";
+import { listElementId } from "src/constants";
 import { listType } from "src/types";
 import { texts } from "./Lists.lang";
-import { Title, Carousel, ItemInput, ListSection, CarouselEdge, ListContainer, TitleSection } from "./Lists.style";
+import { spawn, vanish } from "src/functions/animation";
+import { ListsContent, Footer, EditPopup } from "./components";
+import { Carousel, ItemInput, CarouselEdge } from "./Lists.style";
 
-const maxLists = import.meta.env.VITE_MAX_LISTS;
+export const areEqual = (list1: listType, list2: listType) => {
+    if(!list1 && !list2) return true;
+    if(!list1 || !list2) return false;
+    if(list1.name != list2.name) return false;
+    if(list1.color != list2.color) return false;
+    return true;
+}
 
 interface props {}
 
@@ -16,18 +23,74 @@ export default function Lists({}: props){
     const { lists, updateList } = useLoggedContext();
     const listsTexts = texts.get(language);
 
-    const [currentIndex, setCurrentIndex] = useState<number>(() => (lists.length - 1));
+    const [currentIndex, setCurrentIndex] = useState<number>(() => -1);
     const [currentList, setCurrentList] = useState<listType>(() => null);
     const [finishedEditing, setFinishedEditing] = useState<boolean>(() => false);
+    const [showingListMenu, setShowingListMenu] = useState<boolean>(() => false);
 
+    const originalList = useRef<listType>(null);
+    const newList = useRef<listType>(null);
     const isEditing = useRef<boolean>(false);
     const inputRef = useRef(null);
     const carouselRef = useRef(null);
 
+    const confirm = (action: string) => {
+        hidePopup();
+        setTimeout(() => showPopup({
+            text: action,
+            type: "warning-success"
+        },{
+            timeout: 4000
+        }), 200);
+    }
+
+    const createNewList = (created: listType) => {
+        originalList.current = null;
+        newList.current = {...created};
+        confirm(listsTexts.listCreated)
+    }
+
+    const clearCurrentList = () => {
+        setCurrentList((prev) => ({...prev, items: []}));
+        confirm(listsTexts.listCleared);
+    }
+
+    const deleteCurrentList = () => {
+        setCurrentList(null);
+        confirm(listsTexts.listDeleted);
+    }
+
+    const showListSettings = (list: listType | null) => {
+        isEditing.current = true;
+        newList.current = null;
+        originalList.current = list;
+        setFinishedEditing(false);
+        showPopup({type: "prompt", text: (
+            <EditPopup
+                editing={originalList.current}
+                onUpdate={setCurrentList}
+                onClear={clearCurrentList}
+                onDelete={deleteCurrentList}
+                onCreate={createNewList}
+            />
+        )},{
+            blur: true,
+            onHide: () => setFinishedEditing(true),
+        });
+    }
+
+
     const scrollIntoView = (index: number) => {
-        const element = document.getElementById(`${listViewerElementId}${index}`);
+        const element = document.getElementById(`${listElementId}${index}`);
         element && element.scrollIntoView({behavior: "smooth"});
     }
+
+
+    const onListClick = (index: number) => {
+        if(index != currentIndex) return scrollIntoView(index);
+        showListSettings({...lists[currentIndex]});        
+    }
+
 
     const onCarouselScroll = () => {
         setCurrentIndex(Math.floor(
@@ -35,42 +98,6 @@ export default function Lists({}: props){
         ));
     };
 
-    const clearCurrentList = () => {
-        setCurrentList((prev) => ({...prev, items: []}));
-        hidePopup();
-        setTimeout(() => showPopup({
-            text: listsTexts.listCleared,
-            type: "warning-success"
-        },{
-            timeout: 4000
-        }), 200);
-    }
-
-    const deleteCurrentList = () => {
-        setCurrentList(null);
-        hidePopup();
-        setTimeout(() => showPopup({
-            text: listsTexts.listDeleted,
-            type: "warning-success"
-        },{
-            timeout: 4000
-        }), 200);
-    }
-
-    const editCurrentList = () => {
-        isEditing.current = true;
-        showPopup({type: "prompt", text: (
-            <EditPopup
-                editing={{...lists[currentIndex]}}
-                onUpdate={setCurrentList}
-                onClear={clearCurrentList}
-                onDelete={deleteCurrentList}
-            />
-        )},{
-            blur: true,
-            onHide: () => setFinishedEditing(true),
-        });
-    }
 
     const addItem = () => {
         const content = inputRef.current.value.trim();
@@ -99,68 +126,76 @@ export default function Lists({}: props){
     }
 
     useEffect(() => {
-        (keyPressed === "Enter") && addItem();
+        lists &&
+        lists.length &&
+        keyPressed === "Enter" &&
+        addItem();
     }, [keyPressed]);
 
 
     useEffect(() => {
-        if(currentIndex < lists.length) setCurrentList({...lists[currentIndex]});
-    }, [currentIndex]);
+        (lists && lists.length)
+        ? spawn(inputRef.current)
+        : vanish(inputRef.current);
+    }, [lists]);
+
 
     useEffect(() => {
-        isEditing.current && currentList &&
+        !isEditing.current && lists && setCurrentList({...lists.at(currentIndex)});
+    }, [lists, currentIndex]);
+
+
+    useEffect(() => {
+        isEditing.current && originalList.current && currentList &&
         updateList(currentIndex, currentList);
     }, [currentList]);
 
+
     useEffect(() => {
-        if(finishedEditing){
-            console.log("final:", currentList);
-            const newIndex = updateList(currentIndex, currentList, true);
-            setCurrentIndex(newIndex);
-            scrollIntoView(newIndex);
-            setFinishedEditing(false);
+        if(
+            (finishedEditing) &&
+            (originalList.current || newList.current) &&
+            (!areEqual(originalList.current, currentList))
+        ){
+            let index = newList.current? -1 : currentIndex;
+            let list = newList.current?? currentList;
+            index = updateList(index, list, true);
+            setCurrentIndex(index);
+            setTimeout(() => scrollIntoView(index), 100);
             isEditing.current = false;
         }
     }, [finishedEditing]);
 
+
     return (
         <>
-            <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
+            <Carousel
+                ref={carouselRef}
+                onScroll={onCarouselScroll}
+                style={{opacity: showingListMenu? 0.2 : 1}}
+            >
                 <CarouselEdge />
-                {!lists.length && <NoList/>}
-                {lists.length && lists.map((list, index) => (
-                    <ListContainer
-                        key={index}
-                        id={`${listViewerElementId}${index}`}
-                    >
-                        <ListSection>
-                            <TitleSection onClick={editCurrentList}>
-                                <Title style={{background: list.color}} onClick={editCurrentList}>
-                                    {list.name}
-                                </Title>
-                            </TitleSection>
-                            <List
-                                source={list.items}
-                                onMark={toggleMark}
-                                markColor={list.color}
-                                onRemove={removeItem}
-                            />
-                        </ListSection>
-                    </ListContainer>
-                ))}
-                {(lists.length < maxLists) && <AddList/>}
+                <ListsContent
+                    lists={lists}
+                    onEdit={() => showListSettings({...lists[currentIndex]})}
+                    onMark={toggleMark}
+                    onRemove={removeItem}
+                />
                 <CarouselEdge />
             </Carousel>
             <ItemInput
+                style={{opacity: showingListMenu? 0.2 : 1}}
                 placeholder={listsTexts.placeholder}
                 ref={inputRef}
             />
             <Footer
                 lists={lists}
                 selectedIndex={currentIndex}
-                onListSelect={scrollIntoView}
+                showingMenu={showingListMenu}
+                onListMenuToggle={setShowingListMenu}
+                onListSelect={onListClick}
                 onListCopy={() => null}
-                onNewList={() => null}
+                onNewList={() => showListSettings(null)}
             />
         </>
     )

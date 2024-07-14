@@ -1,36 +1,38 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { fade, move, reactToClick, resize, rotate } from "src/functions/animation";
+import { useRef, useState } from "react";
+import { reactToClick } from "src/functions/animation";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Button, ColorOption } from "src/components";
 import { listType } from "src/types";
 import { colors } from "src/colors";
 import { texts } from "./EditPopup.lang";
-import { ChevronUp, Edit2 } from "react-feather";
-import { ButtonSection, ConfirmButtons, Container, DangerButton, DangerConfirm, DangerSection, DangerText, DangerTitle, EditSection, Input, InputButton, Option, Options, Row, Text, Title } from "./EditPopup.style";
+import { Edit2 } from "react-feather";
+import { Container, EditSection, Input, InputButton, Options, Row, Text, Title } from "./EditPopup.style";
+import { DangerSection } from "./components";
 
 interface props {
-  editing: listType;
+  editing: listType | null;
   onUpdate: (newList: listType) => void;
   onClear: () => void;
   onDelete: () => void;
+  onCreate: (newList: listType) => void;
 }
 
 const colorsAvailable = [
   colors.red,
+  colors.yellow,
   colors.green,
   colors.blue,
+  colors.purple,
   colors.black
 ]
 
-export default function EditListPopup({editing, onUpdate, onClear, onDelete}: props){
+export default function EditListPopup({editing, onUpdate, onClear, onDelete, onCreate}: props){
   const { language } = useGlobalContext();
   const popupTexts = texts.get(language);
-
-  const [showingDanger, setShowingDanger] = useState<boolean>(() => false);
-  const [confirmText, setConfirmText] = useState<string | null>(() => null);
   
+  const [isValid, setIsValid] = useState(() => (editing)? true : false);
   /*
-    TODO gambiarra. Apenas um useState deveria ser preciso
+    TODO gambiarra no color. Apenas um useState deveria ser preciso
     para a cor, em vez de um useState e um useRef, mas estou
     tendo problemas significativos em persistir o estado do
     componente pai quando o popup desaparece. Parece que
@@ -49,31 +51,18 @@ export default function EditListPopup({editing, onUpdate, onClear, onDelete}: pr
     }, [color]);
 
     ...em vez da jeito atual, o estado original da lista quando
-    este popup nasceu é restaurado, independentemente de quantas
-    modificações fizemos, e isso é inaceitável. 
+    este popup nasceu é restaurado no momento que o popup é
+    fechado, independentemente de quantas modificações fizemos,
+    e isso é inaceitável.
     
     Gostaria de investigar mais, mas sinceramente estou
     ficando sem paciência.
   */
-  const [color, setColor] = useState<string>(() => editing.color);
+  const [color, setColor] = useState<string>(() => editing? editing.color : "");
   const colorRef = useRef(color);
   
   const inputRef = useRef(null);
   const iconRef = useRef(null);
-  const dangerRef = useRef(null);
-
-  const dangerButtonsRef = useRef(null);
-  const dangerToggleRef = useRef(null);
-  const dangerConfirmRef = useRef(null);
-
-  const onYes = () => {
-    if(confirmText === popupTexts.clear) return onClear();
-    onDelete();
-  }
-
-  const onNo = () => {
-    setConfirmText(null);
-  }
 
   const focusOnInput = () => {
     if(!inputRef.current) return;
@@ -82,62 +71,34 @@ export default function EditListPopup({editing, onUpdate, onClear, onDelete}: pr
     );
   }
 
-  const toggleDanger = () => {
-    if(!dangerToggleRef.current) return;
-    setShowingDanger(prev => !prev);
+  const validateInputs = () => {
+    if(!inputRef.current) return null;
+    const name = inputRef.current.value.trim();
+    const color = colorRef.current;
+    if(!name.length || !color.length) return null;
+    return {name, color};
   }
 
   const update = () => {
-    if(!inputRef.current) return;
-    const name = inputRef.current.value.trim();
-    const color = colorRef.current;
-    if(!name.length) return;
-    onUpdate({...editing, name, color});
+    const validated = validateInputs();
+    if(!validated) return setIsValid(false);
+    const {name, color} = validated;
+    const items = editing? [...editing.items] : [];
+    setIsValid(true);
+    onUpdate({name, color, items});
   }
 
-
-  useLayoutEffect(() => {
-    resize(dangerRef.current, {height: 70});
-    move(dangerConfirmRef.current, {y: 0});
-  }, []);
-
-
-  useLayoutEffect(() => {
-    resize(dangerRef.current, {
-      height: (showingDanger)? "auto" : 70
-    }, 1);
-    rotate(dangerToggleRef.current,
-      (showingDanger)? -180 : 0,
-    1);
-    !showingDanger && setConfirmText(null);
-  }, [showingDanger]);
-
-
-  useLayoutEffect(() => {
-    move(dangerConfirmRef.current, {
-      y: (confirmText)? -85 : 0
-    }, {
-      duration: 1,
-      ease: confirmText? "back" : "power2",
-      opacity: (confirmText)? 1 : 0
-    });
-    fade(dangerButtonsRef.current, 
-      confirmText? 0 : 1,
-      0.5,
-      confirmText? 0 : 0.25
-    );
-    
-    !confirmText && setTimeout(() => {
-      setConfirmText(null);
-    }, 500);
-  }, [confirmText]);
-
+  const createNewList = () => {
+    const {name, color} = validateInputs();
+    const items = [];
+    onCreate({name, color, items});
+  }
 
   return (
     <Container>
       <EditSection>
         <Title>
-          {popupTexts.properties}
+          {editing? popupTexts.properties : popupTexts.newList}
         </Title>
         <Row>
             <Text>
@@ -146,7 +107,7 @@ export default function EditListPopup({editing, onUpdate, onClear, onDelete}: pr
             <Options>
                 <Input 
                   ref={inputRef}
-                  defaultValue={editing.name}
+                  defaultValue={editing? editing.name : ""}
                   placeholder={popupTexts.insertName}
                   onChange={update}
                 />
@@ -164,7 +125,7 @@ export default function EditListPopup({editing, onUpdate, onClear, onDelete}: pr
                 <ColorOption
                   key={index}
                   color={col}
-                  selected={editing && (color === col)}
+                  selected={color === col}
                   onClick={() => {
                     colorRef.current = col;
                     setColor(col);
@@ -175,61 +136,23 @@ export default function EditListPopup({editing, onUpdate, onClear, onDelete}: pr
             </Options>
         </Row>
       </EditSection>
-      <DangerSection ref={dangerRef} style={{opacity: showingDanger? 1 : 0.5}}>
-        <Row style={{height: 40}}>
-          <DangerTitle>
-            {popupTexts.dangerZone}
-          </DangerTitle>
-          <DangerButton ref={dangerToggleRef}>
-            <ChevronUp strokeWidth={3} color={colors.pink} width={"100%"} height={"100%"} onClick={toggleDanger}/>
-          </DangerButton>
-        </Row>
-        <ButtonSection ref={dangerButtonsRef}>
-          <Button
-            disabled={!showingDanger || !editing.items.length}
-            height={45}
-            borderRadius={10}
-            onClick={() => setConfirmText(popupTexts.clear)}
-          >
-            {`${popupTexts.clear} ${popupTexts.list}`}
-          </Button>
-          <Button
-            disabled={!showingDanger}
-            height={45}
-            borderRadius={10}
-            background={colors.pink}
-            onClick={() => setConfirmText(popupTexts.delete)}
-          >
-            {`${popupTexts.delete} ${popupTexts.list}`}
-          </Button>
-        </ButtonSection>
-        <DangerConfirm ref={dangerConfirmRef}>
-            <DangerText>
-              {(confirmText)? `${confirmText} ${popupTexts.list}?` : ""}
-            </DangerText>
-            <ConfirmButtons>
-              <Button
-                width={70}
-                height={40}
-                borderRadius={10}
-                onClick={onYes}
-              >
-                {popupTexts.yep}
-              </Button>
-              <Button
-                width={70}
-                height={40}
-                borderRadius={10}
-                border={`1px solid ${colors.black}`}
-                background={colors.white}
-                color={colors.black}
-                onClick={onNo}
-              >
-                {popupTexts.nope}
-              </Button>
-            </ConfirmButtons>
-        </DangerConfirm>
-      </DangerSection>
+      {editing && (
+        <DangerSection
+          list={editing}
+          onClear={onClear}
+          onDelete={onDelete}
+        />
+      )}
+      {!editing && (
+        <Button
+          width={"100%"}
+          borderRadius={10}
+          onClick={createNewList}
+          disabled={!isValid}
+        >
+          {`${popupTexts.create} ${popupTexts.list}`}
+        </Button>
+      )}
     </Container>
   );
 }

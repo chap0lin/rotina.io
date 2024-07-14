@@ -1,7 +1,7 @@
 import { itemType } from "src/types";
 import { colors } from "src/colors";
 import { X } from "react-feather";
-import { Content, Items, Line} from "./List.style";
+import { Container, Content, Line} from "./Items.style";
 
 interface props {
     maxHeight?: number;
@@ -11,11 +11,11 @@ interface props {
     onRemove: (index: number) => void;
 }
 
-export default function List({maxHeight, source, markColor, onMark, onRemove}: props){
+export default function Items({maxHeight, source, markColor, onMark, onRemove}: props){
 
     return (
-        <Items style={{maxHeight: maxHeight?? "100%"}}>
-            {(source.length > 0) && source.map(((item, index) => (
+        <Container style={{maxHeight: maxHeight?? "100%"}}>
+            {source && source.map(((item, index) => (
                 <Line key={index}>
                     <X
                         style={{cursor: "pointer"}}
@@ -40,6 +40,6 @@ export default function List({maxHeight, source, markColor, onMark, onRemove}: p
                     </Content>
                 </Line>
             )))}
-        </Items>
+        </Container>
     )
 }

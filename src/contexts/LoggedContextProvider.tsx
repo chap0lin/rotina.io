@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { activitySelectionType, activityType, dataType, itemType, listType, loggedScreens } from "src/types";
 import { areActivitiesEqual, isSelectionValid } from "src/functions";
-import { dayViewerElementId, emptyWeek } from "src/constants";
+import { dayElementId, emptyWeek } from "src/constants";
 import { isBefore } from "src/functions/time";
 import { useTime } from "src/hooks/time";
 
@@ -77,7 +77,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
             isBefore(a.startsAt, b.startsAt) ? -1 : 1
         );
         setWeekActivities(newWeek);
-        document.getElementById(`${dayViewerElementId}${selection.day}`).scrollIntoView();
+        document.getElementById(`${dayElementId}${selection.day}`).scrollIntoView();
         updateServer && setUpdateServer("week");
     }
 
@@ -107,21 +107,30 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         setWeekActivities(newWeek);
     }
 
+    const getNewIndex = (index: number, element: any, list: any[]) => {
+        if(!list) return 0;
+        if(!element) return (index > 0)? (index - 1) : 0;
+        if(index < 0) return (list.length);
+        return index;
+    }
 
-    const updateList = (index: number, updatedList: listType | null, updateServer?: boolean) => {
+    const updateList = (index: number, list: listType | null, updateServer?: boolean) => {
+        let newIndex = getNewIndex(index, list, lists);
+        console.log(newIndex);
         setLists((prev) =>{
-            if(index < 0) return prev;
             const newLists = [...prev];
-            if(!updatedList){
+            if(!list){                              // no list given = remove existing list
                 newLists.splice(index, 1);
-            } else {
-                newLists[index] = {...updatedList};
+            } else if(index > -1) {                 // index is positive = update existing list
+                newLists[index] = {...list};       
+            } else {                                // index in negative = add new list
+                newLists.push({...list});
+                
             }
             return newLists;
         });
         updateServer && setUpdateServer("lists");
-        if(!updatedList) return 0;
-        return index;
+        return newIndex;
     }
 
     const resetSelectedActivity = (toSomeSpecificDay?: number) => {
@@ -150,10 +159,6 @@ export default function LoggedProvider(props: LoggedProviderProps) {
             return newScreen;
         });
     }
-
-    useEffect(() => {
-        console.log(lists);
-    }, [lists]);
 
     useEffect(() => {
         const date = new Date();

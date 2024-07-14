@@ -4,6 +4,9 @@ import { colors } from "src/colors";
 const Gsap = styled.div`
     position: absolute;
     bottom: 0;
+    -webkit-transition: opacity 0.2s linear;
+    -ms-transition: opacity 0.2s linear;
+    transition: opacity 0.2s linear;
 `;
 
 export const Container = styled.div`
@@ -19,7 +22,8 @@ export const Left = styled(Gsap)`
     left: 7.5%;
 `;
 
-export const Center = styled(Gsap)``;
+export const Center = styled(Gsap)`
+`;
 
 export const Right = styled(Gsap)`
     right: 7.5%;
@@ -70,14 +74,14 @@ export const Option = styled.button`
 `;
 
 export const Lists = styled(Right)`
-    right: calc(7.5% - 10px);
+    right: calc(7.5% - 310px);
+    opacity: 0;
     bottom: 60px;    
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: flex-end;
     gap: 10px;
-    background: ${colors.white};
     border-radius: 10px;
     padding: 10px;
     @media(max-height: 750px){
@@ -87,7 +91,8 @@ export const Lists = styled(Right)`
 
 export const ListName = styled.p`
     font-size: 18px;
-    padding: 5px 15px;
+    padding: 7px 15px;
+    border-width: 1px solid ${colors.black};
     border-radius: 5px;
     color: ${colors.white};
     width: 100%;
@@ -96,7 +101,11 @@ export const ListName = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    -webkit-transition: all 0.1s linear;
+    -ms-transition: all 0.1s linear;
+    transition: all 0.1s linear;
     @media(max-height: 750px){
+        padding: 4px 13px;
         font-size: 16px;
     }
 `;

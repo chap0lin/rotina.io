@@ -6,7 +6,7 @@ const FlexColumn = styled.div`
   flex-direction: column;
 `;
 
-export const Items = styled(FlexColumn)`
+export const Container = styled(FlexColumn)`
   margin-top: 23%;
   width: 100%;
   height: 600px;

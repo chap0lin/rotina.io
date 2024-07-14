@@ -12,6 +12,9 @@ export const Carousel = styled.div`
   ::-webkit-scrollbar {
     display: none;
   }
+  -webkit-transition: opacity 0.2s linear;
+  -ms-transition: opacity 0.2s linear;
+  transition: opacity 0.2s linear;
 `;
 
 export const CarouselEdge = styled.div`
@@ -20,48 +23,6 @@ export const CarouselEdge = styled.div`
   flex-shrink: 0;
   @media(max-height: 750px){
       width: 32px;
-  }
-`;
-
-export const ListContainer = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  scroll-snap-align: center;
-  width: 85%;
-  height: 100%;
-`;
-
-export const ListSection = styled.div`
-  width: 100%;
-  height: 100%;
-`;
-
-export const TitleSection = styled.div`
-  margin-top: 5%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  cursor: pointer;
-`;
-
-export const Title = styled.p`
-  text-align: left;
-  border-radius: 10px;
-  color: ${colors.white};
-  font-size: 28px;
-  line-height: 35px;
-  padding: 10px 15px;
-  font-weight: 400;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  transition: background 0.25s;
-  @media (max-height: 750px) {
-    font-size: 24px;
-    line-height: 28px;
   }
 `;
 
@@ -88,8 +49,11 @@ export const ItemInput = styled.input`
   left: 8.5%;
   border: none;
   outline: none;
-  border-bottom: 1px solid ${colors.black};
+  border-bottom: 1px solid ${colors.grey};
   font-size: 16px;
+  -webkit-transition: opacity 0.2s linear;
+  -ms-transition: opacity 0.2s linear;
+  transition: opacity 0.2s linear;
   @media(max-height: 750px){
     top: 75px;
     font-size: 15px;
