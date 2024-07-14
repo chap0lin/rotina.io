@@ -67,7 +67,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => initialValues.weekActivities);
     const [updateServer, setUpdateServer] = useState<dataType>(() => initialValues.updateServer);
     
-    const screenHistory = useRef<loggedScreens[]>([]);
+    const screenHistory = useRef<loggedScreens>(null);
 
     const addActivity = (selection: activitySelectionType, updateServer?: boolean) => {
         if (!isSelectionValid(selection)) return;
@@ -142,22 +142,19 @@ export default function LoggedProvider(props: LoggedProviderProps) {
 
 
     const goBack = (shouldReset?: boolean) => {
-        if(screenHistory.current.length > 0){
-            setScreen(screenHistory.current.at(-1));
-            screenHistory.
-            current.pop();
-        }
+        setScreen((prev) => {
+            switch(prev){
+                case "activity-settings": return screenHistory.current;
+                default: return "dashboard";
+            }
+        });
         shouldReset && resetSelectedActivity();
     }
 
 
     const goTo = (newScreen: loggedScreens) => {
-        setScreen((prev) => {
-            if(screenHistory.current.at(-1) !== prev){
-                screenHistory.current.push(prev);
-            }
-            return newScreen;
-        });
+        screenHistory.current = screen;
+        setScreen(newScreen);
     }
 
     useEffect(() => {

@@ -29,7 +29,7 @@ export default function Header({
   lang,
   arrow,
 }: props) {
-  const { innerHeight, blur, setLanguage, hidePopup, showBlur, hideBlur } = useGlobalContext();
+  const { innerHeight, blur, setLanguage, showBlur, hideBlur } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(() => false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
 
