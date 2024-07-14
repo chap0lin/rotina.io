@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { moveAndVanish, spawn, spawnAndMove, vanish } from "src/functions/animation";
 import { emptyStorage, getFromStorage, saveOnStorage } from "src/functions/storage";
-import { Background, Header, Loading } from "src/components";
+import { Header, Loading } from "src/components";
 import { serverReplyType } from "src/types";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
@@ -20,7 +20,7 @@ export default function LoggedScreens(){
     const navigate = useNavigate();
     const { minute } = useTime();
     const { language, user, innerWidth, rollingCode, showPopup, setUser, setRollingCode } = useGlobalContext();
-    const {screen, weekActivities, todoList, shoppingList, updateServer, selected, setUpdateServer, goBack, updateWeek, updateList } = useLoggedContext();
+    const {screen, weekActivities, lists, updateServer, selected, setUpdateServer, goBack, updateWeek, setLists } = useLoggedContext();
     const [receivedFirstContent, setReceivedFirstContent] = useState<boolean>(() => false);
 
     const loadingRef = useRef(null);
@@ -32,13 +32,6 @@ export default function LoggedScreens(){
 
     //COMUNICAÇÃO COM SERVIDOR////////////////////////////////////////////////////////////////////////////////////////
 
-    const validateToken = (updateUser?: boolean) => {
-        const token = getFromStorage(tokenKey);
-        if(!token) return;
-        if(updateUser) setUser({token});
-        request("/token", { rollingCode }, token);
-    }
-
     const request = (link: string, params: any, alternativeToken?: string) => {
         if((!user || !user.token) && !alternativeToken) return onError({ status: "ERROR_NO_TOKENS_FOUND" });
         const token = alternativeToken?? user.token;
@@ -47,27 +40,28 @@ export default function LoggedScreens(){
 
     const onSuccess = (reply: serverReplyType) => {
         reply.rollingCode && setRollingCode(reply.rollingCode);
-        if(!reply.status) return;
+        if(!reply || !reply.status) return;
         switch(reply.status){
             case "SUCCESS_CODE":
-                validateToken();
                 break;
             case "SUCCESS_TOKEN":
                 if(!reply.token) return onError({status: "ERROR_NO_TOKEN_PROVIDED_BY_SERVER"});
                 saveOnStorage(tokenKey, reply.token);
                 setUser({token: reply.token});
-                console.log("new access token is", reply.token);
+                request("/get-data", {rollingCode, data: "week"}, reply.token);
+                request("/get-data", {rollingCode, data: "lists"}, reply.token);
                 break;
             default:
                 if(reply.token) saveOnStorage(tokenKey, reply.token);
                 if(!reply.data || !reply.content) return;
                 switch(reply.data){
                     case "week": updateWeek(JSON.parse(reply.content)); break;
-                    case "todo": updateList("todo", JSON.parse(reply.content)); break;
-                    case "shopping": updateList("shopping", JSON.parse(reply.content)); break;
+                    case "lists": setLists(JSON.parse(reply.content)); break;
                     default:
-                        return showPopup(loggedTexts.errorFetchingData, {
-                        type: "warning-failure",
+                    return showPopup({
+                        text: loggedTexts.errorFetchingData,
+                        type: "warning-failure"
+                    },{
                         timeout: 4000,
                     });
                 }
@@ -90,9 +84,11 @@ export default function LoggedScreens(){
                 errorMsg = loggedTexts.somethingWentWrong;
                 break;
         }
-        showPopup(errorMsg, {
-            type: "warning-failure",
-            timeout: 4000,
+        showPopup({
+            text: errorMsg,
+            type: "warning-failure" 
+        },{
+            timeout: 4000
         });
         emptyStorage();
         navigate("/login");
@@ -101,17 +97,24 @@ export default function LoggedScreens(){
 
     useEffect(() => {
         if(!rollingCode){
-            const link = "/rolling-code";
-            postRequest({link, onSuccess, onError});
+          postRequest({link: "/rolling-code", onSuccess, onError});
+        } else {
+          const token = getFromStorage(tokenKey);
+          if(token){
+            const link = "/token";
+            const params = { rollingCode };
+            postRequest({link, token, params, onSuccess, onError});
+          } else {
+            onError({ status: "ERROR_NO_TOKENS_FOUND" });
+          }
         }
     }, [rollingCode]);
 
 
     useEffect(() => {
-        if(!selected.activity) {
-            request("/get-data", {rollingCode, data: "week"});
-            request("/get-data", {rollingCode, data: "shopping"});
-            request("/get-data", {rollingCode, data: "todo"});
+        if(user && user.token && !selected.activity) {
+            request("/get-data", {rollingCode, data: "week"});      //TODO criar fluxo unificado de pedidos
+            request("/get-data", {rollingCode, data: "lists"});
         }
     }, [minute]);
 
@@ -120,8 +123,7 @@ export default function LoggedScreens(){
             let jsonContent = [];
             switch(updateServer){
                 case "week": jsonContent = [...weekActivities]; break;
-                case "todo": jsonContent = [...todoList]; break;
-                case "shopping": jsonContent = [...shoppingList]; break; 
+                case "lists": jsonContent = [...lists]; break;
             }
             const data = updateServer;
             const content = JSON.stringify(jsonContent);
@@ -188,7 +190,7 @@ export default function LoggedScreens(){
     }, [screen]);
 
     return (
-        <Background>
+        <>
             <Header 
                 logo user lang show={receivedFirstContent} 
                 arrow={(screen !== "dashboard") ? goBack : null}
@@ -210,6 +212,6 @@ export default function LoggedScreens(){
             <Gsap ref={loadingRef}>
                 <Loading />
             </Gsap>
-        </Background>
+        </>
     )
 }

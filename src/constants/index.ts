@@ -26,4 +26,5 @@ export const emptyWeek: activityType[][] = [
 ];
 
 export const tokenKey = "tknky";                  //tried to save on .env but it didn't work
-export const dayViewerElementId = "day";
+export const dayElementId = "day";
+export const listElementId = "list";

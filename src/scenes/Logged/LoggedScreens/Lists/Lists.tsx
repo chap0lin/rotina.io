@@ -1,146 +1,202 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { moveAndVanish, spawnAndMove } from "src/functions/animation";
-import { useGlobalContext } from "src/contexts/GlobalContextProvider";
-import { Background } from "src/components";
-import { texts } from "./Lists.lang";
-import catYarn from "src/assets/images/cat-yarn.png";
-import bags from "src/assets/images/bags.png";
-import julius from "src/assets/images/julius.png";
-import List from "./components/List";
-import Slot from "./components/Slot";
-import { Title, MainContent, Section, ItemInput, ListSection, PlaceholderImage, PlaceholderContainer, PlaceholderText } from "./Lists.style";
+import { useEffect, useRef, useState } from "react";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
+import { useGlobalContext } from "src/contexts/GlobalContextProvider";
+import { listElementId } from "src/constants";
+import { listType } from "src/types";
+import { texts } from "./Lists.lang";
+import { spawn, vanish } from "src/functions/animation";
+import { ListsContent, Footer, EditPopup } from "./components";
+import { Carousel, ItemInput, CarouselEdge } from "./Lists.style";
 
+export const areEqual = (list1: listType, list2: listType) => {
+    if(!list1 && !list2) return true;
+    if(!list1 || !list2) return false;
+    if(list1.name != list2.name) return false;
+    if(list1.color != list2.color) return false;
+    return true;
+}
 
 interface props {}
 
 export default function Lists({}: props){
-    const { keyPressed, language, innerWidth, innerHeight } = useGlobalContext();
-    const {todoList, shoppingList, updateList} = useLoggedContext();
+    const { keyPressed, language, innerWidth, showPopup, hidePopup } = useGlobalContext();
+    const { lists, updateList } = useLoggedContext();
     const listsTexts = texts.get(language);
 
-    const [toggled, setToggled] = useState<boolean>(() => false);
-    const [juliusMode, setJuliusMode] = useState<boolean>(() => false);
+    const [currentIndex, setCurrentIndex] = useState<number>(() => -1);
+    const [currentList, setCurrentList] = useState<listType>(() => null);
+    const [finishedEditing, setFinishedEditing] = useState<boolean>(() => false);
+    const [showingListMenu, setShowingListMenu] = useState<boolean>(() => false);
 
-    const shoppingListTitleRef = useRef(null);
-    const todoListTitleRef = useRef(null);
-    const shoppingListRef = useRef(null);
-    const todoListRef = useRef(null);
+    const originalList = useRef<listType>(null);
+    const newList = useRef<listType>(null);
+    const isEditing = useRef<boolean>(false);
     const inputRef = useRef(null);
-    const outOfScreenX = (innerWidth * 1.1);
+    const carouselRef = useRef(null);
+
+    const confirm = (action: string) => {
+        hidePopup();
+        setTimeout(() => showPopup({
+            text: action,
+            type: "warning-success"
+        },{
+            timeout: 4000
+        }), 200);
+    }
+
+    const createNewList = (created: listType) => {
+        originalList.current = null;
+        newList.current = {...created};
+        confirm(listsTexts.listCreated)
+    }
+
+    const clearCurrentList = () => {
+        setCurrentList((prev) => ({...prev, items: []}));
+        confirm(listsTexts.listCleared);
+    }
+
+    const deleteCurrentList = () => {
+        setCurrentList(null);
+        confirm(listsTexts.listDeleted);
+    }
+
+    const showListSettings = (list: listType | null) => {
+        isEditing.current = true;
+        newList.current = null;
+        originalList.current = list;
+        setFinishedEditing(false);
+        showPopup({type: "prompt", text: (
+            <EditPopup
+                editing={originalList.current}
+                onUpdate={setCurrentList}
+                onClear={clearCurrentList}
+                onDelete={deleteCurrentList}
+                onCreate={createNewList}
+            />
+        )},{
+            blur: true,
+            onHide: () => setFinishedEditing(true),
+        });
+    }
+
+
+    const scrollIntoView = (index: number) => {
+        const element = document.getElementById(`${listElementId}${index}`);
+        element && element.scrollIntoView({behavior: "smooth"});
+    }
+
+
+    const onListClick = (index: number) => {
+        if(index != currentIndex) return scrollIntoView(index);
+        showListSettings({...lists[currentIndex]});        
+    }
+
+
+    const onCarouselScroll = () => {
+        setCurrentIndex(Math.floor(
+            (1.05 * carouselRef.current.scrollLeft) / innerWidth
+        ));
+    };
+
 
     const addItem = () => {
         const content = inputRef.current.value.trim();
         if (content.length === 0) return;
-        const newItem = {content, marked: false};
-        const updated = (toggled)? [newItem, ...todoList]: [newItem, ...shoppingList];
-        updateList((toggled)? "todo" : "shopping", updated, true);
+        const updated: listType = {
+            ...lists[currentIndex],
+            items: [
+                {content, marked: false},
+                ...lists[currentIndex].items
+            ]
+        };
+        updateList(currentIndex, updated, true);
         inputRef.current.value = "";
-    };
-
-    const removeItem = (i: number) => {
-        const updated = (toggled)? [...todoList]: [...shoppingList];
-        updated.splice(i, 1);
-        updateList((toggled)? "todo" : "shopping", updated, true);
-    };
-
-    const toggleMark = (i: number) => {
-        const updated = (toggled)? [...todoList]: [...shoppingList];
-        updated[i] = {...updated[i], marked: !updated[i].marked };
-        updateList((toggled)? "todo" : "shopping", updated, true);    
     }
 
-    const toggleJulius = () => {
-        setJuliusMode(prev => !prev);
+    const removeItem = (index: number) => {
+        const updated = {...lists[currentIndex]};
+        updated.items.splice(index, 1);
+        updateList(currentIndex, updated, true);
     }
 
-
-    const shoppingPlaceholder = (
-        <PlaceholderContainer>
-            <PlaceholderImage src={juliusMode? julius : bags} onClick={toggleJulius}/>
-            <PlaceholderText>
-                {juliusMode? listsTexts.juliusPhrase : listsTexts.nothingToShop}
-            </PlaceholderText>
-        </PlaceholderContainer>
-    )
-
-    const todoPlaceholder = (
-        <PlaceholderContainer>
-            <PlaceholderImage src={catYarn}/>
-            <PlaceholderText>
-                {listsTexts.nothingToDo}
-            </PlaceholderText>
-        </PlaceholderContainer>
-    )
-
+    const toggleMark = (index: number) => {
+        const updated = {...lists[currentIndex]};
+        updated.items[index] = {...updated.items[index], marked: !updated.items[index].marked };
+        updateList(currentIndex, updated, true);
+    }
 
     useEffect(() => {
-        (keyPressed === "Enter") && addItem();
+        lists &&
+        lists.length &&
+        keyPressed === "Enter" &&
+        addItem();
     }, [keyPressed]);
 
 
-    useLayoutEffect(() => {
-        spawnAndMove(shoppingListTitleRef.current, {x: 0});
-        spawnAndMove(shoppingListRef.current, {x: 0});
-        moveAndVanish(todoListTitleRef.current, {x: outOfScreenX});
-        moveAndVanish(todoListRef.current, {x: outOfScreenX});
-    }, []);
+    useEffect(() => {
+        (lists && lists.length)
+        ? spawn(inputRef.current)
+        : vanish(inputRef.current);
+    }, [lists]);
 
-    
-    useLayoutEffect(() => {
-        if(toggled){
-            moveAndVanish(shoppingListTitleRef.current, {x: -outOfScreenX}, 1);
-            moveAndVanish(shoppingListRef.current, {x: -outOfScreenX}, 1);
-            spawnAndMove(todoListTitleRef.current, {x: 0}, 1);
-            spawnAndMove(todoListRef.current, {x: 0}, 1);
-        } else {
-            spawnAndMove(shoppingListTitleRef.current, {x: 0}, 1);
-            spawnAndMove(shoppingListRef.current, {x: 0}, 1);
-            moveAndVanish(todoListTitleRef.current, {x: outOfScreenX}, 1);
-            moveAndVanish(todoListRef.current, {x: outOfScreenX}, 1);
+
+    useEffect(() => {
+        !isEditing.current && lists && setCurrentList({...lists.at(currentIndex)});
+    }, [lists, currentIndex]);
+
+
+    useEffect(() => {
+        isEditing.current && originalList.current && currentList &&
+        updateList(currentIndex, currentList);
+    }, [currentList]);
+
+
+    useEffect(() => {
+        if(
+            (finishedEditing) &&
+            (originalList.current || newList.current) &&
+            (!areEqual(originalList.current, currentList))
+        ){
+            let index = newList.current? -1 : currentIndex;
+            let list = newList.current?? currentList;
+            index = updateList(index, list, true);
+            setCurrentIndex(index);
+            setTimeout(() => scrollIntoView(index), 100);
+            isEditing.current = false;
         }
-    }, [toggled, innerWidth]);
+    }, [finishedEditing]);
 
 
     return (
-        <Background >
-            <MainContent>
-                <Section>
-                    <Section>
-                        <Title ref={shoppingListTitleRef}>
-                            {listsTexts.shoppingListTitle}
-                        </Title>
-                        <Title ref={todoListTitleRef}>
-                            {listsTexts.todoListTitle}
-                        </Title>
-                    </Section>
-                    <ItemInput placeholder={listsTexts.placeholder} ref={inputRef}/>
-                    <ListSection style={{height:(0.57 * innerHeight)}} ref={shoppingListRef}>
-                        <List
-                            placeholder={shoppingPlaceholder}
-                            source={shoppingList}
-                            onMark={toggleMark}
-                            onRemove={removeItem}
-                        />
-                    </ListSection>
-                    <ListSection style={{height:(0.57 * innerHeight)}} ref={todoListRef}>
-                        <List
-                            placeholder={todoPlaceholder}
-                            source={todoList}
-                            onMark={toggleMark}
-                            onRemove={removeItem}
-                        />
-                    </ListSection>
-                </Section>
-                <Section>
-                    <Slot
-                        isToggled={toggled}
-                        option1={listsTexts.shopping}
-                        option2={listsTexts.todo}
-                        onToggle={() => setToggled(prev => !prev)}
-                    />
-                </Section>
-            </MainContent>
-        </Background>
+        <>
+            <Carousel
+                ref={carouselRef}
+                onScroll={onCarouselScroll}
+                style={{opacity: showingListMenu? 0.2 : 1}}
+            >
+                <CarouselEdge />
+                <ListsContent
+                    lists={lists}
+                    onEdit={() => showListSettings({...lists[currentIndex]})}
+                    onMark={toggleMark}
+                    onRemove={removeItem}
+                />
+                <CarouselEdge />
+            </Carousel>
+            <ItemInput
+                style={{opacity: showingListMenu? 0.2 : 1}}
+                placeholder={listsTexts.placeholder}
+                ref={inputRef}
+            />
+            <Footer
+                lists={lists}
+                selectedIndex={currentIndex}
+                showingMenu={showingListMenu}
+                onListMenuToggle={setShowingListMenu}
+                onListSelect={onListClick}
+                onListCopy={() => null}
+                onNewList={() => showListSettings(null)}
+            />
+        </>
     )
 }

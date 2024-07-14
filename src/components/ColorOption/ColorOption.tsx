@@ -8,10 +8,10 @@ import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 interface props {
   color: string;
   selected: boolean;
-  onCLick: (color: string) => void;
+  onClick: (color: string) => void;
 }
 
-export default function ColorOption({ color, selected, onClick }) {
+export default function ColorOption({ color, selected, onClick }: props) {
   const { innerHeight } = useGlobalContext();
   const checkSize = innerHeight > 740 ? 20 : 16;
   const boxRef = useRef(null);

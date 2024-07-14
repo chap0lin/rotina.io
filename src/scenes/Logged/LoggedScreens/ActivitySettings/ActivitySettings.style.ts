@@ -7,7 +7,7 @@ const FlexColumn = styled.div`
   align-items: center;
 `;
 
-export const Background = styled(FlexColumn)`
+export const Container = styled(FlexColumn)`
   flex-shrink: 0;
   width: 100%;
   padding: 0 10%;

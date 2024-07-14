@@ -26,7 +26,7 @@ export default function HappeningNow({
   happeningNow,
   onNotesClick,
 }: props) {
-  const { language, innerHeight } = useGlobalContext();
+  const { language, innerWidth, innerHeight } = useGlobalContext();
   const happeningTexts = texts.get(language);
   const buttonHeight = innerHeight > 750 ? 50 : 40;
 
@@ -43,11 +43,20 @@ export default function HappeningNow({
   }, []);
 
   useLayoutEffect(() => {
-    move(sectionRef.current, { x: show ? 0 : -400 }, 1, 0.3);
+    move(sectionRef.current, {
+      x: show ? 0 : -innerWidth
+    }, {
+      duration: 1,
+      delay: 0.3
+    });
   }, [show]);
 
   useLayoutEffect(() => {
-    move(buttonRef.current, { y: happeningNow ? 0 : -60 }, 1);
+    move(buttonRef.current, {
+      y: happeningNow ? 0 : -60
+    }, {
+      duration: 1
+    });
     fade(happeningRef.current, happeningNow ? 1 : 0, 1);
     fade(nothingRef.current, happeningNow ? 0 : 1, 1, 0.5);
   }, [happeningNow]);

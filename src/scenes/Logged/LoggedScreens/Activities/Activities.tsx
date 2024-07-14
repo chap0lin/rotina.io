@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { areActivitiesEqual } from "src/functions";
 import { useLoggedContext } from "src/contexts/LoggedContextProvider";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
@@ -8,7 +8,7 @@ import { Notes } from "src/components";
 import ButtonBar from "./components/ButtonBar/ButtonBar";
 import DayViewer from "./components/DayViewer";
 import PopupContent from "./components/PopupContent";
-import { Background, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
+import { Container, ButtonBarContainer, Hint, Carousel, CarouselEdge } from "./Activities.style";
 
 interface props {}
 
@@ -16,8 +16,8 @@ export default function Activities({}: props) {
   const { language, innerWidth, showPopup, hidePopup } = useGlobalContext();
   const { today, weekActivities, selected, goTo, setSelected, updateActivity, deleteActivity, resetSelectedActivity } = useLoggedContext();
   const activitiesTexts = texts.get(language);
-  const selectedScroll = useRef<number>(0);
-
+  
+  const selectedScroll = useRef(0);
   const selectedDayRef = useRef(0);
   const carouselRef = useRef(null);
 
@@ -41,49 +41,54 @@ export default function Activities({}: props) {
 
 
   const confirmDelete = () => {
-    showPopup(
-      <PopupContent
-        dayIndex={selectedDayRef.current}
-        activity={selected.activity}
-        onYes={() => {
-          hidePopup();
-          setTimeout(() => {
-            deleteActivity(selected, true);
-            resetSelectedActivity();
-            showPopup(
-              activitiesTexts.activityDeleted, {
+    showPopup({type: "prompt", text: (
+        <PopupContent
+          dayIndex={selectedDayRef.current}
+          activity={selected.activity}
+          onYes={() => {
+            hidePopup();
+            setTimeout(() => {
+              deleteActivity(selected, true);
+              resetSelectedActivity();
+              showPopup({
+                text: activitiesTexts.activityDeleted,
                 type: "warning-success",
+              },{
                 timeout: 4000
               });          
-          }, 200);
-        }}
-        onNo={() => {
-          hidePopup();
-        }}
-      />,
-      { type: "prompt" }
+            }, 200);
+          }}
+          onNo={() => {
+            hidePopup();
+          }}
+        />
+      )},{
+        blur: true,
+      }
     );
   };
 
 
   const showNotes = () => {
-    showPopup(
-      <Notes
-        activity={selected.activity}
-        onNotesUpdate={(notes) => {
-          updateActivity({
-            activity: {...selected.activity, notes},
-            day: selected.day,
-          }, true);
-          hidePopup();
-        }}
-      />,
-      { type: "prompt" }
+    showPopup({type: "prompt", text: (
+        <Notes
+          activity={selected.activity}
+          onNotesUpdate={(notes) => {
+            updateActivity({
+              activity: {...selected.activity, notes},
+              day: selected.day,
+            }, true);
+            hidePopup();
+          }}
+        />
+      )},{
+        blur: true,
+      }
     );
   };
 
   return (
-    <Background>
+    <Container>
       <Hint>{activitiesTexts.yourRoutine}</Hint>
       <Carousel ref={carouselRef} onScroll={onCarouselScroll}>
         <CarouselEdge />
@@ -114,6 +119,6 @@ export default function Activities({}: props) {
           }}
         />
       </ButtonBarContainer>
-    </Background>
+    </Container>
   );
 }

@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import { activitySelectionType, activityType } from "src/types";
+import { activitySelectionType, activityType, listType } from "src/types";
 
 export const isEmailValid = (email: string) => {
   const regex = /\S+@\S+\.\S+/;
