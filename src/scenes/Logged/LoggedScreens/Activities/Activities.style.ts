@@ -5,12 +5,11 @@ const Full = styled.div`
   width: 100%;
 `;
 
-export const Background = styled(Full)`
+export const Container = styled(Full)`
   padding: 20px 0;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: ${colors.white};
 `;
 
 export const Hint = styled.p`

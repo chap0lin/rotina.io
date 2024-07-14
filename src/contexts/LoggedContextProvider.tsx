@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { activitySelectionType, activityType, dataType, itemType, loggedScreens } from "src/types";
+import { activitySelectionType, activityType, dataType, itemType, listType, loggedScreens } from "src/types";
 import { areActivitiesEqual, isSelectionValid } from "src/functions";
-import { dayViewerElementId, emptyWeek } from "src/constants";
+import { dayElementId, emptyWeek } from "src/constants";
 import { isBefore } from "src/functions/time";
 import { useTime } from "src/hooks/time";
 
@@ -13,8 +13,7 @@ interface LoggedContextValue {
     updateServer: dataType,
     screen: loggedScreens,
     today: number,
-    shoppingList: itemType[],
-    todoList: itemType[],
+    lists: listType[],
     weekActivities: activityType[][],
     selected: activitySelectionType | null,
     setUpdateServer: React.Dispatch<React.SetStateAction<dataType>>,
@@ -23,7 +22,8 @@ interface LoggedContextValue {
     addActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     updateActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
     deleteActivity: (whichOne: activitySelectionType, updateServer?: boolean) => void;
-    updateList: (whichOne: "shopping" | "todo", updatedList: itemType[], updateServer?: boolean) => void,
+    updateList: (index: number, updatedList: listType, updateServer?: boolean) => number,
+    setLists: React.Dispatch<React.SetStateAction<listType[]>>,
     resetSelectedActivity: (toSomeSpecificDay?: number) => void,
     goTo: (newScreen: loggedScreens) => void,
     goBack: (shouldReset?: boolean) => void,
@@ -33,8 +33,7 @@ const initialValues: LoggedContextValue = {
     updateServer: null,
     screen: "dashboard",
     today: 0,
-    shoppingList: [],
-    todoList: [],
+    lists: [],
     weekActivities: emptyWeek,
     selected: { activity: null, day: 0 },
     setUpdateServer: () => null,
@@ -44,6 +43,7 @@ const initialValues: LoggedContextValue = {
     updateActivity: () => null,
     deleteActivity: () => null,
     updateList: () => null,
+    setLists: () => null,
     resetSelectedActivity: () => null,
     goTo: () => null,
     goBack: () => null,
@@ -62,8 +62,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
     const {hour} = useTime();
     const [screen, setScreen] = useState<loggedScreens>(() => initialValues.screen);
     const [today, setToday] = useState<number>(() => initialValues.today);
-    const [shoppingList, setShoppingList] = useState<itemType[]>(() => initialValues.shoppingList);
-    const [todoList, setTodoList] = useState<itemType[]>(() => initialValues.todoList);
+    const [lists, setLists] = useState<listType[]>(() => initialValues.lists);
     const [selected, setSelected] = useState<activitySelectionType | null>(() => initialValues.selected);
     const [weekActivities, setWeekActivities] = useState<activityType[][]>(() => initialValues.weekActivities);
     const [updateServer, setUpdateServer] = useState<dataType>(() => initialValues.updateServer);
@@ -78,7 +77,7 @@ export default function LoggedProvider(props: LoggedProviderProps) {
             isBefore(a.startsAt, b.startsAt) ? -1 : 1
         );
         setWeekActivities(newWeek);
-        document.getElementById(`${dayViewerElementId}${selection.day}`).scrollIntoView();
+        document.getElementById(`${dayElementId}${selection.day}`).scrollIntoView();
         updateServer && setUpdateServer("week");
     }
 
@@ -108,11 +107,30 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         setWeekActivities(newWeek);
     }
 
+    const getNewIndex = (index: number, element: any, list: any[]) => {
+        if(!list) return 0;
+        if(!element) return (index > 0)? (index - 1) : 0;
+        if(index < 0) return (list.length);
+        return index;
+    }
 
-    const updateList = (whichOne: dataType, updatedList: itemType[], updateServer?: boolean) => {
-        const setList = (whichOne === "shopping")? setShoppingList : setTodoList;
-        setList(updatedList);
-        updateServer && setUpdateServer(whichOne);
+    const updateList = (index: number, list: listType | null, updateServer?: boolean) => {
+        let newIndex = getNewIndex(index, list, lists);
+        console.log(newIndex);
+        setLists((prev) =>{
+            const newLists = [...prev];
+            if(!list){                              // no list given = remove existing list
+                newLists.splice(index, 1);
+            } else if(index > -1) {                 // index is positive = update existing list
+                newLists[index] = {...list};       
+            } else {                                // index in negative = add new list
+                newLists.push({...list});
+                
+            }
+            return newLists;
+        });
+        updateServer && setUpdateServer("lists");
+        return newIndex;
     }
 
     const resetSelectedActivity = (toSomeSpecificDay?: number) => {
@@ -142,7 +160,6 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         });
     }
 
-
     useEffect(() => {
         const date = new Date();
         setToday((date.getDay() + 6) % 7);      //here, 0 equals monday and 6 equals sunday. Fuck the system
@@ -154,12 +171,12 @@ export default function LoggedProvider(props: LoggedProviderProps) {
         updateServer,
         screen,
         today,
-        shoppingList,
-        todoList,
+        lists,
         weekActivities,
         selected,
         setUpdateServer,
         updateList,
+        setLists,
         updateWeek,
         updateActivity,
         addActivity,

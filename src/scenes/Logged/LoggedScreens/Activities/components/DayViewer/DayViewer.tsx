@@ -1,6 +1,6 @@
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { areActivitiesEqual } from "src/functions";
-import { dayViewerElementId } from "src/constants";
+import { dayElementId } from "src/constants";
 import { texts } from "./DayViewer.lang";
 import { activityType } from "src/types";
 import { ActivityCard } from "src/components";
@@ -40,7 +40,7 @@ export default function DayViewer({
 
   return (
     <OuterSpacer>
-      <Container id={`${dayViewerElementId}${index}`}>
+      <Container id={`${dayElementId}${index}`}>
         <TitleContainer>
           <Title>{day}</Title>
           {isToday && <Badge>{dayTexts.today}</Badge>}

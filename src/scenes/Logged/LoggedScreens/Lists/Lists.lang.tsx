@@ -6,9 +6,10 @@ type textTypes = {
   todo: string;
   shopping: string;
   placeholder: string;
-  nothingToDo: string;
-  nothingToShop: string;
-  juliusPhrase: string | JSX.Element;
+  nothingHere: string;
+  listCleared: string;
+  listDeleted: string;
+  listCreated: string;
 };
 
 const texts = new Map<languageOption, textTypes>();
@@ -19,9 +20,10 @@ texts.set("pt-br", {
     todo: "afazeres",
     shopping: "compras",
     placeholder: "Insira um item...",
-    nothingToDo: "Nada pra fazer! yey!",
-    nothingToShop: "Nada para comprar. ainda.",
-    juliusPhrase: <>Se você não comprar,<br/>o desconto é maior.</>
+    nothingHere: "Nada por aqui!",
+    listCleared: "Lista limpa!",
+    listDeleted: "Lista apagada!",
+    listCreated: "Lista criada com sucesso!"
 });
 
 texts.set("en-us", {
@@ -30,9 +32,10 @@ texts.set("en-us", {
     todo: "to-do",
     shopping: "shopping",
     placeholder: "Insert an item...",
-    nothingToDo: "Nothing to do! yey!",
-    nothingToShop: "Nothing to buy. yet.",
-    juliusPhrase: <>if you don't buy,<br/>the discount is bigger.</>
+    nothingHere: "Nothing in here!",
+    listCleared: "List cleared!",
+    listDeleted: "List deleted!",
+    listCreated: "List created successfuly!"
 });
 
 export { texts };

@@ -44,7 +44,12 @@ export default function PopupContent({
   const slotRef = useRef(null);
 
   useEffect(() => {
-    move(slotRef.current, { x: focus ? 0 : -19 }, 0.5);
+    move(slotRef.current, {
+      x: focus ? 0 : -19
+    }, {
+      duration: 0.5,
+      ease: "power3"
+    });
   }, [focus]);
 
   useEffect(() => {

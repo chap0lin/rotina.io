@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Start, Login, Activate, Recovery, Logged } from "scenes/index";
+import { Login, Activate, Recovery, Logged } from "scenes/index";
 
 export default function Router() {
   return (

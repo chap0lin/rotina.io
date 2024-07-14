@@ -64,7 +64,8 @@ export default function Button({
       ref={buttonRef}
       disabled={disabled}
       style={buttonStyle}
-      onClick={handleClick}>
+      onClick={handleClick}
+    >
       {content}
     </Container>
   );

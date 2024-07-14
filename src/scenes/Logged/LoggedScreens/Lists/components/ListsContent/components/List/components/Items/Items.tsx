@@ -1,27 +1,27 @@
 import { itemType } from "src/types";
 import { colors } from "src/colors";
 import { X } from "react-feather";
-import { Content, Line} from "./List.style";
+import { Container, Content, Line} from "./Items.style";
 
 interface props {
+    maxHeight?: number;
     source: itemType[];
-    markColor?: string; 
-    placeholder?: JSX.Element | string;
+    markColor?: string;
     onMark: (index: number) => void;
     onRemove: (index: number) => void;
 }
 
-export default function List({source, markColor, placeholder, onMark, onRemove}: props){
+export default function Items({maxHeight, source, markColor, onMark, onRemove}: props){
 
     return (
-        <>
-            {(source.length > 0) && source.map(((item, index) => (
+        <Container style={{maxHeight: maxHeight?? "100%"}}>
+            {source && source.map(((item, index) => (
                 <Line key={index}>
                     <X
                         style={{cursor: "pointer"}}
                         color={colors.grey}
                         width={"20px"}
-                        height={"20px"}
+                        height={"22px"}
                         onClick={() => onRemove(index)}
                     />
                     <Content
@@ -40,8 +40,6 @@ export default function List({source, markColor, placeholder, onMark, onRemove}:
                     </Content>
                 </Line>
             )))}
-
-            {!source.length && placeholder}
-        </>
+        </Container>
     )
 }

@@ -11,7 +11,7 @@ const rotate = keyframes`
   }
 `;
 
-export const Background = styled.div`
+export const Container = styled.div`
   position: fixed;
   z-index: 100;
   width: 100%;

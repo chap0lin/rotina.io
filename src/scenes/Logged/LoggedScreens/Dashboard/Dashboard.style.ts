@@ -18,13 +18,12 @@ const Bold = styled.span`
   color: ${colors.black};
 `;
 
-export const Background = styled(FlexColumn)`
+export const Container = styled(FlexColumn)`
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: ${colors.white};
 `;
 
 export const Gsap = styled.div`

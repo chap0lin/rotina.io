@@ -50,11 +50,6 @@ export const WarningContainer = styled.div`
   }
 `;
 
-export const Cookie = styled.img`
-  width: 40px;
-  object-fit: scale-down;
-`;
-
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;

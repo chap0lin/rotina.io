@@ -1,6 +1,6 @@
 import gsap from "gsap";
-import { Popup } from "src/components";
-import { languageOption, popupType, userType } from "../types";
+import { Background, Blur, Popup } from "src/components";
+import { languageOption, popupPropsType, popupType, userType } from "../types";
 import {
   createContext,
   ReactNode,
@@ -10,15 +10,18 @@ import {
   useRef,
 } from "react";
 
-interface popupPropsType {
-  type?: popupType;
+interface popupOptionsType {
   timeout?: number;
-  height?: number;
+  blur?: boolean;
+  onHide?: () => void;
 }
+
 
 interface GlobalProviderProps {
   children: ReactNode;
 }
+
+
 interface GlobalContextValue {
   rollingCode: string | null;
   keyPressed: string;
@@ -26,13 +29,17 @@ interface GlobalContextValue {
   innerWidth: number;
   user: userType["auth"] | null;
   language: languageOption;
-  popupType: popupType;
+  popup: popupType;
+  blur: boolean;
   setRollingCode: React.Dispatch<React.SetStateAction<string | null>>; 
   setUser: React.Dispatch<React.SetStateAction<userType["auth"]>>;
+  showBlur: (props?: popupOptionsType) => void;
+  hideBlur: () => void;
   setLanguage: React.Dispatch<React.SetStateAction<languageOption>>;
-  showPopup: (message: string | JSX.Element, props?: popupPropsType) => void;
+  showPopup: (props: popupPropsType, options?: popupOptionsType) => void;
   hidePopup: () => void;
 }
+
 
 const initialValues: GlobalContextValue = {
   rollingCode: null,
@@ -41,9 +48,12 @@ const initialValues: GlobalContextValue = {
   innerWidth: 1366,
   user: {token: null},
   language: "pt-br",
-  popupType: null,
+  popup: {text: null, type: null, visible: false},
+  blur: false,
   setRollingCode: () => null,
   setUser: () => null,
+  showBlur: () => null,
+  hideBlur: () => null,
   setLanguage: () => null,
   showPopup: () => null,
   hidePopup: () => null,
@@ -62,15 +72,15 @@ export function useGlobalContext() {
 
 export default function GlobalProvider(props: GlobalProviderProps) {
   const [user, setUser] = useState<userType["auth"]>(() => initialValues.user);
+  const [blur, setBlur] = useState<boolean>(() => initialValues.blur);
   const [language, setLanguage] = useState<languageOption>(() => initialValues.language);
   const [innerWidth, setInnerWidth] = useState<number>(() => window.innerWidth);
   const [innerHeight, setInnerHeight] = useState<number>(() => window.innerHeight);
   const [rollingCode, setRollingCode] = useState<string | null>(() => initialValues.rollingCode);
   const [keyPressed, setKeyPressed] = useState<string>(() => initialValues.keyPressed);
-  const [popupText, setPopupText] = useState<string | JSX.Element>(() => "");
-  const [popupType, setPopupType] = useState<popupType>(() => initialValues.popupType);
-  const [popupVisibility, setPopupVisibility] = useState<boolean>(() => false);
+  const [popup, setPopup] = useState<popupType | null>(() => initialValues.popup);
 
+  const blurCallback = useRef<popupOptionsType["onHide"]>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const handleResize = () => {
@@ -82,22 +92,30 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     setKeyPressed(e.key);
   };
 
-  const showPopup = (message: string | JSX.Element, props?: popupPropsType) => {
+  const showBlur = (props?: popupOptionsType) => {
+    setBlur(true);
+    blurCallback.current = props? props.onHide : null;
+  }
+
+  const hideBlur = () => {
+    setBlur(false);
+  }
+
+
+  const showPopup = (props: popupPropsType, options?: popupOptionsType) => {
+    setPopup((prev) => ({ ...prev, ...props, visible: true }));
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    const type = props ? props.type : null;
-    const timeout = props ? props.timeout : null;
-    setPopupText(message);
-    setPopupType(type ?? "warning-failure");
-    setPopupVisibility(true);
-    if (!timeout) return null;
+    if(!options) return;
+    if(options.blur) showBlur({...options});
+    if(!options.timeout) return;
     timeoutRef.current = setTimeout(() => {
-      setPopupVisibility(false);
-    }, timeout);
+      setPopup((prev) => ({ ...prev, visible: false }));
+    }, options.timeout);
   };
 
   const hidePopup = () => {
-    setPopupVisibility(false);
-    setPopupType(null);
+    setPopup((prev) => ({ ...prev, type: null, visible: false }));
+    hideBlur();
   };
 
   useEffect(() => {
@@ -115,9 +133,16 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     document.documentElement.lang = lang;
   }, [language]);
 
+
   useEffect(() => {
-    console.log("new rolling code:", rollingCode);
-  }, [rollingCode]);
+    if(!blur){
+      if(popup.visible) hidePopup();
+      if(blurCallback.current) {
+        blurCallback.current();
+        blurCallback.current = null;
+      }
+    }
+  }, [blur]);
 
   const { children } = props;
 
@@ -128,9 +153,12 @@ export default function GlobalProvider(props: GlobalProviderProps) {
     innerHeight,
     user,
     language,
-    popupType,
+    popup,
+    blur,
     setRollingCode,
     setUser,
+    showBlur,
+    hideBlur,
     setLanguage,
     showPopup,
     hidePopup,
@@ -138,12 +166,18 @@ export default function GlobalProvider(props: GlobalProviderProps) {
 
   return (
     <GlobalContext.Provider value={value}>
-      {children}
-      <Popup
-        description={popupText}
-        show={popupVisibility}
-        type={popupType}
-      />
+      <Background>
+        <Blur
+          show={blur}
+          onClick={hideBlur}
+        />
+        {children}
+        <Popup
+          description={popup.text}
+          show={popup.visible}
+          type={popup.type}
+        />
+      </Background>
     </GlobalContext.Provider>
   );
 }

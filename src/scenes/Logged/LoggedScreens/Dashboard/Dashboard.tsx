@@ -8,14 +8,14 @@ import { activityType } from "src/types";
 import { useTime } from "src/hooks/time";
 import { texts } from "./Dashboard.lang";
 import { Notes } from "src/components";
-import { Background, BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, BottomContainer } from "./Dashboard.style";
+import { Container, BigBold, SubTitle, BigTitle, MainContent, TopTexts, Section, SectionTitle, BottomContainer } from "./Dashboard.style";
 
 interface props {
   show: boolean;
 }
 
 export default function Dashboard({ show }: props) {
-  const { language, innerHeight, showPopup, hidePopup } = useGlobalContext();
+  const { language, innerWidth, innerHeight, showPopup, hidePopup } = useGlobalContext();
   const { today, weekActivities, addActivity, deleteActivity, goTo } = useLoggedContext();
   const { hour, minute } = useTime();
   const [happeningNow, setHappeningNow] = useState<activityType | undefined>(() => null);
@@ -64,7 +64,7 @@ export default function Dashboard({ show }: props) {
 
   useEffect(() => {
     takingNotes &&
-      showPopup(
+      showPopup({type: "prompt", text: (
         <Notes
           activity={takingNotes}
           onNotesUpdate={(notes) => {
@@ -72,9 +72,11 @@ export default function Dashboard({ show }: props) {
             hidePopup();
             setTakingNotes(null);
           }}
-        />,
-        { type: "prompt" }
-      );
+        />
+      )},{
+        blur: true,
+      }
+    );
   }, [takingNotes]);
 
   useEffect(() => {
@@ -83,30 +85,40 @@ export default function Dashboard({ show }: props) {
     const nowHeight = (innerHeight > 750 ? 240 : 175) + dy;
     const laterHeight = (innerHeight > 750 ? 300 : 190) - dy;
 
-    move(laterSectionRef.current, { y: dy }, 1);
+    move(laterSectionRef.current, { y: dy }, {duration: 1});
     resize(nowSectionRef.current, { height: nowHeight }, 1);
     resize(laterSectionRef.current, { height: laterHeight }, 1);
   }, [happeningNow, innerHeight]);
 
-  useLayoutEffect(() => {
-    if (!show) {
-      vanish([mainContentRef.current]);
-      move(menuButtonsRef.current, { y: 200 }, 0);
-    } else {
+  useLayoutEffect(() => {    
+    move(nowTitleRef.current, {
+      x: show? 0 : -innerWidth, 
+    }, {
+      duration: show? 1 : 0,
+      delay: show? 0.15 : 0,
+    });
+    move(laterTitleRef.current, {
+      x: show? 0 : -innerWidth, 
+    }, {
+      duration: show? 1 : 0,
+      delay: show? 0.7 : 0,
+    });
+    move(menuButtonsRef.current, {
+      y: show? 0 : 200,
+    }, {
+      duration: show? 1 : 0,
+      delay: show? 1.5 : 0,
+    });
+
+    if(show){
       spawn(mainContentRef.current, 1, 0.15);
-      move(nowTitleRef.current, { x: 0 }, 1, 0.15);
-      move(laterTitleRef.current, { x: 0 }, 1, 0.7);
-      move(menuButtonsRef.current, { y: 0 }, 1, 1.5);
+    } else {
+      vanish([mainContentRef.current]);
     }
   }, [show]);
 
-  useLayoutEffect(() => {
-    move(nowTitleRef.current, { x: -400 });
-    move(laterTitleRef.current, { x: -400 });
-  }, []);
-
   return (
-    <Background>
+    <Container>
       <MainContent ref={mainContentRef}>
         <TopTexts>
           <BigTitle>
@@ -140,6 +152,6 @@ export default function Dashboard({ show }: props) {
           onWeekClick={() =>  goTo("activities")}
         />
       </BottomContainer>
-    </Background>
+    </Container>
   );
 }
