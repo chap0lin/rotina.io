@@ -12,7 +12,7 @@ const rotate = keyframes`
 `;
 
 export const Container = styled.div`
-  position: fixed;
+  position: absolute;
   z-index: 100;
   width: 100%;
   height: 100%;

@@ -26,12 +26,6 @@ export const Container = styled(FlexColumn)`
   flex-direction: column;
 `;
 
-export const Gsap = styled.div`
-  width: 100%;
-  height: 100%;
-  position: fixed;
-`;
-
 export const MainContent = styled(FlexColumn)`
   padding: 30px;
   position: relative;
@@ -95,7 +89,7 @@ export const SectionTitle = styled(Text)`
 `;
 
 export const BottomContainer = styled.div`
-  position: fixed;
+  position: absolute;
   bottom: 15px;
   width: 100%;
   padding: 0 30px;

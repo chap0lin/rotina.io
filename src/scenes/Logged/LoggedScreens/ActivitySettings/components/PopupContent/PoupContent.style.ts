@@ -104,6 +104,7 @@ export const Slot = styled.div`
   align-items: center;
   background: ${colors.black};
   position: relative;
+  cursor: pointer;
 `;
 
 export const FocusText = styled(Text)`

@@ -7,7 +7,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   overflow: hidden;
-  position: fixed;
+  position: absolute;
   z-index: 100;
   @media screen and (min-width: 500px) {
     scale: 0;

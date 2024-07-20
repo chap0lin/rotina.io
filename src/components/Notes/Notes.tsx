@@ -102,7 +102,7 @@ export default function Notes({ activity, onNotesUpdate }: props) {
                 width={20}
                 color={colors.grey}
                 strokeWidth={3}
-                style={{ flexShrink: 0, marginRight: 5 }}
+                style={{ cursor: "pointer", flexShrink: 0, marginRight: 5 }}
                 onClick={() => removeNote(i)}
               />
               {note}

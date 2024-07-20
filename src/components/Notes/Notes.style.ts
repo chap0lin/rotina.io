@@ -96,6 +96,9 @@ export const NoteList = styled.ul`
   padding: 0;
   max-height: 500px;
   overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
   @media (max-height: 750px) {
     max-height: 350px;
   }

@@ -106,7 +106,7 @@ export default function Header({
   }, [arrow, logo, user, lang]);
 
   return (
-    <Container ref={containerRef}>
+    <Container ref={containerRef} onClick={hideBlur}>
       <LeftSide ref={leftSideRef}>
         <Gsap ref={arrowRef}>
           <Clickable>

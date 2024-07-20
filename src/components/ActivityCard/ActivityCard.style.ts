@@ -8,6 +8,7 @@ const Text = styled.p`
 `;
 
 export const Container = styled.div`
+  cursor: pointer;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
