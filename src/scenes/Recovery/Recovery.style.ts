@@ -22,7 +22,7 @@ export const Gsap = styled.div`
 export const LoadingDiv = styled.div`
   width: 100%;
   height: 100%;
-  position: fixed;
+  position: absolute;
 `;
 
 export const Title = styled.p`

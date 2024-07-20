@@ -6,7 +6,7 @@ const Full = styled.div`
 `;
 
 export const Gsap = styled(Full)`
-  position: fixed;
+  position: absolute;
 `;
 
 export const BigContainer = styled(Full)`

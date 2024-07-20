@@ -35,7 +35,7 @@ export const Hint = styled.p`
 export const ColorPalette = styled.div`
     width: 100%:
     flex-shrink: 0;
-    margin: 20px 0;
+    margin: 20px 0 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,8 +58,8 @@ export const Input = styled.input`
   outline: none;
   font-size: 18px;
   background: none;
-  width: 100%;
-  max-width: 300px;
+  width: 85%;
+  max-width: 340px;
   height: 40px;
   @media (max-height: 750px) {
     font-size: 16px;
@@ -68,12 +68,12 @@ export const Input = styled.input`
 `;
 
 export const HourInputs = styled.div`
-  width: 100%;
+  width: 85%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  max-width: 300px;
+  max-width: 340px;
   @media (max-height: 750px) {
     max-width: 260px;
   }
@@ -81,6 +81,9 @@ export const HourInputs = styled.div`
 
 export const HourInput = styled(Input)`
   text-align: center;
+  ::-webkit-inner-spin-button {
+    background: ${colors.black};
+  }
 `;
 
 export const HourInputText = styled.p`
@@ -98,8 +101,8 @@ export const Weekdays = styled.select`
   outline: none;
   font-size: 18px;
   background: none;
-  width: 100%;
-  max-width: 300px;
+  width: 85%;
+  max-width: 340px;
   height: 40px;
   @media (max-height: 750px) {
     font-size: 16px;

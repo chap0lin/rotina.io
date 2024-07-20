@@ -30,6 +30,9 @@ export const Container = styled.button`
   :focus {
     outline: none;
   }
+  :disabled {
+    cursor: not-allowed;
+  }
   @media (max-height: 750px) {
     font-size: 16px;
     gap: 6px;

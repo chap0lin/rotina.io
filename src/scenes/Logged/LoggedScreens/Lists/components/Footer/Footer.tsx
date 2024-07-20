@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useGlobalContext } from "src/contexts/GlobalContextProvider";
 import { Container, Text, Left, Right, Icon, Lists, ListName, NewListSection } from "./Footer.style";
 import { RotatingButton} from "../index";
-import { Copy, Plus } from "react-feather";
+import { Plus, Share2 } from "react-feather";
 import { colors } from "src/colors";
 import { listType } from "src/types";
 import { Button } from "src/components";
@@ -12,6 +12,8 @@ import { moveAndVanish, reactToClick, spawnAndMove } from "src/functions/animati
 const maxLists = import.meta.env.VITE_MAX_LISTS;
 
 const iconProps = {
+    fill: colors.white,
+    strokeWidth: 1,
     color: colors.white,
     width: "40%",
     height: "40%",
@@ -74,7 +76,7 @@ export default function Footer({lists, selectedIndex, showingMenu, onListMenuTog
                     background={lists[selectedIndex]? lists[selectedIndex].color : colors.black}
                     onClick={copyList}
                 >
-                    <Copy {...iconProps}/>
+                    <Share2 {...iconProps}/>
                 </RotatingButton>
             </Left>
             <Right ref={listsButtonRef}>

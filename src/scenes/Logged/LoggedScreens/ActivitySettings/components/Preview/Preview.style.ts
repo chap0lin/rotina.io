@@ -41,6 +41,7 @@ export const Buttons = styled.div`
 
 export const Gsap = styled.div`
   transition: opacity 0.25s;
+  cursor: pointer;
 `;
 
 export const InvalidWarning = styled.div`

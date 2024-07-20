@@ -154,12 +154,12 @@ export default function LoggedScreens(){
     useLayoutEffect(() => {
         switch (screen) {
         case "dashboard":
-            moveAndVanish([listsRef.current], { x: -1.4 * innerWidth }, 1);
+            moveAndVanish([listsRef.current], { x: -510 }, 1);
             spawnAndMove([dashboardRef.current], { x: 0 }, 1);
             moveAndVanish([
                 activitiesRef.current, 
                 newActivityRef.current
-            ], { x: 1.4 * innerWidth }, 1);
+            ], { x: 510 }, 1);
             break;
         case "lists":
             spawnAndMove([listsRef.current], { x: 0 }, 1);
@@ -167,23 +167,23 @@ export default function LoggedScreens(){
                 dashboardRef.current,
                 activitiesRef.current,
                 newActivityRef.current
-            ], { x: 1.4 * innerWidth }, 1);
+            ], { x: 510 }, 1);
             break;
         case "activities":
             moveAndVanish([
                 dashboardRef.current,
                 listsRef.current
-            ], { x: -1.4 * innerWidth }, 1);
+            ], { x: -510 }, 1);
             spawnAndMove(activitiesRef.current, { x: 0 }, 1);
-            moveAndVanish(newActivityRef.current, { x: 1.4 * innerWidth }, 1);
+            moveAndVanish(newActivityRef.current, { x: 510 }, 1);
             break;
         case "activity-settings":
             moveAndVanish([
                 listsRef.current,
                 dashboardRef.current,
                 activitiesRef.current
-            ], { x: -1.4 * innerWidth }, 1);
-            moveAndVanish(activitiesRef.current, { x: -1.4 * innerWidth }, 1);
+            ], { x: -510 }, 1);
+            moveAndVanish(activitiesRef.current, { x: -510 }, 1);
             spawnAndMove(newActivityRef.current, { x: 0 }, 1);
             break;
         }

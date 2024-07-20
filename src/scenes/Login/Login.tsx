@@ -158,6 +158,7 @@ export default function Login() {
   };
 
   const onError = (reply: serverReplyType) => {
+    if(!reply || !reply.status) return;
     switch(reply.status){
       case "ERROR_AUTHENTICATION":
         showPopup(

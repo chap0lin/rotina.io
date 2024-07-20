@@ -7,6 +7,7 @@ import { texts } from "./Lists.lang";
 import { spawn, vanish } from "src/functions/animation";
 import { ListsContent, Footer, EditPopup } from "./components";
 import { Carousel, ItemInput, CarouselEdge } from "./Lists.style";
+import CopyPopup from "./components/CopyPopup";
 
 export const areEqual = (list1: listType, list2: listType) => {
     if(!list1 && !list2) return true;
@@ -79,6 +80,13 @@ export default function Lists({}: props){
         });
     }
 
+    const showCopyOptions = () => {
+        showPopup({type: "prompt", text: (
+            <CopyPopup list={currentList}/>
+        )},{
+            blur: true,
+        });
+    }
 
     const scrollIntoView = (index: number) => {
         const element = document.getElementById(`${listElementId}${index}`);
@@ -194,7 +202,7 @@ export default function Lists({}: props){
                 showingMenu={showingListMenu}
                 onListMenuToggle={setShowingListMenu}
                 onListSelect={onListClick}
-                onListCopy={() => null}
+                onListCopy={showCopyOptions}
                 onNewList={() => showListSettings(null)}
             />
         </>

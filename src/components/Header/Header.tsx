@@ -29,7 +29,7 @@ export default function Header({
   lang,
   arrow,
 }: props) {
-  const { innerHeight, blur, setLanguage, hidePopup, showBlur, hideBlur } = useGlobalContext();
+  const { innerHeight, blur, setLanguage, showBlur, hideBlur } = useGlobalContext();
   const [showLanguagesMenu, setShowLanguagesMenu] = useState<boolean>(() => false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(() => false);
 
@@ -106,7 +106,7 @@ export default function Header({
   }, [arrow, logo, user, lang]);
 
   return (
-    <Container ref={containerRef}>
+    <Container ref={containerRef} onClick={hideBlur}>
       <LeftSide ref={leftSideRef}>
         <Gsap ref={arrowRef}>
           <Clickable>
